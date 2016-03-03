@@ -1,0 +1,253 @@
+# Guide
+
+If you want to build a mobile app like [Afro](http://www.getafrocab.com) and enable people to make purchases directly in your app, our iOS libraries can help.
+
+Accepting payments in your app involves 3 steps, which we'll cover in this guide:
+
+- Collecting credit card information from your customer
+- Converting the credit card information to a _single-use_ token
+- Sending this token to your server to create a charge
+
+## Getting Started
+
+### Step 1: Install the library
+
+#### Using CocoaPods
+
+We recommend using CocoaPods to install the Paystack iOS library, since it makes it easy to keep your app's dependencies up to date.
+
+If you haven't set up Cocoapods before, their site has installation instructions. Then, add pod 'Paystack' to your Podfile, and run pod install.
+
+(Don't forget to use the .xcworkspace file to open your project in Xcode, instead of the .xcodeproj file, from here on out.)
+
+#### Using Carthage
+
+We also support installing our SDK using Carthage. You can simply add github "paystack/paystack-ios" to your Cartfile, and follow the Carthage installation instructions.
+
+#### Manual installation
+
+We also publish our SDK as a static framework that you can copy directly into your app without any additional tools:
+
+- Head to our [releases page](https://github.com/PaystackHQ/paystack-ios/releases/) and download the framework that's right for you.
+- Unzip the file you downloaded.
+- In Xcode, with your project open, click on 'File' then 'Add files to "Project"...'.
+- Select Paystack.framework in the directory you just unzipped.
+- Make sure 'Copy items if needed' is checked.
+- Click 'Add'.
+- In your project settings, go to the "Build Settings" tab, and make sure -ObjC is present under "Other Linker Flags".
+
+### Step 2: Configure API keys
+
+First, you'll want to configure Paystack with your publishable API key. We recommend doing this in your AppDelegate's application:didFinishLaunchingWithOptions: method so that it'll be set for the entire lifecycle of your app.
+
+```Swift
+// AppDelegate.swift
+
+import Paystack
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        Paystack.setDefaultPublishableKey("pk_test_xxxx")
+        return true
+    }
+}
+```
+
+We've placed a test publishable API key as the PaystackPublishableKey constant in the above snippet. You'll need to swap it out with your live publishable key in production. You can see all your API keys in your dashboard.
+
+### Step 3: Collecting credit card information
+
+#### Test Mode
+
+When you're using your test publishable key, our libraries give you the ability to test your payment flow without having to charge real credit cards.
+
+If you're building your own form or using PSTCKPaymentCardTextField, using the card number 4123450131001381 with CVC 883 (along with any future expiration date) will accomplish the same effect.
+
+At some point in the flow of your app, you'll want to obtain payment details from the user. There are three ways to do this. You can (in increasing order of complexity):
+
+- Use our pre-built form component, PSTCKPaymentCardTextField, to collect new credit card details
+- Build your own credit card form from scratch
+
+#### Using PSTCKPaymentCardTextField
+
+To use our pre-built form component, we'll create a view controller called PaymentViewController and add a PSTCKPaymentCardTextField property to the view controller.
+
+```Swift
+// PaymentViewController.swift
+
+class PaymentViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
+    let paymentTextField = PSTCKPaymentCardTextField()
+}
+```
+
+Next, let's instantiate the PSTCKPaymentCardTextField, set the PaymentViewController as its PSTCKPaymentCardTextFieldDelegate, and add it to our view.
+
+```Swift
+// PaymentViewController.swift
+
+override func viewDidLoad() {
+    super.viewDidLoad();
+    paymentTextField.frame = CGRectMake(15, 15, CGRectGetWidth(self.view.frame) - 30, 44)
+    paymentTextField.delegate = self
+    view.addSubview(paymentTextField)
+}
+```
+
+This will add an PSTCKPaymentCardTextField to the controller to accept card numbers, expiration dates, and CVCs. It'll format the input, and validate it on the fly.
+
+When the user enters text into this field, the paymentCardTextFieldDidChange: method will be called on our view controller. In this callback, we can enable a save button that allows users to submit their valid cards if the form is valid:
+
+```Swift
+func paymentCardTextFieldDidChange(textField: PSTCKPaymentCardTextField) {
+    // Toggle navigation, for example
+    saveButton.enabled = textField.isValid
+}
+```
+
+#### Building your own form
+
+If you build your own payment form, you'll need to collect at least your customers' card numbers, CVC and expiration dates.
+
+### Step 4: Creating Tokens
+
+Our libraries shoulder the burden of PCI compliance by helping you avoid the need to send card data directly to your server. Instead, our libraries send credit card data directly to our servers, where we can convert them to tokens. You can charge these tokens later in your server-side code.
+
+#### Using PSTCKCardParams
+
+If you're using PSTCKPaymentCardTextField or your own form, you can assemble the data into an PSTCKCardParams object. Once you've collected the card number, expiration, and CVC, package them up in an PSTCKCardParams object and invoke the createTokenWithCard: method on the PSTCKAPIClient class, instructing the library to send off the credit card data to Paystack and return a token.
+
+```Swift
+@IBAction func save(sender: UIButton) {
+    if let card = paymentTextField.card {
+        PSTCKAPIClient.sharedClient().createTokenWithCard(card) { (token, error) -> Void in
+            if let error = error  {
+                handleError(error)
+            }
+            else if let token = token {
+                createBackendChargeWithToken(token) { status in
+                    ...
+                }
+            }
+        }
+    }
+}
+```
+
+In the example above, we're calling createTokenWithCard: when a save button is tapped. The important thing to ensure is the createToken isn't called before the user has finished entering their card details.
+
+Handling error messages and showing activity indicators while we're creating the token is up to you.
+
+### Step 5: Sending the token to your server
+
+The block you gave to createToken will be called whenever Paystack returns with a token (or error). You'll need to send the token off to your server so you can, for example, charge the card.
+
+Here's how it looks:
+
+```Swift
+// ViewController.swift
+
+func createBackendChargeWithToken(token: PSTCKToken, completion: PKPaymentAuthorizationStatus -> ()) {
+    let url = NSURL(string: "https://example.com/token")!
+    let request = NSMutableURLRequest(URL: url)
+    request.HTTPMethod = "POST"
+    let postBody = "token=\(tokenString!)&amountinkobo=\(capPrice)&email=\(emailAddress!)"
+    let postData = postBody.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+    session.uploadTaskWithRequest(request, fromData: postData, completionHandler: { data, response, error in
+        let successfulResponse = (response as? NSHTTPURLResponse)?.statusCode == 200
+        if successfulResponse && error == nil && data != nil{
+            // All was well
+            let newStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
+            print(newStr) // All we did here is log it to the output window
+        } else {
+            if let e=error {
+                print(e.description)
+            } else {
+                // There was no error returned though status code was not 200
+                print("There was an error communicating with your payment backend.") // All we did here is log it to the output window
+            }
+            
+        }
+    }).resume()
+}
+
+On the server, you just need to implement an endpoint that will accept the parameters token, email and amountinkobo. Make sure any communication with your server is SSL secured to prevent eavesdropping.
+
+--------------------
+
+### How to implement payment on your server
+Create a charge by calling our REST API. An authorization_code will be returned once the single-use token has been charged successfully. You can learn more about our API [here](https://developers.paystack.co/docs/getting-started).
+ 
+ **Endpoint:** https://api.paystack.co/transaction/charge_token
+
+ **Parameters:**
+ 
+
+ - email  - customer's email address (required)
+ - reference - unique reference  (required)
+ - amount - Amount in Kobo (required) 
+
+**Example**
+
+```bash
+   $ curl https://api.paystack.co/transaction/charge_token \
+    -H "Authorization: Bearer SECRET_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{"token": "PSTK_r4ec2m75mrgsd8n9", "email": "customer@email.com", "amount": 10000, "reference": "amutaJHSYGWakinlade256"}' \
+    -X POST
+
+```
+###Using the [Paystack-PHP library](https://github.com/yabacon/paystack-php) or [Paystack PHP class](https://github.com/yabacon/paystack-class)
+```php
+list($headers, $body, $code) = $paystack->transaction->chargeToken([
+                'reference'=>'amutaJHSYGWakinlade256',
+                'token'=>'PSTK_r4ec2m75mrgsd8n9',
+                'email'=>'customer@email.com',
+                'amount'=>10000 // in kobo
+              ]);
+              
+// check if authorization code was generated
+if ((intval($code) === 200) && array_key_exists('status', $body) && $body['status']) {
+    // body contains Array with data similar to result below
+    $authorization_code = $body['authorization']['authorization_code']; 
+    // save the authorization_code so you may charge in future
+    
+} else {
+// invalid body was returned
+// handle this or troubleshoot
+    throw new \Exception('Transaction Initialise returned non-true status');
+}
+
+```
+
+
+**Result**
+```json
+    {  
+        "status": true,
+        "message": "Charge successful",
+        "data": {
+            "amount": 10000,
+            "transaction_date": "2016-01-26T15:34:02.000Z",
+            "status": "success",
+            "reference": "amutaJHSYGWakinlade256",
+            "domain": "test",
+            "authorization": {
+            "authorization_code": "AUTH_d47nbp3x",
+            "card_type": "visa",
+            "last4": "1111",
+            "bank": null
+        },
+        "customer": {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "customer@email.com"
+        },
+        "plan": 0
+    }
+```
+
+
+
+### 5. Charging Returning Customers
+See details for charging returning customers [here](https://developers.paystack.co/docs/charging-returning-customers). 

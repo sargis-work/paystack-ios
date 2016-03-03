@@ -1,0 +1,5 @@
+=== 1.0.0 2016-03-03
+
+* Initial release
+
+Special thanks to: the Stripe iOS team. This was built based on their library at http://github.com/stripe/stripe-ios .

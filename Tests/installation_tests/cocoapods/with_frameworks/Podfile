@@ -1,0 +1,3 @@
+use_frameworks!
+pod 'Paystack', path: '../../../..'
+pod 'Paystack/ApplePay', path: '../../../..'

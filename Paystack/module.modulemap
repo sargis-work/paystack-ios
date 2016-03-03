@@ -1,0 +1,5 @@
+framework module Paystack {
+    umbrella header "Paystack.h"
+    export *
+    module * { export * }
+}

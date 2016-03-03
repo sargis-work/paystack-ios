@@ -5,7 +5,13 @@
 [![CocoaPods](https://img.shields.io/cocoapods/l/Paystack.svg?style=flat)](https://github.com/paystackhq/paystack-ios/blob/master/LICENSE)
 [![CocoaPods](https://img.shields.io/cocoapods/p/Paystack.svg?style=flat)](https://github.com/paystackhq/paystack-ios#)
 
-The Paystack iOS SDK make it easy to collect your users' credit card details inside your iOS app. By creating tokens, Paystack handles the bulk of PCI compliance by preventing sensitive card data from hitting your server.
+The Paystack iOS SDK make it easy to collect your users' credit card details inside your iOS app. By creating tokens, 
+Paystack handles the bulk of PCI compliance by preventing sensitive card data from hitting your server.
+
+This library helps collect card details on iOS and OSX, getting a token. This shoulders the burden of PCI compliance by helping you avoid the need to send 
+card data directly to your server. Instead you send to Paystack's server and get a token which you can charge once in your server-side code. This charge 
+returns an `authorization_code` if successful. Subsequent charges can then be made using the `authorization_code`.
+
 
 ## Requirements
 Our SDK is compatible with iOS apps supporting iOS 7.0 and above. It requires Xcode 7.0+ to build the source.
@@ -41,6 +47,7 @@ And the return value from the backend will be displayed in your Output window.
 1. Open Paystack.xcworkspace
 1. Choose the "iOS Tests" or "OS X Tests" scheme
 1. Run Product -> Test
+
 ## Misc. notes
 
 ### Handling errors

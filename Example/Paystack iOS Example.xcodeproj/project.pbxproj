@@ -11,8 +11,9 @@
 		042CA41F1A685E8D00D778E7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 042CA4171A685E8D00D778E7 /* Main.storyboard */; };
 		042CA4201A685E8D00D778E7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 042CA4191A685E8D00D778E7 /* Images.xcassets */; };
 		042CA4221A685E8D00D778E7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042CA41C1A685E8D00D778E7 /* ViewController.swift */; };
-		10500ABA1C8140EE00EEF7CF /* Paystack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10500AB91C8140EE00EEF7CF /* Paystack.framework */; };
 		10A653A71C88CFBC00EBC974 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 10A653A61C88CFBC00EBC974 /* Default-568h@2x.png */; };
+		10DAC7941C896BB300855971 /* Paystack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10DAC7921C896BAC00855971 /* Paystack.framework */; };
+		10DAC7951C896BB300855971 /* Paystack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 10DAC7921C896BAC00855971 /* Paystack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		10FC52021C88D40A004A0733 /* Paystack iOS Example.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 10FC52011C88D40A004A0733 /* Paystack iOS Example.entitlements */; };
 		C11745DF1C456D6D0029936F /* PSTCKPaymentCardTextFieldUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C11745DE1C456D6D0029936F /* PSTCKPaymentCardTextFieldUITests.m */; };
 /* End PBXBuildFile section */
@@ -27,6 +28,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		10DAC7961C896BB300855971 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				10DAC7951C896BB300855971 /* Paystack.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		042CA4141A685E8D00D778E7 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		042CA4181A685E8D00D778E7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -34,8 +49,8 @@
 		042CA41A1A685E8D00D778E7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		042CA41C1A685E8D00D778E7 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		04823F781A6849200098400B /* Paystack iOS Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Paystack iOS Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		10500AB91C8140EE00EEF7CF /* Paystack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Paystack.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/Paystack-eocshxmtrugnoohigtzntpokkqyc/Build/Products/Debug-iphoneos/Paystack.framework"; sourceTree = "<group>"; };
 		10A653A61C88CFBC00EBC974 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		10DAC7921C896BAC00855971 /* Paystack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Paystack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		10FC52011C88D40A004A0733 /* Paystack iOS Example.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Paystack iOS Example.entitlements"; sourceTree = "<group>"; };
 		C11745D31C456C730029936F /* Paystack iOS Application Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Paystack iOS Application Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C11745D71C456C730029936F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -48,7 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				10500ABA1C8140EE00EEF7CF /* Paystack.framework in Frameworks */,
+				10DAC7941C896BB300855971 /* Paystack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,7 +113,7 @@
 		04823F9F1A6849850098400B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				10500AB91C8140EE00EEF7CF /* Paystack.framework */,
+				10DAC7921C896BAC00855971 /* Paystack.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -123,6 +138,7 @@
 				04823F741A6849200098400B /* Sources */,
 				04823F751A6849200098400B /* Frameworks */,
 				04823F761A6849200098400B /* Resources */,
+				10DAC7961C896BB300855971 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -163,7 +179,6 @@
 				TargetAttributes = {
 					04823F771A6849200098400B = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = VZCEZ65JNX;
 						SystemCapabilities = {
 							com.apple.InterAppAudio = {
 								enabled = 0;

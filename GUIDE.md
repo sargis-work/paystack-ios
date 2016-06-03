@@ -55,6 +55,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
+```Objective-C
+// AppDelegate.m
+
+#import "AppDelegate.h"
+#import <Paystack/Paystack.h>
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application
+didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [Paystack setDefaultPublishableKey:@"pk_test_xxxxx"];
+    return YES;
+}
+
+@end
+```
+
 We've placed a test publishable API key as the PaystackPublishableKey constant in the above snippet. You'll need to swap it out with your live publishable key in production. You can see all your API keys in your dashboard.
 
 ### Step 3: Collecting credit card information
@@ -82,6 +99,16 @@ class PaymentViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate
 }
 ```
 
+```Objective-C
+// PaymentViewController.m
+
+#import "PaymentViewController.h"
+
+@interface PaymentViewController ()<PSTCKPaymentCardTextFieldDelegate>
+@property(nonatomic) PSTCKPaymentCardTextField *paymentTextField;
+@end
+```
+
 Next, let's instantiate the `PSTCKPaymentCardTextField`, set the `PaymentViewController` as its `PSTCKPaymentCardTextFieldDelegate`, and add it to our view.
 
 ```Swift
@@ -95,6 +122,17 @@ override func viewDidLoad() {
 }
 ```
 
+```Objective-C
+// PaymentViewController.m
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.paymentTextField = [[PSTCKPaymentCardTextField alloc] initWithFrame:CGRectMake(15, 15, CGRectGetWidth(self.view.frame) - 30, 44)];
+    self.paymentTextField.delegate = self;
+    [self.view addSubview:self.paymentTextField];
+}
+```
+
 This will add an `PSTCKPaymentCardTextField` to the controller to accept card numbers, expiration dates, and CVCs. It'll format the input, and validate it on the fly.
 
 When the user enters text into this field, the `paymentCardTextFieldDidChange:` method will be called on our view controller. In this callback, we can enable a save button that allows users to submit their valid cards if the form is valid:
@@ -103,6 +141,13 @@ When the user enters text into this field, the `paymentCardTextFieldDidChange:` 
 func paymentCardTextFieldDidChange(textField: PSTCKPaymentCardTextField) {
     // Toggle navigation, for example
     saveButton.enabled = textField.isValid
+}
+```
+
+```Objective-C
+- (void)paymentCardTextFieldDidChange:(PSTCKPaymentCardTextField *)textField { {
+    // Toggle navigation, for example
+    self.saveButton.enabled = textField.isValid;
 }
 ```
 
@@ -130,6 +175,21 @@ If you're using `PSTCKPaymentCardTextField` or your own form, you can assemble t
             }
         }
     }
+}
+```
+
+```Objective-C
+- (IBAction)save:(UIButton *)sender {
+    [[PSTCKAPIClient sharedClient]
+     createTokenWithCard:self.paymentTextField.cardParams
+     completion:^(PSTCKToken *token, NSError *error) {
+         if (error) {
+             [self handleError:error];
+         } else {
+            // call your createBackendChargeWithToken function
+            // A sample is presented in step 5
+         }
+     }];
 }
 ```
 
@@ -163,12 +223,43 @@ func createBackendChargeWithToken(token: PSTCKToken, amountinkobo: Int, emailAdd
                 print(e.description)
             } else {
                 // There was no error returned though status code was not 200
-                print("There was an error communicating with your payment backend.") // All we did here is log it to the output window
+                print("There was an error communicating with your payment backend.")
+                // All we did here is log it to the output window
             }
             
         }
     }).resume()
 }
+```
+
+```Objective-C
+// ViewController.m
+
+- (void)createBackendChargeWithToken:(PSTCKToken *)token, 
+                            (NSInt *) amountinkobo, 
+                            (NSString *) emailAddress
+                           {
+    NSURL *url = [NSURL URLWithString:@"https://example.com/token"];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+    request.HTTPMethod = @"POST";
+    NSString *body     = [NSString stringWithFormat:@"token=%@&amountinkobo=%@&email=%@", token.tokenId, amountinkobo, emailAddress];
+    request.HTTPBody   = [body dataUsingEncoding:NSUTF8StringEncoding];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
+    NSURLSessionDataTask *task =
+    [session dataTaskWithRequest:request
+               completionHandler:^(NSData *data,
+                                   NSURLResponse *response,
+                                   NSError *error) {
+                   if (error) {
+                       ...
+                   } else {
+                       ...
+                   }
+               }];
+    [task resume];
+}
+
 ```
 
 On the server, you just need to implement an endpoint that will accept the parameters `token`, `email` and `amountinkobo`. Make sure any communication with your server is SSL secured to prevent eavesdropping.

@@ -165,7 +165,7 @@ If you're using `PSTCKPaymentCardTextField` or your own form, you can assemble t
 
 ```Swift
 @IBAction func save(sender: UIButton) {
-    if let card = paymentTextField.card {
+    if let card = paymentTextField.cardParams as? PSTCKCardParams {
         PSTCKAPIClient.sharedClient().createTokenWithCard(card) { (token, error) -> Void in
             if let error = error  {
                 handleError(error)

@@ -9,12 +9,12 @@
 #import "PSTCKRSA.h"
 
 extern OSStatus SecKeyEncrypt(
-                                  SecKeyRef           key,
-                                  SecPadding          padding,
-                                  const uint8_t		*plainText,
-                                  size_t              plainTextLen,
-                                  uint8_t             *cipherText,
-                                  size_t              *cipherTextLen)
+                              SecKeyRef           key,
+                              SecPadding          padding,
+                              const uint8_t		*plainText,
+                              size_t              plainTextLen,
+                              uint8_t             *cipherText,
+                              size_t              *cipherTextLen)
 __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_2_0) __attribute__((weak_import));
 
 @implementation PSTCKRSA
@@ -33,7 +33,7 @@ __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_2_0) __attribute__((weak_import));
     if (c_key[idx++] != 0x30) return(nil);
     
     if (c_key[idx] > 0x80) idx += c_key[idx] - 0x80 + 1;
-        else idx++;
+    else idx++;
     
     // PKCS #1 rsaEncryption szOID_RSA_RSA
     static unsigned char seqiod[] =
@@ -46,7 +46,7 @@ __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_2_0) __attribute__((weak_import));
     if (c_key[idx++] != 0x03) return(nil);
     
     if (c_key[idx] > 0x80) idx += c_key[idx] - 0x80 + 1;
-        else idx++;
+    else idx++;
     
     if (c_key[idx++] != '\0') return(nil);
     
@@ -55,37 +55,28 @@ __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_2_0) __attribute__((weak_import));
 }
 
 
-+(NSString *)encryptRSA:(NSString *)plainTextString  {
-    
-    NSString *key = @"-----BEGIN PUBLIC KEY-----\n"
-    "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANIsL+RHqfkBiKGn/D1y1QnNrMkKzxWP\n"
-    "2wkeSokw2OJrCI+d6YGJPrHHx+nmb/Qn885/R01Gw6d7M824qofmCvkCAwEAAQ==\n"
-    "-----END PUBLIC KEY-----";
-    NSString *s_key = [NSString string];
-    NSArray  *a_key = [key componentsSeparatedByString:@"\n"];
-    BOOL     f_key  = FALSE;
-    
-    for (NSString *a_line in a_key) {
-        if ([a_line isEqualToString:@"-----BEGIN PUBLIC KEY-----"]) {
-            f_key = TRUE;
-        }
-        else if ([a_line isEqualToString:@"-----END PUBLIC KEY-----"]) {
-            f_key = FALSE;
-        }
-        else if (f_key) {
-            s_key = [s_key stringByAppendingString:a_line];
-        }
-    }
-    // NSLog(@"Key length = %lu",(unsigned long)s_key.length);
-    if (s_key.length == 0) return nil;
++(NSString *)publicEncryptionKey{
+    return @"MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANIsL+RHqfkBiKGn/D1y1QnNrMkKzxWP"
+    "2wkeSokw2OJrCI+d6YGJPrHHx+nmb/Qn885/R01Gw6d7M824qofmCvkCAwEAAQ==";
+}
+
++(NSData *)decodedPublicEncryptionKey{
+    NSString *s_key = [self publicEncryptionKey];
     
     // This will be base64 encoded, decode it.
     NSData *d_key = [[NSData alloc] initWithBase64EncodedString:s_key options:0];
-    d_key = [self stripPublicKeyHeader:d_key];
-    if (d_key == nil) return nil;
-    //NSLog(@"Dkey wasn't nil");
     
-    //    NSData *d_tag = [NSData dataWithBytes:[tag UTF8String] length:[tag length]];
+    return [self stripPublicKeyHeader:d_key];
+}
+
++(void)throwNotEntitledException{
+    NSException *ex = [NSException exceptionWithName:@"Not entitled to Keychain Sharing" reason:NSLocalizedString(@"To use the Paystack SDK, you must add Keychain Sharing entitlements to your app", @"To use the Paystack SDK, you must add Keychain Sharing entitlements to your app") userInfo:nil];
+    [ex raise];
+}
+
+
++(NSString *)encryptRSA:(NSString *)plainTextString  {
+    NSData *d_key = [self decodedPublicEncryptionKey];
     
     // Delete any old lingering key with the same tag
     NSMutableDictionary *publicKey = [[NSMutableDictionary alloc] init];
@@ -105,10 +96,18 @@ __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_2_0) __attribute__((weak_import));
     
     OSStatus secStatus = SecItemAdd((CFDictionaryRef)publicKey, &persistKey);
     if (persistKey != nil) CFRelease(persistKey);
-        
-        if ((secStatus != noErr) && (secStatus != errSecDuplicateItem)) {
+    
+    if (secStatus != noErr) {
+//        NSLog(@"THTHTHTH: %d", (int)secStatus);
+        if(secStatus == -34018) {
+//            NSLog(@"THTHTHTH: Not entitled");
+            [self throwNotEntitledException];
+        }
+        if(secStatus == errSecDuplicateItem) {
+            // we don't mind if there was a duplication
             return(FALSE);
         }
+    }
     
     // Now fetch the SecKeyRef version of the key
     SecKeyRef keyRef = nil;
@@ -121,9 +120,22 @@ __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_2_0) __attribute__((weak_import));
     secStatus = SecItemCopyMatching((CFDictionaryRef)publicKey,
                                     (CFTypeRef *)&keyRef);
     
+    if (secStatus != noErr) {
+//        NSLog(@"THTHTHTH: %d", (int)secStatus);
+        if(secStatus == -34018) {
+//            NSLog(@"THTHTHTH: Not entitled");
+            [self throwNotEntitledException];
+        }
+        if(secStatus == errSecDuplicateItem) {
+            // we don't mind if there was a duplication
+            return(FALSE);
+        }
+    }
+    // Fetch the SecKeyRef version of our public key
+    // SecKeyRef keyRef = [self fetchKeyRef:publicKey andAddIfNotFound:true];
     
     if (keyRef == nil){
-        //NSLog(@"No key");
+//        NSLog(@"THTHTHTH: No key");
         return nil;
     }
     
@@ -142,7 +154,10 @@ __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_2_0) __attribute__((weak_import));
                   strlen( (char*)nonce ),
                   &cipherBuffer[0],
                   &cipherBufferSize);
+//    NSLog(@"THTHTHTH: After s_k_e_");
     NSData *encryptedData = [NSData dataWithBytes:cipherBuffer length:cipherBufferSize];
+//    NSLog(@"THTHTHTH: %@", [encryptedData base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0]);
+    
     return [encryptedData base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0];
 }
 

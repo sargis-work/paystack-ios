@@ -888,6 +888,7 @@
 					};
 					04CDB4411A5F2E1800B854EE = {
 						CreatedOnToolsVersion = 6.1.1;
+						LastSwiftMigration = 0800;
 					};
 					04D12C051A5F556D0010446E = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -1236,6 +1237,7 @@
 			baseConfigurationReference = 04F39F101AEF2AFE005B926E /* PaystackiOS-Debug.xcconfig */;
 			buildSettings = {
 				PRODUCT_BUNDLE_IDENTIFIER = "com.paystack.paystack-ios";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -1244,6 +1246,7 @@
 			baseConfigurationReference = 04F39F111AEF2AFE005B926E /* PaystackiOS-Release.xcconfig */;
 			buildSettings = {
 				PRODUCT_BUNDLE_IDENTIFIER = "com.paystack.paystack-ios";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};

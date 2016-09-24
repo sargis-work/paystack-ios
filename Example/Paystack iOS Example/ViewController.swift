@@ -11,7 +11,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     // MARK: REPLACE THESE
     // Replace these values with your application's keys
     // Find this at https://dashboard.paystack.co/#/settings/developer
-    let paystackPublishableKey = ""
+    let paystackPublishableKey = "pk_live_2bf31d4aea08ab31f5d0cfd645c7e4f67025d259"
     
     // To set this up, see https://github.com/PaystackHQ/sample-charge-token-backend
     let backendChargeURLString = ""

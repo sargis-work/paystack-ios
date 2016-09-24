@@ -5,16 +5,18 @@
 [![CocoaPods](https://img.shields.io/cocoapods/l/Paystack.svg?style=flat)](https://github.com/paystackhq/paystack-ios/blob/master/LICENSE)
 [![CocoaPods](https://img.shields.io/cocoapods/p/Paystack.svg?style=flat)](https://github.com/paystackhq/paystack-ios#)
 
-The Paystack iOS SDK make it easy to collect your users' credit card details inside your iOS app. By creating tokens, 
+The Paystack iOS SDK make it easy to collect your users' credit card details inside your iOS app. By creating tokens,
 Paystack handles the bulk of PCI compliance by preventing sensitive card data from hitting your server.
 
-This library helps collect card details on iOS and OSX, getting a token. This shoulders the burden of PCI compliance by helping you avoid the need to send 
-card data directly to your server. Instead you send to Paystack's server and get a token which you can charge once in your server-side code. This charge 
+This library helps collect card details on iOS and OSX, getting a token. This shoulders the burden of PCI compliance by helping you avoid the need to send
+card data directly to your server. Instead you send to Paystack's server and get a token which you can charge once in your server-side code. This charge
 returns an `authorization_code` if successful. Subsequent charges can then be made using the `authorization_code`.
 
 
 ## Requirements
 Our SDK is compatible with iOS apps supporting iOS 7.0 and above. It requires Xcode 7.0+ to build the source.
+
+You also need to add Keychain Sharing entitlements for your app.
 
 ## Integration
 
@@ -38,7 +40,7 @@ Before you can run the app, you need to provide it with your Paystack publishabl
 3. Head to https://github.com/paystackhq/sample-charge-token-backend and click "Deploy to Heroku" (you may have to sign up for a Heroku account as part of this process). Provide your Paystack test secret key for the `PAYSTACK_TEST_SECRET_KEY` field under 'Env'. Click "Deploy for Free".
 4. Replace the `backendChargeURLString` variable in the example iOS app with the app URL Heroku provides you with (e.g. "https://my-example-app.herokuapp.com")
 
-After this is done, you can make test payments through the app (use credit card number 4123 4501 3100 1381, along with 883 as cvc and any future expiration date) and then view the payments in your Paystack Dashboard! 
+After this is done, you can make test payments through the app (use credit card number 4123 4501 3100 1381, along with 883 as cvc and any future expiration date) and then view the payments in your Paystack Dashboard!
 
 And the return value from the backend will be displayed in your Output window.
 

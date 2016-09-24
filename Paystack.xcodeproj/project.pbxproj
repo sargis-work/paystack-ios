@@ -874,7 +874,7 @@
 			attributes = {
 				CLASSPREFIX = PSTCK;
 				LastTestingUpgradeCheck = 0510;
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Paystack, Inc";
 				TargetAttributes = {
 					045E7C021A5F41DE004751EF = {
@@ -882,9 +882,11 @@
 					};
 					049E84AA1A605D93000B66CD = {
 						CreatedOnToolsVersion = 6.1.1;
+						LastSwiftMigration = 0800;
 					};
 					049E85221A607FFD000B66CD = {
 						CreatedOnToolsVersion = 6.1.1;
+						LastSwiftMigration = 0800;
 					};
 					04CDB4411A5F2E1800B854EE = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -1208,6 +1210,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 04F39F151AEF2AFE005B926E /* PaystackiOSStatic.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -1215,6 +1219,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 04F39F151AEF2AFE005B926E /* PaystackiOSStatic.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -1222,6 +1228,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 04F39F181AEF2AFE005B926E /* PaystackiOSStaticFramework.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -1229,6 +1236,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 04F39F181AEF2AFE005B926E /* PaystackiOSStaticFramework.xcconfig */;
 			buildSettings = {
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -1236,6 +1244,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 04F39F101AEF2AFE005B926E /* PaystackiOS-Debug.xcconfig */;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.paystack.paystack-ios";
 				SWIFT_VERSION = 2.3;
 			};
@@ -1245,6 +1254,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 04F39F111AEF2AFE005B926E /* PaystackiOS-Release.xcconfig */;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.paystack.paystack-ios";
 				SWIFT_VERSION = 2.3;
 			};
@@ -1286,6 +1296,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 04F39F0A1AEF2AFE005B926E /* Project-Debug.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				ENABLE_TESTABILITY = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
@@ -1297,6 +1309,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 04F39F0B1AEF2AFE005B926E /* Project-Release.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 			};

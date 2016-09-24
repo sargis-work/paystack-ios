@@ -24,25 +24,25 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     override func viewDidLoad() {
         // hide token label and email box
         tokenLabel.text=""
-        tokenLabel.hidden = true
-        chargeTokenButton.hidden=true
-        emailText.hidden=true
-        requestTokenButton.enabled = false
+        tokenLabel.isHidden = true
+        chargeTokenButton.isHidden=true
+        emailText.isHidden=true
+        requestTokenButton.isEnabled = false
         // clear text from card details
         // comment these to use the sample data set
         super.viewDidLoad();
     }
     
     // MARK: Helpers
-    func showOkayableMessage(title: String, message: String){
+    func showOkayableMessage(_ title: String, message: String){
         let alert = UIAlertController(
             title: title,
             message: message,
-            preferredStyle: UIAlertControllerStyle.Alert
+            preferredStyle: UIAlertControllerStyle.alert
         )
-        let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+        let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil)
         alert.addAction(action)
-        presentViewController(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
     
     func dismissKeyboardIfAny(){
@@ -70,10 +70,10 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     
     
     // MARK: Actions
-    @IBAction func cardDetailsChanged(sender: PSTCKPaymentCardTextField) {
-        requestTokenButton.enabled = sender.valid
+    @IBAction func cardDetailsChanged(_ sender: PSTCKPaymentCardTextField) {
+        requestTokenButton.isEnabled = sender.isValid
     }
-    @IBAction func requestToken(sender: UIButton) {
+    @IBAction func requestToken(_ sender: UIButton) {
         dismissKeyboardIfAny()
         
         
@@ -87,16 +87,16 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         }
         Paystack.setDefaultPublishableKey(paystackPublishableKey)
         // use library to create token request and return a token
-        if cardDetailsForm.valid {
-            PSTCKAPIClient.sharedClient().createTokenWithCard(cardDetailsForm.cardParams) { (token, error) -> Void in
+        if cardDetailsForm.isValid {
+            PSTCKAPIClient.shared().createToken(withCard: cardDetailsForm.cardParams) { (token, error) -> Void in
                 if let error = error  {
-                    print(error.description)
+                    print(error.localizedDescription)
                 }
                 else if let token = token {
                     self.tokenLabel.text = token.tokenId
-                    self.tokenLabel.hidden = false
-                    self.chargeTokenButton.hidden=false
-                    self.emailText.hidden=false
+                    self.tokenLabel.isHidden = false
+                    self.chargeTokenButton.isHidden=false
+                    self.emailText.isHidden=false
                 }
             }
         }
@@ -110,22 +110,22 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
                 if e.isEmail{
                     
                     if backendChargeURLString != "" {
-                        if let url = NSURL(string: backendChargeURLString  + "/charge") {
+                        if let url = URL(string: backendChargeURLString  + "/charge") {
                             
-                            let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-                            let request = NSMutableURLRequest(URL: url)
-                            request.HTTPMethod = "POST"
+                            let session = URLSession(configuration: URLSessionConfiguration.default)
+                            let request = NSMutableURLRequest(url: url)
+                            request.httpMethod = "POST"
                             let postBody = "token=\(tokenString!)&amountinkobo=\(capPrice)&email=\(emailAddress!)"
-                            let postData = postBody.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
-                            session.uploadTaskWithRequest(request, fromData: postData, completionHandler: { data, response, error in
-                                let successfulResponse = (response as? NSHTTPURLResponse)?.statusCode == 200
+                            let postData = postBody.data(using: String.Encoding.utf8, allowLossyConversion: false)
+                            session.uploadTask(with: request as URLRequest, from: postData, completionHandler: { data, response, error in
+                                let successfulResponse = (response as? HTTPURLResponse)?.statusCode == 200
                                 if successfulResponse && error == nil && data != nil{
                                     // All was well
-                                    let newStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
+                                    let newStr = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
                                     print(newStr)
                                 } else {
                                     if let e=error {
-                                        print(e.description)
+                                        print(e.localizedDescription)
                                     } else {
                                         // There was no error returned though status code was not 200
                                         print("There was an error communicating with your payment backend.")

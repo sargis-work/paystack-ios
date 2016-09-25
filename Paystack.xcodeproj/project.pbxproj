@@ -360,7 +360,7 @@
 		04B94BC71A47B78A00092C46 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		04CDB4421A5F2E1800B854EE /* Paystack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Paystack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		04CDB4A91A5F30A700B854EE /* Paystack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Paystack.h; path = PublicHeaders/Paystack.h; sourceTree = "<group>"; };
-		04CDB4C21A5F30A700B854EE /* PSTCKAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PSTCKAPIClient.h; path = PublicHeaders/PSTCKAPIClient.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		04CDB4C21A5F30A700B854EE /* PSTCKAPIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PSTCKAPIClient.h; path = PublicHeaders/PSTCKAPIClient.h; sourceTree = "<group>"; };
 		04CDB4C31A5F30A700B854EE /* PSTCKAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKAPIClient.m; sourceTree = "<group>"; };
 		04CDB4C41A5F30A700B854EE /* PSTCKFormEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCKFormEncoder.h; sourceTree = "<group>"; };
 		04CDB4C51A5F30A700B854EE /* PSTCKFormEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKFormEncoder.m; sourceTree = "<group>"; };

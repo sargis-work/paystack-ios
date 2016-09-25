@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.default_subspecs               = 'Core'
 
   s.subspec 'Core' do |ss|
-    ss.public_header_files         = 'Paystack/PublicHeaders/*.h'
+    ss.public_header_files         = 'Paystack/PublicHeaders/*.h', 'Paystack/RSA/*.h'
     ss.ios.public_header_files     = 'Paystack/PublicHeaders/UI/*.h'
     ss.source_files                = 'Paystack/PublicHeaders/*.h', 'Paystack/RSA/*.{h,m}', 'Paystack/*.{h,m}'
     ss.ios.source_files            = 'Paystack/PublicHeaders/UI/*.h', 'Paystack/UI/*.{h,m}', 'Paystack/Fabric/*'

@@ -5,6 +5,7 @@
 
 #import "PSTCKFormEncoder.h"
 #import "PSTCKCardParams.h"
+#import "PSTCKTransactionParams.h"
 #import "PSTCKFormEncodable.h"
 
 FOUNDATION_EXPORT NSString * PSTCKPercentEscapedStringFromString(NSString *string);
@@ -24,11 +25,26 @@ FOUNDATION_EXPORT NSString * PSTCKQueryStringFromParameters(NSDictionary *parame
 
 
 + (nonnull NSData *)formEncryptedDataForCard:(nonnull PSTCKCardParams *)card {
-    NSString *urlencoded = [NSString stringWithFormat:@"%@=%@", PSTCKPercentEscapedStringFromString(@"clientdata"), PSTCKPercentEscapedStringFromString([card clientdata])];
+    NSString *urlencoded = [PSTCKFormEncoder urlEndocdedClientDataForCard:card];
     return [urlencoded dataUsingEncoding:NSUTF8StringEncoding];
 }
 
++ (nonnull NSString *)urlEndocdedClientDataForCard:(nonnull PSTCKCardParams *)card {
+    return [NSString stringWithFormat:@"%@=%@", PSTCKPercentEscapedStringFromString(@"clientdata"), PSTCKPercentEscapedStringFromString([card clientdata])];
+}
+
++ (nonnull NSData *)formEncryptedDataForCard:(nonnull PSTCKCardParams *)card
+                              andTransaction:(nonnull PSTCKTransactionParams *)transaction {
+    NSString *urlencodedcard = [PSTCKFormEncoder urlEndocdedClientDataForCard:card];
+    NSString *urlencodedtransaction = [PSTCKFormEncoder urlEncodedStringForObject:transaction];
+    return [[NSString stringWithFormat:@"%@&%@", urlencodedcard, urlencodedtransaction ] dataUsingEncoding:NSUTF8StringEncoding];
+}
+
 + (nonnull NSData *)formEncodedDataForObject:(nonnull NSObject<PSTCKFormEncodable> *)object {
+    return [[PSTCKFormEncoder urlEncodedStringForObject:object] dataUsingEncoding:NSUTF8StringEncoding];
+}
+
++ (nonnull NSString *)urlEncodedStringForObject:(nonnull NSObject<PSTCKFormEncodable> *)object {
     NSDictionary *dict = @{
                            [object.class rootObjectName]: [self keyPairDictionaryForObject:object]
                            };
@@ -167,7 +183,7 @@ NSArray * PSTCKQueryStringPairsFromKeyAndValue(NSString *key, id value) {
         for (id nestedKey in [dictionary.allKeys sortedArrayUsingDescriptors:@[ sortDescriptor ]]) {
             id nestedValue = dictionary[nestedKey];
             if (nestedValue) {
-                [mutableQueryStringComponents addObjectsFromArray:PSTCKQueryStringPairsFromKeyAndValue((key ? [NSString stringWithFormat:@"%@[%@]", key, nestedKey] : nestedKey), nestedValue)];
+                [mutableQueryStringComponents addObjectsFromArray:PSTCKQueryStringPairsFromKeyAndValue((key ? [NSString stringWithFormat:@"%@%@", key, nestedKey] : nestedKey), nestedValue)];
             }
         }
     } else if ([value isKindOfClass:[NSArray class]]) {

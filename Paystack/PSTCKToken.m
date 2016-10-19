@@ -70,8 +70,9 @@
     if (!dict) {
         return nil;
     }
-    
-    if (![[dict[@"status"] description] isEqual: @"1"]) {
+
+    // only status 0 is an error
+    if ([[dict[@"status"] description] isEqual: @"0"]) {
         return nil;
     }
     

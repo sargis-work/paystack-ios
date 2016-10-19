@@ -62,7 +62,7 @@
         return nil;
     }
     
-    if (![[dict[@"status"] description] isEqual: @"1"]) {
+    if ([[dict[@"status"] description] isEqual: @"0"]) {
         return nil;
     }
     
@@ -71,6 +71,7 @@
     transaction.trans = dict[@"trans"];
     transaction.redirecturl = dict[@"redirecturl"];
     transaction.message = dict[@"message"];
+    transaction.status = dict[@"status"];
     
     transaction.allResponseFields = dict;
     return transaction;

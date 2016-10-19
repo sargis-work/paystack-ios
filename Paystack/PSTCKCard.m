@@ -55,7 +55,7 @@
         return @"Verve";
     case PSTCKCardBrandVisa:
         return @"Visa";
-    default:
+    case PSTCKCardBrandUnknown:
         return @"Unknown";
     }
 }

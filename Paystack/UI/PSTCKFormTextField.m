@@ -61,7 +61,7 @@
         if (currentBrand == PSTCKCardBrandAmex) {
             cardSpacing = @[@3, @9];
         } else if (currentBrand == PSTCKCardBrandVerve) {
-            cardSpacing = @[@3, @7, @11, @15];
+            cardSpacing = @[@2, @6, @10, @14];
         } else {
             cardSpacing = @[@3, @7, @11];
         }

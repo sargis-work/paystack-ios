@@ -63,6 +63,9 @@
         case PSTCKCardBrandMasterCard:
             imageName = @"pstck_card_mastercard";
             break;
+        case PSTCKCardBrandVerve:
+            imageName = @"pstck_card_verve";
+            break;
         case PSTCKCardBrandUnknown:
             imageName = templateSupported ? @"pstck_card_placeholder_template" : @"pstck_card_placeholder";
             break;

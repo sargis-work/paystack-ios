@@ -60,6 +60,8 @@
         PSTCKCardBrand currentBrand = [PSTCKCardValidator brandForNumber:attributedString.string];
         if (currentBrand == PSTCKCardBrandAmex) {
             cardSpacing = @[@3, @9];
+        } else if (currentBrand == PSTCKCardBrandVerve) {
+            cardSpacing = @[@3, @7, @11, @15];
         } else {
             cardSpacing = @[@3, @7, @11];
         }

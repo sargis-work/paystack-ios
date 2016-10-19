@@ -19,6 +19,7 @@
 
 @property (nonatomic, readonly, nonnull) NSString *reference;
 @property (nonatomic, readonly, nonnull) NSString *message;
+@property (nonatomic, readonly, nonnull) NSString *status;
 @property (nonatomic, readonly, nonnull) NSString *trans;
 @property (nonatomic, readonly, nonnull) NSString *redirecturl;
 

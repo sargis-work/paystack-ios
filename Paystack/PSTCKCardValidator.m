@@ -116,14 +116,12 @@
         return PSTCKCardValidationStateIncomplete;
     } else {
         PSTCKCardBrand brand = (PSTCKCardBrand)[brands.firstObject integerValue];
-        NSInteger desiredLength = [self lengthForCardBrand:brand];
-        if ((NSInteger)sanitizedNumber.length > desiredLength) {
+        NSUInteger desiredLength = [self lengthForCardBrand:brand];
+        if (sanitizedNumber.length > desiredLength) {
             return PSTCKCardValidationStateInvalid;
-        // A verve card is valid as long as it has at least 18 digits (no luhn check)
-        } else if ((brand == PSTCKCardBrandVerve) && ((NSInteger)sanitizedNumber.length >= desiredLength-1)) {
-            return PSTCKCardValidationStateValid;
-        } else if ((NSInteger)sanitizedNumber.length == desiredLength) {
-            return [self stringIsValidLuhn:sanitizedNumber] ? PSTCKCardValidationStateValid : PSTCKCardValidationStateInvalid;
+        } else if (sanitizedNumber.length == desiredLength) {
+            // A verve card is valid as long as it has 19 digits (no luhn check)
+            return (brand == PSTCKCardBrandVerve) ? PSTCKCardValidationStateValid : ([self stringIsValidLuhn:sanitizedNumber] ? PSTCKCardValidationStateValid : PSTCKCardValidationStateInvalid);
         } else {
             return PSTCKCardValidationStateIncomplete;
         }
@@ -211,11 +209,12 @@
          ];
 }
 
-+ (NSInteger)lengthForCardBrand:(PSTCKCardBrand)brand {
++ (NSUInteger)lengthForCardBrand:(PSTCKCardBrand)brand {
     switch (brand) {
         case PSTCKCardBrandAmex:
             return 15;
         case PSTCKCardBrandVerve:
+        case PSTCKCardBrandUnknown:
             return 19;
         case PSTCKCardBrandDinersClub:
             return 14;
@@ -227,7 +226,6 @@
 + (NSInteger)fragmentLengthForCardBrand:(PSTCKCardBrand)brand {
     switch (brand) {
         case PSTCKCardBrandAmex:
-        case PSTCKCardBrandVerve:
             return 5;
         case PSTCKCardBrandDinersClub:
             return 2;
@@ -263,7 +261,7 @@
         case PSTCKCardBrandJCB:
             return @[@"35"];
         case PSTCKCardBrandMasterCard:
-            return @[@"50", @"51", @"52", @"53", @"54", @"55", @"56", @"57", @"58", @"59"];
+            return @[@"501", @"502", @"503", @"504", @"505", @"507", @"508", @"509", @"500", @"51", @"52", @"53", @"54", @"55", @"56", @"57", @"58", @"59"];
         case PSTCKCardBrandVisa:
             return @[@"40", @"41", @"42", @"43", @"44", @"45", @"46", @"47", @"48", @"49"];
         case PSTCKCardBrandUnknown:

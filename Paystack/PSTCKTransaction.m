@@ -12,6 +12,7 @@
 @property (nonatomic) NSString *message;
 @property (nonatomic) NSString *trans;
 @property (nonatomic) NSString *redirecturl;
+@property (nonatomic) NSString *status;
 @property (nonatomic, readwrite, nonnull, copy) NSDictionary *allResponseFields;
 @end
 

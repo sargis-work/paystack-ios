@@ -24,7 +24,7 @@ NSString *const PSTCKIncorrectCVC = @"com.paystack.lib:IncorrectCVC";
 
 + (NSError *)pstck_errorFromPaystackResponse:(NSDictionary *)jsonDictionary {
     NSString *status = [jsonDictionary[@"status"] description];
-    if ([status isEqual: @"1"]) {
+    if (![status isEqual: @"0"]) {
         return nil;
     }
     

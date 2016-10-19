@@ -51,6 +51,8 @@
         return @"JCB";
     case PSTCKCardBrandMasterCard:
         return @"MasterCard";
+    case PSTCKCardBrandVerve:
+        return @"Verve";
     case PSTCKCardBrandVisa:
         return @"Visa";
     default:

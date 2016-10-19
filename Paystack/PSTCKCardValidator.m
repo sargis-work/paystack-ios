@@ -119,6 +119,9 @@
         NSInteger desiredLength = [self lengthForCardBrand:brand];
         if ((NSInteger)sanitizedNumber.length > desiredLength) {
             return PSTCKCardValidationStateInvalid;
+        // A verve card is valid as long as it has at least 18 digits (no luhn check)
+        } else if ((brand == PSTCKCardBrandVerve) && ((NSInteger)sanitizedNumber.length >= desiredLength-1)) {
+            return PSTCKCardValidationStateValid;
         } else if ((NSInteger)sanitizedNumber.length == desiredLength) {
             return [self stringIsValidLuhn:sanitizedNumber] ? PSTCKCardValidationStateValid : PSTCKCardValidationStateInvalid;
         } else {
@@ -204,6 +207,7 @@
              @(PSTCKCardBrandJCB),
              @(PSTCKCardBrandMasterCard),
              @(PSTCKCardBrandVisa),
+             @(PSTCKCardBrandVerve),
          ];
 }
 
@@ -211,6 +215,8 @@
     switch (brand) {
         case PSTCKCardBrandAmex:
             return 15;
+        case PSTCKCardBrandVerve:
+            return 19;
         case PSTCKCardBrandDinersClub:
             return 14;
         default:
@@ -221,6 +227,7 @@
 + (NSInteger)fragmentLengthForCardBrand:(PSTCKCardBrand)brand {
     switch (brand) {
         case PSTCKCardBrandAmex:
+        case PSTCKCardBrandVerve:
             return 5;
         case PSTCKCardBrandDinersClub:
             return 2;
@@ -245,6 +252,8 @@
 
 + (NSArray *)validBeginningDigits:(PSTCKCardBrand)brand {
     switch (brand) {
+        case PSTCKCardBrandVerve:
+            return @[@"506"];
         case PSTCKCardBrandAmex:
             return @[@"34", @"37"];
         case PSTCKCardBrandDinersClub:

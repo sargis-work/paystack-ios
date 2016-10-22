@@ -88,17 +88,37 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         Paystack.setDefaultPublishableKey(paystackPublishableKey)
         // use library to create token request and return a token
         if cardDetailsForm.isValid {
-            PSTCKAPIClient.shared().createToken(withCard: cardDetailsForm.cardParams) { (token, error) -> Void in
-                if let error = error  {
-                    print(error.localizedDescription)
-                }
-                else if let token = token {
-                    self.tokenLabel.text = token.tokenId
-                    self.tokenLabel.isHidden = false
-                    self.chargeTokenButton.isHidden=false
-                    self.emailText.isHidden=false
-                }
-            }
+            let b = PSTCKCardParams.init();
+            
+            b.number = "5399831621010061";
+            b.cvc = "343";
+            b.expYear = 18;
+            b.expMonth = 8;
+            
+            let c = PSTCKTransactionParams.init();
+            c.amount = UInt(733830);
+            c.bearer  = "subaccount";
+            c.email = "h@yahoo.com";
+            
+            PSTCKAPIClient.shared().chargeCard(b, forTransaction: c, on: self, didEndWithError: { (error) -> Void in
+                
+                }, didRequestValidation: { (reference) -> Void in
+                    self.tokenLabel.text = reference;
+                }, didTransactionSuccess: { (reference) -> Void in
+                    self.tokenLabel.text = reference;
+            })
+            
+//            PSTCKAPIClient.shared().createToken(withCard: cardDetailsForm.cardParams) { (token, error) -> Void in
+//                if let error = error  {
+//                    print(error.localizedDescription)
+//                }
+//                else if let token = token {
+//                    self.tokenLabel.text = token.tokenId
+//                    self.tokenLabel.isHidden = false
+//                    self.chargeTokenButton.isHidden=false
+//                    self.emailText.isHidden=false
+//                }
+//            }
         }
         
     }

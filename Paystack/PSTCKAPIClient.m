@@ -33,11 +33,11 @@
 
 #define FAUXPAS_IGNORED_IN_METHOD(...)
 
-static NSString *const apiURLBase = @"paystack.mock";
+static NSString *const apiURLBase = @"standard.paystack.co";
 static NSString *const tokenEndpoint = @"bosco/createmobiletoken";
 static NSString *const chargeEndpoint = @"charge/mobile_charge";
 static NSString *const validateEndpoint = @"charge/validate";
-static NSString *const paystackAPIVersion = @"2016-02-12";
+static NSString *const paystackAPIVersion = @"2016-10-22";
 static NSString *PSTCKDefaultPublishableKey;
 
 @implementation Paystack
@@ -84,7 +84,7 @@ static NSString *PSTCKDefaultPublishableKey;
     self = [super init];
     if (self) {
         [self.class validateKey:publishableKey];
-        _apiURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@", apiURLBase]];
+        _apiURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiURLBase]];
         _publishableKey = [publishableKey copy];
         _operationQueue = [NSOperationQueue mainQueue];
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];

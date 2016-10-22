@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 
 
-static NSString *const __nonnull PSTCKSDKVersion = @"1.0.0";
+static NSString *const __nonnull PSTCKSDKVersion = @"2.0.0";
 
 @class PSTCKCard, PSTCKCardParams, PSTCKTransactionParams, PSTCKToken;
 

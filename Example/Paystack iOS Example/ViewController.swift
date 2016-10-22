@@ -88,43 +88,60 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         Paystack.setDefaultPublishableKey(paystackPublishableKey)
         // use library to create token request and return a token
         if cardDetailsForm.isValid {
-            let b = PSTCKCardParams.init();
-            
-            b.number = "5399831621010061";
-            b.cvc = "343";
-            b.expYear = 18;
-            b.expMonth = 8;
+            PSTCKAPIClient.shared().createToken(withCard: cardDetailsForm.cardParams) { (token, error) -> Void in
+                if let error = error  {
+                    print(error.localizedDescription)
+                }
+                else if let token = token {
+                    self.tokenLabel.text = token.tokenId
+                    self.tokenLabel.isHidden = false
+                    self.chargeTokenButton.isHidden=false
+                    self.emailText.isHidden=false
+                }
+            }
+        }
+        
+    }
+    
+    @IBAction func requestToken(_ sender: UIButton) {
+        dismissKeyboardIfAny()
+        
+        // Make sure public key has been set
+        if (paystackPublishableKey == "" || !paystackPublishableKey.hasPrefix("pk_")) {
+            showOkayableMessage("You need to set your Paystack publishable key.", message:"You can find your publishable key at https://dashboard.paystack.co/#/settings/developer .")
+            // You need to set your Paystack publishable key.
+            return
+        }
+        Paystack.setDefaultPublishableKey(paystackPublishableKey)
+        // use library to create charge and get its reference
+        if cardDetailsForm.isValid {
             
             let c = PSTCKTransactionParams.init();
-            c.amount = UInt(733830);
-            c.bearer  = "subaccount";
-            c.email = "h@yahoo.com";
+            // charging 75naira, 80kobo
+            c.amount = UInt(7580);
+            // c.subaccount  = "ACCT_80d907euhish8d";
+            // c.bearer  = "subaccount";
+            // c.transaction_charge  = 280;
+            c.metadata  = "{\"custom_fields\":[{\"display_name\":\"Paid Via\",\"variable_name\":\"paid_via\",\"value\":\"iOS SDK\"}]}";
+            c.email = "support@paystack.com";
+            c.reference = "myfirstiossdkcharge"; // if not supplied, we will give one
             
-            PSTCKAPIClient.shared().chargeCard(b, forTransaction: c, on: self, didEndWithError: { (error) -> Void in
-                
+            PSTCKAPIClient.shared().chargeCard(cardDetailsForm.cardParams, forTransaction: c, on: self, didEndWithError: { (error) -> Void in
+                    // what should I do if an error occured?
+                    print(error.localizedDescription)
+                    showOkayableMessage(error.localizedDescription)
                 }, didRequestValidation: { (reference) -> Void in
-                    self.tokenLabel.text = reference.appending(" requested v")
+                    self.tokenLabel.text = reference.appending(" requested validation")
                     self.tokenLabel.isHidden = false
                 }, didTransactionSuccess: { (reference) -> Void in
                     self.tokenLabel.text = reference
                     self.tokenLabel.isHidden = false
             })
-            
-//            PSTCKAPIClient.shared().createToken(withCard: cardDetailsForm.cardParams) { (token, error) -> Void in
-//                if let error = error  {
-//                    print(error.localizedDescription)
-//                }
-//                else if let token = token {
-//                    self.tokenLabel.text = token.tokenId
-//                    self.tokenLabel.isHidden = false
-//                    self.chargeTokenButton.isHidden=false
-//                    self.emailText.isHidden=false
-//                }
-//            }
+
         }
         
     }
-    
+
     @IBAction func chargeToken(_: UIButton) {
         dismissKeyboardIfAny()
         if let _ = tokenString {

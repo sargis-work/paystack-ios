@@ -13,6 +13,7 @@
 #import "PSTCKFormEncoder.h"
 #import "PSTCKCard.h"
 #import "PSTCKToken.h"
+#import "PSTCKTransaction.h"
 #import "PaystackError.h"
 #import "PSTCKAPIResponseDecodable.h"
 #import "PSTCKAPIPostRequest.h"
@@ -28,8 +29,10 @@
 
 #define FAUXPAS_IGNORED_IN_METHOD(...)
 
-static NSString *const apiURLBase = @"standard.paystack.co/bosco";
-static NSString *const tokenEndpoint = @"createmobiletoken";
+static NSString *const apiURLBase = @"localhost";
+static NSString *const tokenEndpoint = @"bosco/createmobiletoken";
+static NSString *const chargeEndpoint = @"charge/mobile_charge";
+static NSString *const validateEndpoint = @"charge/validate";
 static NSString *const paystackAPIVersion = @"2016-02-12";
 static NSString *PSTCKDefaultPublishableKey;
 
@@ -107,6 +110,71 @@ static NSString *PSTCKDefaultPublishableKey;
                                              postData:data
                                            serializer:[PSTCKToken new]
                                            completion:completion];
+}
+
+- (void)chargeCard:(nonnull PSTCKCardParams *)card
+    forTransaction:(nonnull PSTCKTransactionParams *)transaction
+  onViewController:(nonnull UIViewController *)viewController
+   didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+didRequestValidation:(nullable PSTCKTransactionCompletionBlock)beforeValidateCompletion
+didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
+    NSCAssert(card != nil, @"'card' is required for a charge");
+    NSCAssert(errorCompletion != nil, @"'errorCompletion' is required to handle any errors encountered while charging");
+    NSCAssert(viewController != nil, @"'viewController' is required to show any alerts that may be needed");
+    NSCAssert(transaction != nil, @"'transaction' is required so we may know who to charge");
+    // we really don't mind if beforeValidate is not provided
+    // NSCAssert(beforeValidateCompletion != nil, @"'beforeValidateCompletion' is not required.");
+    NSCAssert(successCompletion != nil, @"'successCompletion' is required so you can continue the process after charge succeeds. Remember to verify on server before giving value.");
+//    [PSTCKAPIPostRequest<PSTCKTransaction *> startWithAPIClient:self
+//                                                 endpoint:chargeEndpoint
+//                                               chargeCard:card
+//                                           forTransaction:transaction
+//                                         onViewController:viewController
+//                                          didEndWithError:errorCompletion
+//                                     didRequestValidation:beforeValidateCompletion
+//                                    didTransactionSuccess:successCompletion
+//                                               serializer:[PSTCKTransaction new]];
+    [PSTCKAPIPostRequest<PSTCKTransaction *>
+        startWithAPIClient:self
+                  endpoint:chargeEndpoint
+                  postData:[PSTCKFormEncoder formEncryptedDataForCard:card
+                                                       andTransaction:transaction]
+                serializer:[PSTCKTransaction new]
+                completion:^(PSTCKTransaction * _Nullable responseObject, NSError * _Nullable error){
+         if(error != nil){
+             [self.operationQueue addOperationWithBlock:^{
+                 errorCompletion(error);
+             }];
+         } else {
+             // This is where we test the status of the request.
+             if([[responseObject status] isEqual:@"1"]){
+                 [self.operationQueue addOperationWithBlock:^{
+                     successCompletion(responseObject.reference);
+                 }];
+             } else if([[responseObject status] isEqual:@"2"]){
+                 // will request PIN now
+                 // show PIN dialog
+                 [viewController isViewLoaded];
+             } else if([[responseObject status] isEqual:@"3"]){
+                 [self.operationQueue addOperationWithBlock:^{
+                     beforeValidateCompletion(responseObject.reference);
+                 }];
+                 // Will request token now
+                 // show token dialog
+
+             } else {
+                 // this is an invalid status
+                 NSDictionary *userInfo = @{
+                                            NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                            PSTCKErrorMessageKey: [@"The response status from Paystack had an invalid status. Status was: " stringByAppendingString:[responseObject status]]
+                                            };
+                 [self.operationQueue addOperationWithBlock:^{
+                     errorCompletion([[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo]);
+                 }];
+                 return;
+             }
+         }
+     }];
 }
 
 #pragma mark - private helpers
@@ -201,6 +269,21 @@ static NSString *PSTCKDefaultPublishableKey;
 //       NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card];
 
     [self createTokenWithData:data completion:completion];
+}
+
+- (void)      chargeCard:(nonnull PSTCKCardParams *)card
+          forTransaction:(nonnull PSTCKTransactionParams *)transaction
+        onViewController:(nonnull UIViewController *)viewController
+         didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+    didRequestValidation:(nullable PSTCKTransactionCompletionBlock)beforeValidateCompletion
+   didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion{
+    
+    [self     chargeCard:card
+          forTransaction:transaction
+        onViewController:viewController
+         didEndWithError:errorCompletion
+    didRequestValidation:beforeValidateCompletion
+   didTransactionSuccess:successCompletion];
 }
 
 @end

@@ -4,10 +4,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 
 static NSString *const __nonnull PSTCKSDKVersion = @"1.0.0";
 
-@class PSTCKCard, PSTCKCardParams, PSTCKToken;
+@class PSTCKCard, PSTCKCardParams, PSTCKTransactionParams, PSTCKToken;
 
 /**
  *  A callback to be run with a token response from the Paystack API.
@@ -16,6 +18,8 @@ static NSString *const __nonnull PSTCKSDKVersion = @"1.0.0";
  *  @param error The error returned from the response, or nil in one occurs. @see PaystackError.h for possible values.
  */
 typedef void (^PSTCKTokenCompletionBlock)(PSTCKToken * __nullable token, NSError * __nullable error);
+typedef void (^PSTCKErrorCompletionBlock)(NSError * __nullable error);
+typedef void (^PSTCKTransactionCompletionBlock)(NSString * __nullable reference);
 
 /**
  A top-level class that imports the rest of the Paystack SDK. This class used to contain several methods to create Paystack tokens, but those are now deprecated in
@@ -68,6 +72,13 @@ typedef void (^PSTCKTokenCompletionBlock)(PSTCKToken * __nullable token, NSError
  *  @param completion  The callback to run with the returned Paystack token (and any errors that may have occurred).
  */
 - (void)createTokenWithCard:(nonnull PSTCKCardParams *)card completion:(nullable PSTCKTokenCompletionBlock)completion;
+
+- (void)      chargeCard:(nonnull PSTCKCardParams *)card
+          forTransaction:(nonnull PSTCKTransactionParams *)transaction
+        onViewController:(nonnull UIViewController *)viewController
+         didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+    didRequestValidation:(nullable PSTCKTransactionCompletionBlock)beforeValidateCompletion
+   didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion;
 
 @end
 

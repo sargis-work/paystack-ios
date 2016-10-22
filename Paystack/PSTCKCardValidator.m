@@ -199,10 +199,10 @@
 
 + (NSArray *)allValidBrands {
     return @[
-             @(PSTCKCardBrandAmex),
-             @(PSTCKCardBrandDinersClub),
-             @(PSTCKCardBrandDiscover),
-             @(PSTCKCardBrandJCB),
+//             @(PSTCKCardBrandAmex),
+//             @(PSTCKCardBrandDinersClub),
+//             @(PSTCKCardBrandDiscover),
+//             @(PSTCKCardBrandJCB),
              @(PSTCKCardBrandMasterCard),
              @(PSTCKCardBrandVisa),
              @(PSTCKCardBrandVerve),

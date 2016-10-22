@@ -6,14 +6,18 @@
 #import "TargetConditionals.h"
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#import <UIKit/UIViewController.h>
 #import <sys/utsname.h>
 #endif
 
 #import "PSTCKAPIClient.h"
 #import "PSTCKFormEncoder.h"
 #import "PSTCKCard.h"
+#import "PSTCKRSA.h"
+#import "PSTCKCardValidator.h"
 #import "PSTCKToken.h"
 #import "PSTCKTransaction.h"
+#import "PSTCKValidationParams.h"
 #import "PaystackError.h"
 #import "PSTCKAPIResponseDecodable.h"
 #import "PSTCKAPIPostRequest.h"
@@ -106,10 +110,10 @@ static NSString *PSTCKDefaultPublishableKey;
     NSCAssert(data != nil, @"'data' is required to create a token");
     NSCAssert(completion != nil, @"'completion' is required to use the token that is created");
     [PSTCKAPIPostRequest<PSTCKToken *> startWithAPIClient:self
-                                             endpoint:tokenEndpoint
-                                             postData:data
-                                           serializer:[PSTCKToken new]
-                                           completion:completion];
+                                                 endpoint:tokenEndpoint
+                                                 postData:data
+                                               serializer:[PSTCKToken new]
+                                               completion:completion];
 }
 
 #pragma mark - private helpers
@@ -136,9 +140,9 @@ static NSString *PSTCKDefaultPublishableKey;
 
 + (NSString *)paystackUserAgentDetails {
     NSMutableDictionary *details = [@{
-        @"lang": @"objective-c",
-        @"bindings_version": PSTCKSDKVersion,
-    } mutableCopy];
+                                      @"lang": @"objective-c",
+                                      @"bindings_version": PSTCKSDKVersion,
+                                      } mutableCopy];
 #if TARGET_OS_IPHONE
     NSString *version = [UIDevice currentDevice].systemVersion;
     if (version) {
@@ -196,13 +200,19 @@ static NSString *PSTCKDefaultPublishableKey;
 
 @end
 
+typedef NS_ENUM(NSInteger, PSTCKChargeStage) {
+    PSTCKChargeStageNoHandle,
+    PSTCKChargeStagePlusHandle,
+    PSTCKChargeStageValidateToken,
+};
+
 #pragma mark - Credit Cards
 @implementation PSTCKAPIClient (CreditCards)
 
 - (void)createTokenWithCard:(PSTCKCard *)card completion:(PSTCKTokenCompletionBlock)completion {
     NSData *data = [PSTCKFormEncoder formEncodedDataForObject:card usePublicKey:[self publishableKey]];
-//       NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card];
-
+    //       NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card];
+    
     [self createTokenWithData:data completion:completion];
 }
 
@@ -219,27 +229,42 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     // we really don't mind if beforeValidate is not provided
     // NSCAssert(beforeValidateCompletion != nil, @"'beforeValidateCompletion' is not required.");
     NSCAssert(successCompletion != nil, @"'successCompletion' is required so you can continue the process after charge succeeds. Remember to verify on server before giving value.");
-    //    [PSTCKAPIPostRequest<PSTCKTransaction *> startWithAPIClient:self
-    //                                                 endpoint:chargeEndpoint
-    //                                               chargeCard:card
-    //                                           forTransaction:transaction
-    //                                         onViewController:viewController
-    //                                          didEndWithError:errorCompletion
-    //                                     didRequestValidation:beforeValidateCompletion
-    //                                    didTransactionSuccess:successCompletion
-    //                                               serializer:[PSTCKTransaction new]];
+    
+    NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card
+                                               andTransaction:transaction
+                                                 usePublicKey:[self publishableKey]];
+    [self makeChargeRequest:data atStage:PSTCKChargeStageNoHandle chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestValidation:beforeValidateCompletion didTransactionSuccess:successCompletion];
+}
+
+- (void) makeChargeRequest:(NSData *)data
+                   atStage:(PSTCKChargeStage) stage
+                chargeCard:(nonnull PSTCKCardParams *)card
+            forTransaction:(nonnull PSTCKTransactionParams *)transaction
+          onViewController:(nonnull UIViewController *)viewController
+           didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+      didRequestValidation:(nullable PSTCKTransactionCompletionBlock)beforeValidateCompletion
+     didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion{
+    NSString *endpoint;
+    
+    switch (stage){
+        case PSTCKChargeStageNoHandle:
+        case PSTCKChargeStagePlusHandle:
+            endpoint = chargeEndpoint;
+            break;
+        case PSTCKChargeStageValidateToken:
+            endpoint = validateEndpoint;
+            break;
+    }
+    
     [PSTCKAPIPostRequest<PSTCKTransaction *>
      startWithAPIClient:self
-     endpoint:chargeEndpoint
-     postData:[PSTCKFormEncoder formEncryptedDataForCard:card
-                                          andTransaction:transaction
-                                            usePublicKey:[self publishableKey]]
+     endpoint:endpoint
+     postData:data
      serializer:[PSTCKTransaction new]
      completion:^(PSTCKTransaction * _Nullable responseObject, NSError * _Nullable error){
          if(error != nil){
-             [self.operationQueue addOperationWithBlock:^{
-                 errorCompletion(error);
-             }];
+             [self didEndWithError:error completion:errorCompletion];
+             return;
          } else {
              // This is where we test the status of the request.
              if([[responseObject status] isEqual:@"1"]){
@@ -249,27 +274,101 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
              } else if([[responseObject status] isEqual:@"2"]){
                  // will request PIN now
                  // show PIN dialog
-                 [viewController isViewLoaded];
+                 UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Enter CARD PIN"
+                                                                                message:@"To confirm that you are the owner of this card please enter your card PIN"
+                                                                         preferredStyle:UIAlertControllerStyleAlert];
+                 
+                 UIAlertAction* defaultAction = [UIAlertAction
+                                                 actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction * action) {
+                                                     [action isEnabled]; // Just to avoid Unused error
+                                                     NSString *provided = ((UITextField *)[alert.textFields objectAtIndex:0]).text;
+                                                     NSString *handle = [PSTCKCardValidator sanitizedNumericStringForString:provided];
+                                                     if(handle == nil ||
+                                                        [handle length]!=4 ||
+                                                        ([provided length] != [handle length])){
+                                                         [self didEndWithErrorMessage:@"Invalid PIN provided. Expected exactly 4 digits." completion:errorCompletion];
+                                                         return;
+                                                     }
+                                                     handle = [PSTCKRSA encryptRSA:handle];
+                                                     NSData *hdata = [PSTCKFormEncoder formEncryptedDataForCard:card
+                                                                                                 andTransaction:transaction
+                                                                                                      andHandle:[PSTCKRSA encryptRSA:handle]
+                                                                                                   usePublicKey:[self publishableKey]];
+                                                     [self makeChargeRequest:hdata atStage:PSTCKChargeStagePlusHandle chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestValidation:beforeValidateCompletion didTransactionSuccess:successCompletion];
+                                                     
+                                                 }];
+                 
+                 [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                     textField.placeholder = @"****";
+                     textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+                     textField.secureTextEntry = YES;
+                 }];
+                 
+                 [alert addAction:defaultAction];
+                 [viewController presentViewController:alert animated:YES completion:nil];
              } else if([[responseObject status] isEqual:@"3"]){
                  [self.operationQueue addOperationWithBlock:^{
                      beforeValidateCompletion(responseObject.reference);
                  }];
                  // Will request token now
                  // show token dialog
+                 UIAlertController* tkalert = [UIAlertController alertControllerWithTitle:@"Enter OTP"
+                                                                                  message:responseObject.message
+                                                                           preferredStyle:UIAlertControllerStyleAlert];
                  
+                 UIAlertAction* tkdefaultAction = [UIAlertAction
+                                                   actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction * action) {
+                                                       [action isEnabled]; // Just to avoid Unused error
+                                                       NSString *provided = ((UITextField *)[tkalert.textFields objectAtIndex:0]).text;
+                                                       PSTCKValidationParams *validateParams = [PSTCKValidationParams alloc];
+                                                       validateParams.trans = responseObject.trans;
+                                                       validateParams.token = provided;
+                                                       NSData *vdata = [PSTCKFormEncoder formEncodedDataForObject:validateParams
+                                                                                                     usePublicKey:[self publishableKey]];
+                                                       [self makeChargeRequest:vdata
+                                                                       atStage:PSTCKChargeStageValidateToken
+                                                                    chargeCard:card
+                                                                forTransaction:transaction
+                                                              onViewController:viewController
+                                                               didEndWithError:errorCompletion
+                                                          didRequestValidation:beforeValidateCompletion
+                                                         didTransactionSuccess:successCompletion];
+                                                       
+                                                   }];
+                 
+                 [tkalert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                     textField.placeholder = @"OTP";
+                     textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+                 }];
+                 [tkalert addAction:tkdefaultAction];
+                 [viewController presentViewController:tkalert animated:YES completion:nil];
              } else {
                  // this is an invalid status
-                 NSDictionary *userInfo = @{
-                                            NSLocalizedDescriptionKey: PSTCKUnexpectedError,
-                                            PSTCKErrorMessageKey: [@"The response status from Paystack had an invalid status. Status was: " stringByAppendingString:[responseObject status]]
-                                            };
-                 [self.operationQueue addOperationWithBlock:^{
-                     errorCompletion([[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo]);
-                 }];
-                 return;
+                 [self didEndWithErrorMessage:[@"The response status from Paystack had an invalid status. Status was: " stringByAppendingString:[responseObject status]] completion:errorCompletion];
              }
          }
      }];
+}
+
+- (void)didEndWithError:(NSError *)error
+             completion:(PSTCKErrorCompletionBlock )completion{
+    [self.operationQueue addOperationWithBlock:^{
+        completion(error);
+    }];
+}
+
+- (void)didEndWithErrorMessage:(NSString *)errorString
+                    completion:(PSTCKErrorCompletionBlock )completion{
+    NSDictionary *userInfo = @{
+                               NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                               PSTCKErrorMessageKey: errorString
+                               };
+    [self.operationQueue addOperationWithBlock:^{
+        completion([[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo]);
+    }];
+    
 }
 
 @end

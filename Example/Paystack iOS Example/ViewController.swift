@@ -103,7 +103,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
             PSTCKAPIClient.shared().chargeCard(b, forTransaction: c, on: self, didEndWithError: { (error) -> Void in
                 
                 }, didRequestValidation: { (reference) -> Void in
-                    self.tokenLabel.text = reference + " requested Validation"
+                    self.tokenLabel.text = reference.appending(" requested v")
                     self.tokenLabel.isHidden = false
                 }, didTransactionSuccess: { (reference) -> Void in
                     self.tokenLabel.text = reference

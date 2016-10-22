@@ -28,6 +28,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         chargeTokenButton.isHidden=true
         emailText.isHidden=true
         requestTokenButton.isEnabled = false
+        chargeCardButton.isEnabled = false
         // clear text from card details
         // comment these to use the sample data set
         super.viewDidLoad();
@@ -59,6 +60,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     @IBOutlet weak var chargeTokenButton: UIButton!
     @IBOutlet weak var emailText: UITextField!
     @IBOutlet weak var cardDetailsForm: PSTCKPaymentCardTextField!
+    @IBOutlet weak var chargeCardButton: UIButton!
     
     var tokenString: String? {
         return tokenLabel.text
@@ -72,7 +74,9 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     // MARK: Actions
     @IBAction func cardDetailsChanged(_ sender: PSTCKPaymentCardTextField) {
         requestTokenButton.isEnabled = sender.isValid
+        chargeCardButton.isEnabled = sender.isValid
     }
+
     @IBAction func requestToken(_ sender: UIButton) {
         dismissKeyboardIfAny()
         
@@ -103,7 +107,8 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         
     }
     
-    @IBAction func requestToken(_ sender: UIButton) {
+    @IBAction func chargeCard(_ sender: UIButton) {
+
         dismissKeyboardIfAny()
         
         // Make sure public key has been set
@@ -116,20 +121,22 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         // use library to create charge and get its reference
         if cardDetailsForm.isValid {
             
-            let c = PSTCKTransactionParams.init();
+            let transactionParams = PSTCKTransactionParams.init();
             // charging 75naira, 80kobo
-            c.amount = UInt(7580);
-            // c.subaccount  = "ACCT_80d907euhish8d";
-            // c.bearer  = "subaccount";
-            // c.transaction_charge  = 280;
-            c.metadata  = "{\"custom_fields\":[{\"display_name\":\"Paid Via\",\"variable_name\":\"paid_via\",\"value\":\"iOS SDK\"}]}";
-            c.email = "support@paystack.com";
-            c.reference = "myfirstiossdkcharge"; // if not supplied, we will give one
+            transactionParams.amount = UInt(7580);
+            // transactionParams.subaccount  = "ACCT_80d907euhish8d";
+            // transactionParams.bearer  = "subaccount";
+            // transactionParams.transaction_charge  = 280;
+            transactionParams.metadata  = "{\"custom_fields\":[{\"display_name\":\"Paid Via\",\"variable_name\":\"paid_via\",\"value\":\"iOS SDK\"}]}";
+            transactionParams.email = "support@paystack.com";
+            transactionParams.reference = "myfirstiossdkvervecharge"; // if not supplied, we will give one
             
-            PSTCKAPIClient.shared().chargeCard(cardDetailsForm.cardParams, forTransaction: c, on: self, didEndWithError: { (error) -> Void in
+            PSTCKAPIClient.shared().chargeCard(cardDetailsForm.cardParams, forTransaction: transactionParams, on: self, didEndWithError: { (error) -> Void in
                     // what should I do if an error occured?
-                    print(error.localizedDescription)
-                    showOkayableMessage(error.localizedDescription)
+                    print(error)
+                    if let errorString = (error._userInfo as! NSDictionary?)?.description {
+                        self.showOkayableMessage("An error occured", message: errorString)
+                    }
                 }, didRequestValidation: { (reference) -> Void in
                     self.tokenLabel.text = reference.appending(" requested validation")
                     self.tokenLabel.isHidden = false
@@ -137,9 +144,9 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
                     self.tokenLabel.text = reference
                     self.tokenLabel.isHidden = false
             })
-
+            
         }
-        
+
     }
 
     @IBAction func chargeToken(_: UIButton) {

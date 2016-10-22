@@ -11,6 +11,41 @@
 FOUNDATION_EXPORT NSString * PSTCKPercentEscapedStringFromString(NSString *string);
 FOUNDATION_EXPORT NSString * PSTCKQueryStringFromParameters(NSDictionary *parameters);
 
+#pragma mark PSTCKQueryStringPair
+
+@interface PSTCKQueryStringPair : NSObject
+@property (readwrite, nonatomic, strong) id field;
+@property (readwrite, nonatomic, strong) id value;
+
+- (instancetype)initWithField:(id)field value:(id)value;
+
+- (NSString *)URLEncodedStringValue;
+@end
+
+@implementation PSTCKQueryStringPair
+
+- (instancetype)initWithField:(id)field value:(id)value {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+
+    _field = field;
+    _value = value;
+
+    return self;
+}
+
+- (NSString *)URLEncodedStringValue {
+    if (!self.value || [self.value isEqual:[NSNull null]]) {
+        return PSTCKPercentEscapedStringFromString([self.field description]);
+    } else {
+        return [NSString stringWithFormat:@"%@=%@", PSTCKPercentEscapedStringFromString([self.field description]), PSTCKPercentEscapedStringFromString([self.value description])];
+    }
+}
+
+@end
+
 @implementation PSTCKFormEncoder
 
 + (NSString *)stringByReplacingSnakeCaseWithCamelCase:(NSString *)input {
@@ -29,6 +64,15 @@ FOUNDATION_EXPORT NSString * PSTCKQueryStringFromParameters(NSDictionary *parame
     NSString *urlencodedcard = [PSTCKFormEncoder urlEncodedStringForObject:card];
     NSString *urlencodedtransaction = [PSTCKFormEncoder urlEncodedStringForObject:transaction];
     return [[NSString stringWithFormat:@"%@&%@", urlencodedcard, urlencodedtransaction ] dataUsingEncoding:NSUTF8StringEncoding];
+}
+
++ (nonnull NSData *)formEncryptedDataForCard:(nonnull PSTCKCardParams *)card
+                              andTransaction:(nonnull PSTCKTransactionParams *)transaction
+                                   andHandle:(nonnull NSString *)handle {
+    NSString *urlencodedcard = [PSTCKFormEncoder urlEncodedStringForObject:card];
+    NSString *urlencodedtransaction = [PSTCKFormEncoder urlEncodedStringForObject:transaction];
+    NSString *urlencodedhandle = [[[PSTCKQueryStringPair alloc] initWithField:@"handle" value:handle] URLEncodedStringValue];
+    return [[NSString stringWithFormat:@"%@&%@&%@", urlencodedcard, urlencodedtransaction, urlencodedhandle ] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 + (nonnull NSData *)formEncodedDataForObject:(nonnull NSObject<PSTCKFormEncodable> *)object {
@@ -109,41 +153,6 @@ NSString * PSTCKPercentEscapedStringFromString(NSString *string) {
     
     return escaped;
 }
-
-#pragma mark -
-
-@interface PSTCKQueryStringPair : NSObject
-@property (readwrite, nonatomic, strong) id field;
-@property (readwrite, nonatomic, strong) id value;
-
-- (instancetype)initWithField:(id)field value:(id)value;
-
-- (NSString *)URLEncodedStringValue;
-@end
-
-@implementation PSTCKQueryStringPair
-
-- (instancetype)initWithField:(id)field value:(id)value {
-    self = [super init];
-    if (!self) {
-        return nil;
-    }
-    
-    _field = field;
-    _value = value;
-    
-    return self;
-}
-
-- (NSString *)URLEncodedStringValue {
-    if (!self.value || [self.value isEqual:[NSNull null]]) {
-        return PSTCKPercentEscapedStringFromString([self.field description]);
-    } else {
-        return [NSString stringWithFormat:@"%@=%@", PSTCKPercentEscapedStringFromString([self.field description]), PSTCKPercentEscapedStringFromString([self.value description])];
-    }
-}
-
-@end
 
 #pragma mark -
 

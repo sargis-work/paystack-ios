@@ -18,8 +18,8 @@ static NSString *const __nonnull PSTCKSDKVersion = @"1.0.0";
  *  @param error The error returned from the response, or nil in one occurs. @see PaystackError.h for possible values.
  */
 typedef void (^PSTCKTokenCompletionBlock)(PSTCKToken * __nullable token, NSError * __nullable error);
-typedef void (^PSTCKErrorCompletionBlock)(NSError * __nullable error);
-typedef void (^PSTCKTransactionCompletionBlock)(NSString * __nullable reference);
+typedef void (^PSTCKErrorCompletionBlock)(NSError * __nonnull error);
+typedef void (^PSTCKTransactionCompletionBlock)(NSString * __nonnull reference);
 
 /**
  A top-level class that imports the rest of the Paystack SDK. This class used to contain several methods to create Paystack tokens, but those are now deprecated in

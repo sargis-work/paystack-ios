@@ -60,23 +60,30 @@ FOUNDATION_EXPORT NSString * PSTCKQueryStringFromParameters(NSDictionary *parame
 
 
 + (nonnull NSData *)formEncryptedDataForCard:(nonnull PSTCKCardParams *)card
-                              andTransaction:(nonnull PSTCKTransactionParams *)transaction {
+                              andTransaction:(nonnull PSTCKTransactionParams *)transaction
+                                usePublicKey:(nonnull NSString *)public_key {
     NSString *urlencodedcard = [PSTCKFormEncoder urlEncodedStringForObject:card];
     NSString *urlencodedtransaction = [PSTCKFormEncoder urlEncodedStringForObject:transaction];
-    return [[NSString stringWithFormat:@"%@&%@", urlencodedcard, urlencodedtransaction ] dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *urlencodedpublickey = [[[PSTCKQueryStringPair alloc] initWithField:@"public_key" value:public_key] URLEncodedStringValue];
+    return [[NSString stringWithFormat:@"%@&%@&%@", urlencodedcard, urlencodedtransaction, urlencodedpublickey] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 + (nonnull NSData *)formEncryptedDataForCard:(nonnull PSTCKCardParams *)card
                               andTransaction:(nonnull PSTCKTransactionParams *)transaction
-                                   andHandle:(nonnull NSString *)handle {
+                                   andHandle:(nonnull NSString *)handle
+                                usePublicKey:(nonnull NSString *)public_key {
     NSString *urlencodedcard = [PSTCKFormEncoder urlEncodedStringForObject:card];
     NSString *urlencodedtransaction = [PSTCKFormEncoder urlEncodedStringForObject:transaction];
     NSString *urlencodedhandle = [[[PSTCKQueryStringPair alloc] initWithField:@"handle" value:handle] URLEncodedStringValue];
-    return [[NSString stringWithFormat:@"%@&%@&%@", urlencodedcard, urlencodedtransaction, urlencodedhandle ] dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *urlencodedpublickey = [[[PSTCKQueryStringPair alloc] initWithField:@"public_key" value:public_key] URLEncodedStringValue];
+    return [[NSString stringWithFormat:@"%@&%@&%@&%@", urlencodedcard, urlencodedtransaction, urlencodedhandle, urlencodedpublickey] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
-+ (nonnull NSData *)formEncodedDataForObject:(nonnull NSObject<PSTCKFormEncodable> *)object {
-    return [[PSTCKFormEncoder urlEncodedStringForObject:object] dataUsingEncoding:NSUTF8StringEncoding];
++ (nonnull NSData *)formEncodedDataForObject:(nonnull NSObject<PSTCKFormEncodable> *)object
+                                usePublicKey:(nonnull NSString *)public_key {
+    NSString *urlencodedobject = [PSTCKFormEncoder urlEncodedStringForObject:object];
+    NSString *urlencodedpublickey = [[[PSTCKQueryStringPair alloc] initWithField:@"public_key" value:public_key] URLEncodedStringValue];
+    return [[NSString stringWithFormat:@"%@&%@", urlencodedobject, urlencodedpublickey] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 + (nonnull NSString *)urlEncodedStringForObject:(nonnull NSObject<PSTCKFormEncodable> *)object {

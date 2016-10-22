@@ -200,7 +200,7 @@ static NSString *PSTCKDefaultPublishableKey;
 @implementation PSTCKAPIClient (CreditCards)
 
 - (void)createTokenWithCard:(PSTCKCard *)card completion:(PSTCKTokenCompletionBlock)completion {
-    NSData *data = [PSTCKFormEncoder formEncodedDataForObject:card];
+    NSData *data = [PSTCKFormEncoder formEncodedDataForObject:card usePublicKey:[self publishableKey]];
 //       NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card];
 
     [self createTokenWithData:data completion:completion];
@@ -232,7 +232,8 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
      startWithAPIClient:self
      endpoint:chargeEndpoint
      postData:[PSTCKFormEncoder formEncryptedDataForCard:card
-                                          andTransaction:transaction]
+                                          andTransaction:transaction
+                                            usePublicKey:[self publishableKey]]
      serializer:[PSTCKTransaction new]
      completion:^(PSTCKTransaction * _Nullable responseObject, NSError * _Nullable error){
          if(error != nil){

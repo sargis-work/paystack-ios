@@ -197,8 +197,8 @@ static NSString *PSTCKDefaultPublishableKey;
 @implementation PSTCKAPIClient (CreditCards)
 
 - (void)createTokenWithCard:(PSTCKCard *)card completion:(PSTCKTokenCompletionBlock)completion {
-//    NSData *data = [PSTCKFormEncoder formEncodedDataForObject:card];
-       NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card];
+    NSData *data = [PSTCKFormEncoder formEncodedDataForObject:card];
+//       NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card];
 
     [self createTokenWithData:data completion:completion];
 }

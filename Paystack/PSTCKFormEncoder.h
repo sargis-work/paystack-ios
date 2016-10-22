@@ -10,7 +10,7 @@
 
 @interface PSTCKFormEncoder : NSObject
 
-+ (nonnull NSData *)formEncryptedDataForCard:(nonnull NSObject<PSTCKFormEncodable> *)object;
++ (nonnull NSData *)formEncodedDataForObject:(nonnull NSObject<PSTCKFormEncodable> *)object;
 
 + (nonnull NSString *)stringByURLEncoding:(nonnull NSString *)string;
 

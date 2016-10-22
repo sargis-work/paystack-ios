@@ -24,18 +24,9 @@ FOUNDATION_EXPORT NSString * PSTCKQueryStringFromParameters(NSDictionary *parame
 }
 
 
-+ (nonnull NSData *)formEncryptedDataForCard:(nonnull PSTCKCardParams *)card {
-    NSString *urlencoded = [PSTCKFormEncoder urlEndocdedClientDataForCard:card];
-    return [urlencoded dataUsingEncoding:NSUTF8StringEncoding];
-}
-
-+ (nonnull NSString *)urlEndocdedClientDataForCard:(nonnull PSTCKCardParams *)card {
-    return [NSString stringWithFormat:@"%@=%@", PSTCKPercentEscapedStringFromString(@"clientdata"), PSTCKPercentEscapedStringFromString([card clientdata])];
-}
-
 + (nonnull NSData *)formEncryptedDataForCard:(nonnull PSTCKCardParams *)card
                               andTransaction:(nonnull PSTCKTransactionParams *)transaction {
-    NSString *urlencodedcard = [PSTCKFormEncoder urlEndocdedClientDataForCard:card];
+    NSString *urlencodedcard = [PSTCKFormEncoder urlEncodedStringForObject:card];
     NSString *urlencodedtransaction = [PSTCKFormEncoder urlEncodedStringForObject:transaction];
     return [[NSString stringWithFormat:@"%@&%@", urlencodedcard, urlencodedtransaction ] dataUsingEncoding:NSUTF8StringEncoding];
 }
@@ -48,7 +39,7 @@ FOUNDATION_EXPORT NSString * PSTCKQueryStringFromParameters(NSDictionary *parame
     NSDictionary *dict = @{
                            [object.class rootObjectName]: [self keyPairDictionaryForObject:object]
                            };
-    return [PSTCKQueryStringFromParameters(dict) dataUsingEncoding:NSUTF8StringEncoding];
+    return PSTCKQueryStringFromParameters(dict) ;
 }
 
 + (NSDictionary *)keyPairDictionaryForObject:(nonnull NSObject<PSTCKFormEncodable> *)object {

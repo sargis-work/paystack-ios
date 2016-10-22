@@ -12,10 +12,10 @@
 @interface PSTCKTransactionParams : NSObject<PSTCKFormEncodable>
 
 @property (nonatomic, copy, nonnull) NSString *email;
-@property (nonatomic, nonnull) NSUInteger *amount;
+@property (nonatomic) NSUInteger amount;
 @property (nonatomic, copy, nullable) NSString *reference;
 @property (nonatomic, copy, nullable) NSString *subaccount;
-@property (nonatomic, nullable) NSUInteger *transactionCharge;
+@property (nonatomic) NSUInteger transactionCharge;
 @property (nonatomic, copy, nullable) NSString *bearer;
 @property (nonatomic, copy, nullable) NSString *metadata;
 

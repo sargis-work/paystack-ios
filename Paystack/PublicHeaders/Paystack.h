@@ -13,6 +13,7 @@
 #import "PaystackError.h"
 #import "PSTCKCardBrand.h"
 #import "PSTCKCardParams.h"
+#import "PSTCKTransactionParams.h"
 #import "PSTCKCard.h"
 #import "PSTCKCardValidationState.h"
 #import "PSTCKCardValidator.h"

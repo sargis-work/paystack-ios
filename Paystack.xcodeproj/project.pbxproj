@@ -239,6 +239,10 @@
 		04F213371BCECB1C001D6F22 /* PSTCKAPIResponseDecodable.h in Headers */ = {isa = PBXBuildFile; fileRef = 04F213341BCECB1C001D6F22 /* PSTCKAPIResponseDecodable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		04FCFA191BD59A8C00297732 /* PSTCKCategoryLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 04FCFA171BD59A8C00297732 /* PSTCKCategoryLoader.h */; };
 		04FCFA1A1BD59A8C00297732 /* PSTCKCategoryLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 04FCFA181BD59A8C00297732 /* PSTCKCategoryLoader.m */; };
+		0806F2F41DBB9E7100C2741B /* PSTCKTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2F21DBB9E7100C2741B /* PSTCKTransaction.h */; };
+		0806F2F51DBB9E7100C2741B /* PSTCKTransactionParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2F31DBB9E7100C2741B /* PSTCKTransactionParams.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0806F2F81DBB9E8200C2741B /* PSTCKTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = 0806F2F61DBB9E8200C2741B /* PSTCKTransaction.m */; };
+		0806F2F91DBB9E8200C2741B /* PSTCKTransactionParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 0806F2F71DBB9E8200C2741B /* PSTCKTransactionParams.m */; };
 		101987811CA47DAC0089A68A /* PSTCKRSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB11C8135D800EEF7CF /* PSTCKRSA.m */; };
 		10500AB21C8135D800EEF7CF /* PSTCKRSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB11C8135D800EEF7CF /* PSTCKRSA.m */; };
 		10500AB51C8136EF00EEF7CF /* PSTCKRSATest.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB41C8136EF00EEF7CF /* PSTCKRSATest.m */; };
@@ -405,6 +409,10 @@
 		04F39F241AEF2AFE005B926E /* PaystackOSXTests-Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "PaystackOSXTests-Shared.xcconfig"; sourceTree = "<group>"; };
 		04FCFA171BD59A8C00297732 /* PSTCKCategoryLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSTCKCategoryLoader.h; sourceTree = "<group>"; };
 		04FCFA181BD59A8C00297732 /* PSTCKCategoryLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKCategoryLoader.m; sourceTree = "<group>"; };
+		0806F2F21DBB9E7100C2741B /* PSTCKTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSTCKTransaction.h; path = PublicHeaders/PSTCKTransaction.h; sourceTree = "<group>"; };
+		0806F2F31DBB9E7100C2741B /* PSTCKTransactionParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSTCKTransactionParams.h; path = PublicHeaders/PSTCKTransactionParams.h; sourceTree = "<group>"; };
+		0806F2F61DBB9E8200C2741B /* PSTCKTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKTransaction.m; sourceTree = "<group>"; };
+		0806F2F71DBB9E8200C2741B /* PSTCKTransactionParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKTransactionParams.m; sourceTree = "<group>"; };
 		10500AB11C8135D800EEF7CF /* PSTCKRSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSTCKRSA.m; path = RSA/PSTCKRSA.m; sourceTree = "<group>"; };
 		10500AB31C8135F800EEF7CF /* PSTCKRSA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PSTCKRSA.h; path = RSA/PSTCKRSA.h; sourceTree = "<group>"; };
 		10500AB41C8136EF00EEF7CF /* PSTCKRSATest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKRSATest.m; sourceTree = "<group>"; };
@@ -567,6 +575,10 @@
 				04EBC7511B7533C300A0E6AE /* PSTCKCardValidationState.h */,
 				04EBC7521B7533C300A0E6AE /* PSTCKCardValidator.h */,
 				0438EF3F1B74170D00D506CC /* PSTCKCardValidator.m */,
+				0806F2F61DBB9E8200C2741B /* PSTCKTransaction.m */,
+				0806F2F71DBB9E8200C2741B /* PSTCKTransactionParams.m */,
+				0806F2F21DBB9E7100C2741B /* PSTCKTransaction.h */,
+				0806F2F31DBB9E7100C2741B /* PSTCKTransactionParams.h */,
 				04CDB4CC1A5F30A700B854EE /* PSTCKToken.h */,
 				04CDB4CD1A5F30A700B854EE /* PSTCKToken.m */,
 				04CDB4CE1A5F30A700B854EE /* PaystackError.h */,
@@ -731,6 +743,7 @@
 				04CDB50E1A5F30A700B854EE /* PSTCKCard.h in Headers */,
 				0438EF2C1B7416BB00D506CC /* PSTCKFormTextField.h in Headers */,
 				049952D21BCF13DD0088C703 /* PSTCKAPIClient+Private.h in Headers */,
+				0806F2F51DBB9E7100C2741B /* PSTCKTransactionParams.h in Headers */,
 				C1718D561C3B2E5B002A7CB3 /* UIImage+Paystack.h in Headers */,
 				04CDB5121A5F30A700B854EE /* PSTCKToken.h in Headers */,
 				049952CF1BCF13510088C703 /* PSTCKAPIPostRequest.h in Headers */,
@@ -739,6 +752,7 @@
 				10FC52071C88DDB3004A0733 /* PSTCKRSA.h in Headers */,
 				04CDB5161A5F30A700B854EE /* PaystackError.h in Headers */,
 				04E32A9D1B7A9490009C9E35 /* PSTCKPaymentCardTextField.h in Headers */,
+				0806F2F41DBB9E7100C2741B /* PSTCKTransaction.h in Headers */,
 				04F213311BCEAB61001D6F22 /* PSTCKFormEncodable.h in Headers */,
 				04CDB5021A5F30A700B854EE /* PSTCKFormEncoder.h in Headers */,
 				0438EF381B7416BB00D506CC /* PSTCKPaymentCardTextFieldViewModel.h in Headers */,
@@ -1126,11 +1140,13 @@
 			files = (
 				0438EF431B74170D00D506CC /* PSTCKCardValidator.m in Sources */,
 				0438EF2F1B7416BB00D506CC /* PSTCKFormTextField.m in Sources */,
+				0806F2F91DBB9E8200C2741B /* PSTCKTransactionParams.m in Sources */,
 				04CDB5101A5F30A700B854EE /* PSTCKCard.m in Sources */,
 				04CDB5001A5F30A700B854EE /* PSTCKAPIClient.m in Sources */,
 				10500AB21C8135D800EEF7CF /* PSTCKRSA.m in Sources */,
 				04CDB5181A5F30A700B854EE /* PaystackError.m in Sources */,
 				C1718D571C3B2E5B002A7CB3 /* UIImage+Paystack.m in Sources */,
+				0806F2F81DBB9E8200C2741B /* PSTCKTransaction.m in Sources */,
 				0438EF351B7416BB00D506CC /* PSTCKPaymentCardTextField.m in Sources */,
 				04CDB5041A5F30A700B854EE /* PSTCKFormEncoder.m in Sources */,
 				04CDB5141A5F30A700B854EE /* PSTCKToken.m in Sources */,

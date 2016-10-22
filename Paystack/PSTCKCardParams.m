@@ -164,18 +164,7 @@
 
 + (NSDictionary *)propertyNamesToFormFieldNamesMapping {
     return @{
-             @"number": @"number",
-             @"cvc": @"cvc",
-             @"name": @"name",
-             @"addressLine1": @"address_line1",
-             @"addressLine2": @"address_line2",
-             @"addressCity": @"address_city",
-             @"addressState": @"address_state",
-             @"addressZip": @"address_zip",
-             @"addressCountry": @"address_country",
-             @"expMonth": @"exp_month",
-             @"expYear": @"exp_year",
-             @"currency": @"currency",
+             @"last4": @"last4",
              @"clientdata": @"clientdata",
              };
 }

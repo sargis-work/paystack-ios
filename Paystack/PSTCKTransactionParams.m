@@ -35,7 +35,7 @@
              @"amount": @"amount",
              @"reference": @"reference",
              @"subaccount": @"subaccount",
-             @"transaction_charge": @"transactionCharge",
+             @"transaction_charge": @"transaction_charge",
              @"bearer": @"bearer",
              @"metadata": @"metadata",
              };

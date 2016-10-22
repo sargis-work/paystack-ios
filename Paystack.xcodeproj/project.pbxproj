@@ -245,6 +245,9 @@
 		0806F2F91DBB9E8200C2741B /* PSTCKTransactionParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 0806F2F71DBB9E8200C2741B /* PSTCKTransactionParams.m */; };
 		0806F2FB1DBBA3C500C2741B /* PSTCKValidationParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 0806F2FA1DBBA3C500C2741B /* PSTCKValidationParams.m */; };
 		0806F2FD1DBBA3F600C2741B /* PSTCKValidationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2FC1DBBA3F600C2741B /* PSTCKValidationParams.h */; };
+		0806F3011DBBB5DF00C2741B /* pstck_card_verve.png in Resources */ = {isa = PBXBuildFile; fileRef = 0806F2FE1DBBB5DF00C2741B /* pstck_card_verve.png */; };
+		0806F3021DBBB5DF00C2741B /* pstck_card_verve@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0806F2FF1DBBB5DF00C2741B /* pstck_card_verve@2x.png */; };
+		0806F3031DBBB5DF00C2741B /* pstck_card_verve@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0806F3001DBBB5DF00C2741B /* pstck_card_verve@3x.png */; };
 		101987811CA47DAC0089A68A /* PSTCKRSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB11C8135D800EEF7CF /* PSTCKRSA.m */; };
 		10500AB21C8135D800EEF7CF /* PSTCKRSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB11C8135D800EEF7CF /* PSTCKRSA.m */; };
 		10500AB51C8136EF00EEF7CF /* PSTCKRSATest.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB41C8136EF00EEF7CF /* PSTCKRSATest.m */; };
@@ -417,6 +420,9 @@
 		0806F2F71DBB9E8200C2741B /* PSTCKTransactionParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKTransactionParams.m; sourceTree = "<group>"; };
 		0806F2FA1DBBA3C500C2741B /* PSTCKValidationParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKValidationParams.m; sourceTree = "<group>"; };
 		0806F2FC1DBBA3F600C2741B /* PSTCKValidationParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSTCKValidationParams.h; path = PublicHeaders/PSTCKValidationParams.h; sourceTree = "<group>"; };
+		0806F2FE1DBBB5DF00C2741B /* pstck_card_verve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pstck_card_verve.png; sourceTree = "<group>"; };
+		0806F2FF1DBBB5DF00C2741B /* pstck_card_verve@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pstck_card_verve@2x.png"; sourceTree = "<group>"; };
+		0806F3001DBBB5DF00C2741B /* pstck_card_verve@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pstck_card_verve@3x.png"; sourceTree = "<group>"; };
 		10500AB11C8135D800EEF7CF /* PSTCKRSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSTCKRSA.m; path = RSA/PSTCKRSA.m; sourceTree = "<group>"; };
 		10500AB31C8135F800EEF7CF /* PSTCKRSA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PSTCKRSA.h; path = RSA/PSTCKRSA.h; sourceTree = "<group>"; };
 		10500AB41C8136EF00EEF7CF /* PSTCKRSATest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKRSATest.m; sourceTree = "<group>"; };
@@ -500,6 +506,9 @@
 		0438EF881B741C2800D506CC /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				0806F2FE1DBBB5DF00C2741B /* pstck_card_verve.png */,
+				0806F2FF1DBBB5DF00C2741B /* pstck_card_verve@2x.png */,
+				0806F3001DBBB5DF00C2741B /* pstck_card_verve@3x.png */,
 				0438EF891B741C2800D506CC /* pstck_card_amex.png */,
 				0438EF8A1B741C2800D506CC /* pstck_card_amex@2x.png */,
 				0438EF8B1B741C2800D506CC /* pstck_card_amex@3x.png */,
@@ -1005,10 +1014,13 @@
 				0438EFC01B741C2800D506CC /* pstck_card_discover@3x.png in Resources */,
 				0438EFB41B741C2800D506CC /* pstck_card_cvc_amex@3x.png in Resources */,
 				0438EFB81B741C2800D506CC /* pstck_card_diners@2x.png in Resources */,
+				0806F3031DBBB5DF00C2741B /* pstck_card_verve@3x.png in Resources */,
 				0438EFAA1B741C2800D506CC /* pstck_card_cvc.png in Resources */,
 				0438EFAC1B741C2800D506CC /* pstck_card_cvc@2x.png in Resources */,
 				0438EFCC1B741C2800D506CC /* pstck_card_mastercard@3x.png in Resources */,
+				0806F3011DBBB5DF00C2741B /* pstck_card_verve.png in Resources */,
 				0438EFCE1B741C2800D506CC /* pstck_card_placeholder.png in Resources */,
+				0806F3021DBBB5DF00C2741B /* pstck_card_verve@2x.png in Resources */,
 				0438EFCA1B741C2800D506CC /* pstck_card_mastercard@2x.png in Resources */,
 				042CA1B81B7BD84100AF0DA6 /* pstck_card_placeholder_template@3x.png in Resources */,
 				0438EFC81B741C2800D506CC /* pstck_card_mastercard.png in Resources */,

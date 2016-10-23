@@ -15,7 +15,7 @@
 @property (nonatomic) NSUInteger amount;
 @property (nonatomic, copy, nullable) NSString *reference;
 @property (nonatomic, copy, nullable) NSString *subaccount;
-@property (nonatomic) NSUInteger transaction_charge;
+@property (nonatomic) NSInteger transaction_charge;
 @property (nonatomic, copy, nullable) NSString *bearer;
 @property (nonatomic, copy, nullable) NSString *metadata;
 

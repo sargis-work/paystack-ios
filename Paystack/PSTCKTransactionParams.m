@@ -16,6 +16,7 @@
     self = [super init];
     if (self) {
         _additionalAPIParameters = @{};
+        _transaction_charge = -1;
     }
     return self;
 }

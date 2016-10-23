@@ -40,7 +40,11 @@ FOUNDATION_EXPORT NSString * PSTCKQueryStringFromParameters(NSDictionary *parame
     if (!self.value || [self.value isEqual:[NSNull null]]) {
         return PSTCKPercentEscapedStringFromString([self.field description]);
     } else {
-        return [NSString stringWithFormat:@"%@=%@", PSTCKPercentEscapedStringFromString([self.field description]), PSTCKPercentEscapedStringFromString([self.value description])];
+        NSString *encoded= [NSString stringWithFormat:@"%@=%@", PSTCKPercentEscapedStringFromString([self.field description]), PSTCKPercentEscapedStringFromString([self.value description])];
+        // never send negative transaction_charge
+        if([encoded hasPrefix:@"transaction_charge=-"])
+            return @"";
+        return encoded;
     }
 }
 

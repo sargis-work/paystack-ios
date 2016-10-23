@@ -42,6 +42,11 @@ static NSString *PSTCKDefaultPublishableKey;
 
 @implementation Paystack
 
++ (id)alloc {
+    NSCAssert(NO, @"'Paystack' is a static class and cannot be instantiated.");
+    return nil;
+}
+
 + (void)setDefaultPublishableKey:(NSString *)publishableKey {
     PSTCKDefaultPublishableKey = publishableKey;
 }
@@ -370,39 +375,5 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     }];
     
 }
-
-@end
-
-@implementation Paystack (Deprecated)
-
-+ (id)alloc {
-    NSCAssert(NO, @"'Paystack' is a static class and cannot be instantiated.");
-    return nil;
-}
-
-+ (void)createTokenWithCard:(PSTCKCard *)card
-             publishableKey:(NSString *)publishableKey
-             operationQueue:(NSOperationQueue *)queue
-                 completion:(PSTCKCompletionBlock)handler {
-    NSCAssert(card != nil, @"'card' is required to create a token");
-    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublishableKey:publishableKey];
-    client.operationQueue = queue;
-    [client createTokenWithCard:card completion:handler];
-}
-
-#pragma mark Shorthand methods -
-
-+ (void)createTokenWithCard:(PSTCKCard *)card completion:(PSTCKCompletionBlock)handler {
-    [self createTokenWithCard:card publishableKey:[self defaultPublishableKey] completion:handler];
-}
-
-+ (void)createTokenWithCard:(PSTCKCard *)card publishableKey:(NSString *)publishableKey completion:(PSTCKCompletionBlock)handler {
-    [self createTokenWithCard:card publishableKey:publishableKey operationQueue:[NSOperationQueue mainQueue] completion:handler];
-}
-
-+ (void)createTokenWithCard:(PSTCKCard *)card operationQueue:(NSOperationQueue *)queue completion:(PSTCKCompletionBlock)handler {
-    [self createTokenWithCard:card publishableKey:[self defaultPublishableKey] operationQueue:queue completion:handler];
-}
-
 
 @end

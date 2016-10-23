@@ -16,7 +16,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     // To set this up, see https://github.com/PaystackHQ/sample-charge-token-backend
     let backendChargeURLString = ""
     
-    let capPrice : UInt = 10000 // this is in kobo (so 100 Naira); 
+    let capPrice : UInt = 7580 // this is in kobo (so 75Naira 80kobo);
     
     let card : PSTCKCard = PSTCKCard()
     
@@ -92,17 +92,24 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         Paystack.setDefaultPublishableKey(paystackPublishableKey)
         // use library to create token request and return a token
         if cardDetailsForm.isValid {
+            self.requestTokenButton.isEnabled = false;
             PSTCKAPIClient.shared().createToken(withCard: cardDetailsForm.cardParams) { (token, error) -> Void in
                 if let error = error  {
-                    print(error.localizedDescription)
+                    print(error)
+                    if let errorString = (error._userInfo as! NSDictionary?)?.description {
+                        self.showOkayableMessage("An error occured", message: errorString)
+                    }
+                    self.requestTokenButton.isEnabled = true;
                 }
                 else if let token = token {
                     self.tokenLabel.text = token.tokenId
                     self.tokenLabel.isHidden = false
+                    self.requestTokenButton.isEnabled = true;
                     self.chargeTokenButton.isHidden=false
                     self.emailText.isHidden=false
                 }
             }
+            self.requestTokenButton.setTitle("Requesting token...", for: UIControlState.disabled)
         }
         
     }
@@ -120,16 +127,21 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         Paystack.setDefaultPublishableKey(paystackPublishableKey)
         // use library to create charge and get its reference
         if cardDetailsForm.isValid {
+            self.chargeCardButton.isEnabled = false;
             
             let transactionParams = PSTCKTransactionParams.init();
             // charging 75naira, 80kobo
-            transactionParams.amount = UInt(7580);
+            transactionParams.amount = capPrice;
+            transactionParams.metadata  = "{\"custom_fields\":[{\"display_name\":\"Paid Via\",\"variable_name\":\"paid_via\",\"value\":\"iOS SDK\"}]}";
+            transactionParams.email = "support@paystack.com";
+
             // transactionParams.subaccount  = "ACCT_80d907euhish8d";
             // transactionParams.bearer  = "subaccount";
             // transactionParams.transaction_charge  = 280;
-            transactionParams.metadata  = "{\"custom_fields\":[{\"display_name\":\"Paid Via\",\"variable_name\":\"paid_via\",\"value\":\"iOS SDK\"}]}";
-            transactionParams.email = "support@paystack.com";
-            transactionParams.reference = "myfirstiossdkvervecharge"; // if not supplied, we will give one
+
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "EEE, dd MMM yyy hh:mm:ss +zzzz"
+            transactionParams.reference = "ChargedFromiOSSDK@" + dateFormatter.string(from: Date.init()); // if not supplied, we will give one
             
             PSTCKAPIClient.shared().chargeCard(cardDetailsForm.cardParams, forTransaction: transactionParams, on: self, didEndWithError: { (error) -> Void in
                     // what should I do if an error occured?
@@ -137,13 +149,16 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
                     if let errorString = (error._userInfo as! NSDictionary?)?.description {
                         self.showOkayableMessage("An error occured", message: errorString)
                     }
+                    self.chargeCardButton.isEnabled = true;
                 }, didRequestValidation: { (reference) -> Void in
-                    self.tokenLabel.text = reference.appending(" requested validation")
+                    self.tokenLabel.text = reference + " requested validation"
                     self.tokenLabel.isHidden = false
                 }, didTransactionSuccess: { (reference) -> Void in
                     self.tokenLabel.text = reference
                     self.tokenLabel.isHidden = false
+                    self.chargeCardButton.isEnabled = true;
             })
+            self.chargeCardButton.setTitle("Charging card...", for: UIControlState.disabled)
             
         }
 

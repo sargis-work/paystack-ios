@@ -272,7 +272,11 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
              return;
          } else {
              // This is where we test the status of the request.
-             if([[responseObject status] isEqual:@"1"] || [[responseObject status] isEqual:@"success"]){
+             if([[responseObject status] isEqual:@"1"] ){
+                 [self.operationQueue addOperationWithBlock:^{
+                     successCompletion(responseObject.reference);
+                 }];
+             } else if([[responseObject status] isEqual:@"success"]){
                  [self.operationQueue addOperationWithBlock:^{
                      successCompletion(responseObject.reference);
                  }];
@@ -295,7 +299,6 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                                          [self didEndWithErrorMessage:@"Invalid PIN provided. Expected exactly 4 digits." completion:errorCompletion];
                                                          return;
                                                      }
-                                                     handle = [PSTCKRSA encryptRSA:handle];
                                                      NSData *hdata = [PSTCKFormEncoder formEncryptedDataForCard:card
                                                                                                  andTransaction:transaction
                                                                                                       andHandle:[PSTCKRSA encryptRSA:handle]

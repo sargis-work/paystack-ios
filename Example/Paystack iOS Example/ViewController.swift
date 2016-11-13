@@ -131,21 +131,19 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
             
             let transactionParams = PSTCKTransactionParams.init();
             // charging 75naira, 80kobo
-            transactionParams.amount = 244;
+            transactionParams.amount = 7580;
             
             do {
-                try transactionParams.setMetadataValue("iOS SDK", forKey: "custom_fields");
-                try transactionParams.setCustomFieldValue("iOS SDK", displayedAs: "Another");
-                try transactionParams.setCustomFieldValue("Emi ni", displayedAs: "One else");
+                try transactionParams.setCustomFieldValue("iOS SDK", displayedAs: "Paid Via");
+                try transactionParams.setCustomFieldValue("Paystack hats", displayedAs: "To Buy");
                 try transactionParams.setMetadataValue("iOS SDK", forKey: "paid_via");
             } catch {
                 print(error);
             }
             
-            transactionParams.email = "ibrahim@paystack.com";
+            // set an email
+            transactionParams.email = "";
             
-            print(transactionParams.description);
-
             // transactionParams.subaccount  = "ACCT_80d907euhish8d";
             // transactionParams.bearer  = "subaccount";
             // transactionParams.transaction_charge  = 280;
@@ -162,10 +160,10 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
                     }
                     self.chargeCardButton.isEnabled = true;
                 }, didRequestValidation: { (reference) -> Void in
-                    self.tokenLabel.text = reference + " requested validation"
+                    self.tokenLabel.text = "requested validation: " + reference
                     self.tokenLabel.isHidden = false
                 }, didTransactionSuccess: { (reference) -> Void in
-                    self.tokenLabel.text = reference
+                    self.tokenLabel.text = "succeeded: " + reference
                     self.tokenLabel.isHidden = false
                     self.chargeCardButton.isEnabled = true;
             })
@@ -194,7 +192,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
                                 if successfulResponse && error == nil && data != nil{
                                     // All was well
                                     let newStr = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
-                                    print(newStr)
+                                    print(newStr ?? "<Unable to read response>")
                                 } else {
                                     if let e=error {
                                         print(e.localizedDescription)

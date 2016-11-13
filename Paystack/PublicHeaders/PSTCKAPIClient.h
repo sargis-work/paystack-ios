@@ -8,7 +8,7 @@
 #import <UIKit/UIViewController.h>
 #endif
 
-static NSString *const __nonnull PSTCKSDKVersion = @"2.0.0";
+static NSString *const __nonnull PSTCKSDKVersion = @"2.1.0";
 
 @class PSTCKCard, PSTCKCardParams, PSTCKTransactionParams, PSTCKToken;
 
@@ -82,4 +82,3 @@ typedef void (^PSTCKTransactionCompletionBlock)(NSString * __nonnull reference);
    didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion;
 
 @end
-

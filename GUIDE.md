@@ -158,7 +158,7 @@ func paymentCardTextFieldDidChange(textField: PSTCKPaymentCardTextField) {
 
 #### Building your own form
 
-If you build your own payment form, you'll need to collect at least your customers' card numbers, CVC and expiration dates. 
+If you build your own payment form, you'll need to collect at least your customers' card numbers, CVC and expiration dates.
 
 ### Step 4: Assembling Card information into `PSTCKCardParams`
 
@@ -221,7 +221,13 @@ If you choose the `chargeCard` route, we charge cards you send using parameters 
     let transactionParams = PSTCKTransactionParams.init();
 
     transactionParams.amount = 1390;
-    transactionParams.metadata  = "{\"custom_fields\":[{\"display_name\":\"Via\",\"variable_name\":\"via\",\"value\":\"iOS\"}]}";
+    do {
+        try transactionParams.setCustomFieldValue("iOS SDK", displayedAs: "Paid Via");
+        try transactionParams.setCustomFieldValue("Paystack hats", displayedAs: "To Buy");
+        try transactionParams.setMetadataValue("iOS SDK", forKey: "paid_via");
+    } catch {
+        print(error);
+    }
     transactionParams.email = "e@ma.il";
 
     // check https://developers.paystack.co/docs/split-payments-overview for details on how these work
@@ -232,7 +238,7 @@ If you choose the `chargeCard` route, we charge cards you send using parameters 
     // if a reference is not supplied, we will give one
     // transactionParams.reference = "ChargedFromiOSSDK@"
 
-    PSTCKAPIClient.shared().chargeCard(cardParams, forTransaction: transactionParams, on: viewController, 
+    PSTCKAPIClient.shared().chargeCard(cardParams, forTransaction: transactionParams, on: viewController,
                didEndWithError: { (error) -> Void in
                 handleError(error)
             }, didRequestValidation: { (reference) -> Void in
@@ -246,11 +252,10 @@ If you choose the `chargeCard` route, we charge cards you send using parameters 
 ```Objective-C
 - (IBAction)charge:(UIButton *)sender {
     // cardParams already fetched from our view or assembled by you
-    
+
     PSTCKTransactionParams transactionParams = [[PSTCKTransactionParams alloc] init];
 
     transactionParams.amount = 1390;
-    transactionParams.metadata  = @"{\"custom_fields\":[{\"display_name\":\"Via\",\"variable_name\":\"via\",\"value\":\"iOS\"}]}";
     transactionParams.email = @"e@ma.il";
 
     // check https://developers.paystack.co/docs/split-payments-overview for details on how these work
@@ -263,7 +268,7 @@ If you choose the `chargeCard` route, we charge cards you send using parameters 
 
     [[PSTCKAPIClient sharedClient] chargeCard:cardParams
                                forTransaction:transactionParams
-                                           on: viewController, 
+                                           on: viewController,
                               didEndWithError:^(NSError *error){
                                                 [self handleError:error];
                                             }
@@ -346,7 +351,7 @@ func verifyCharge(reference: String) {
                 print("There was an error communicating with your payment backend.")
                 // All we did here is log it to the output window
             }
-            
+
         }
     }).resume()
 }
@@ -411,7 +416,7 @@ func createBackendChargeWithToken(token: PSTCKToken, amountinkobo: Int, emailAdd
                 print("There was an error communicating with your payment backend.")
                 // All we did here is log it to the output window
             }
-            
+
         }
     }).resume()
 }
@@ -420,8 +425,8 @@ func createBackendChargeWithToken(token: PSTCKToken, amountinkobo: Int, emailAdd
 ```Objective-C
 // ViewController.m
 
-- (void)createBackendChargeWithToken:(PSTCKToken *)token, 
-                            (NSInt *) amountinkobo, 
+- (void)createBackendChargeWithToken:(PSTCKToken *)token,
+                            (NSInt *) amountinkobo,
                             (NSString *) emailAddress
                            {
     NSURL *url = [NSURL URLWithString:@"https://example.com/token"];
@@ -453,13 +458,13 @@ On the server, you just need to implement an endpoint that will accept the param
 
 ### Step 6 Option 1: Implement verification on your server
 Verify a charge by calling our REST API. An `authorization_code` will be returned once the card has been charged successfully. You can learn more about our API [here](https://developers.paystack.co/docs/getting-started).
- 
+
  **Endpoint:** GET: https://api.paystack.co/transaction/verify
- 
+
  **Documentation:** https://developers.paystack.co/docs/verify-transaction
 
  **Parameters:**
- 
+
  - reference - the transaction reference
 
 **Example**
@@ -473,17 +478,17 @@ Verify a charge by calling our REST API. An `authorization_code` will be returne
 ```
 ### Step 6 Option 2: Implement payment on your server
 Create a charge by calling our REST API. An `authorization_code` will be returned once the _single-use_ token has been charged successfully. You can learn more about our API [here](https://developers.paystack.co/docs/getting-started).
- 
+
  **Endpoint:** POST: https://api.paystack.co/transaction/charge_token
 
  **Documentation:** https://developers.paystack.co/docs/charge-token
 
  **Parameters:**
- 
+
  - token - the token you want to charge (required)
- - reference - unique reference 
+ - reference - unique reference
  - email  - customer's email address (required)
- - amount - Amount in Kobo (required) 
+ - amount - Amount in Kobo (required)
 
 **Example**
 
@@ -503,11 +508,11 @@ list($headers, $body, $code) = $paystack->transaction->chargeToken([
                 'email'=>'customer@email.com',
                 'amount'=>10000 // in kobo
               ]);
-              
+
 // check if authorization code was generated
 if ((intval($code) === 200) && array_key_exists('status', $body) && $body['status']) {
     // body contains Array with data similar to result below
-    $authorization_code = $body['authorization']['authorization_code']; 
+    $authorization_code = $body['authorization']['authorization_code'];
     // save the authorization_code so you may charge in future
 } else {
     // invalid body was returned
@@ -544,4 +549,4 @@ if ((intval($code) === 200) && array_key_exists('status', $body) && $body['statu
 ```
 
 ### Charging Returning Customers
-See details for charging returning customers [here](https://developers.paystack.co/docs/charging-returning-customers). 
+See details for charging returning customers [here](https://developers.paystack.co/docs/charging-returning-customers).

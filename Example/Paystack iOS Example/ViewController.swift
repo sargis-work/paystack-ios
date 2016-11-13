@@ -131,9 +131,20 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
             
             let transactionParams = PSTCKTransactionParams.init();
             // charging 75naira, 80kobo
-            transactionParams.amount = capPrice;
-            transactionParams.metadata  = "{\"custom_fields\":[{\"display_name\":\"Paid Via\",\"variable_name\":\"paid_via\",\"value\":\"iOS SDK\"}]}";
-            transactionParams.email = "support@paystack.com";
+            transactionParams.amount = 244;
+            
+            do {
+                try transactionParams.setMetadataValue("iOS SDK", forKey: "custom_fields");
+                try transactionParams.setCustomFieldValue("iOS SDK", displayedAs: "Another");
+                try transactionParams.setCustomFieldValue("Emi ni", displayedAs: "One else");
+                try transactionParams.setMetadataValue("iOS SDK", forKey: "paid_via");
+            } catch {
+                print(error);
+            }
+            
+            transactionParams.email = "ibrahim@paystack.com";
+            
+            print(transactionParams.description);
 
             // transactionParams.subaccount  = "ACCT_80d907euhish8d";
             // transactionParams.bearer  = "subaccount";
@@ -142,7 +153,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "EEE, dd MMM yyy hh:mm:ss +zzzz"
             transactionParams.reference = "ChargedFromiOSSDK@" + dateFormatter.string(from: Date.init()); // if not supplied, we will give one
-            
+//
             PSTCKAPIClient.shared().chargeCard(cardDetailsForm.cardParams, forTransaction: transactionParams, on: self, didEndWithError: { (error) -> Void in
                     // what should I do if an error occured?
                     print(error)

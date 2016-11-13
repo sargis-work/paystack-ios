@@ -272,7 +272,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
              return;
          } else {
              // This is where we test the status of the request.
-             if([[responseObject status] isEqual:@"1"]){
+             if([[responseObject status] isEqual:@"1"] || [[responseObject status] isEqual:@"success"]){
                  [self.operationQueue addOperationWithBlock:^{
                      successCompletion(responseObject.reference);
                  }];

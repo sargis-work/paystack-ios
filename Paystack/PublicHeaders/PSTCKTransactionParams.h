@@ -6,8 +6,7 @@
 #import <Foundation/Foundation.h>
 #import "PSTCKFormEncodable.h"
 /**
- *  Representation of a user's credit card details. You can assemble these with information that your user enters and
- *  then create Paystack tokens with them using an PSTCKAPIClient. @see https://paystack.com/docs/api#cards
+ *  Representation of the transaction to perform on a card
  */
 @interface PSTCKTransactionParams : NSObject<PSTCKFormEncodable>
 
@@ -17,6 +16,13 @@
 @property (nonatomic, copy, nullable) NSString *subaccount;
 @property (nonatomic) NSInteger transaction_charge;
 @property (nonatomic, copy, nullable) NSString *bearer;
-@property (nonatomic, copy, nullable) NSString *metadata;
+@property (nonatomic, readonly, nullable) NSString *metadata;
 
+- (nullable PSTCKTransactionParams *) setMetadataValue:(nonnull NSString*)value
+                   forKey:(nonnull NSString*)key
+                    error:(NSError * _Nullable __autoreleasing * _Nonnull) error;
+
+- (nullable PSTCKTransactionParams *) setCustomFieldValue:(nonnull NSString*)value
+                 displayedAs:(nonnull NSString*)display_name
+                       error:(NSError * _Nullable __autoreleasing * _Nonnull) error;
 @end

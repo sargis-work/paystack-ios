@@ -97,6 +97,8 @@
              @"transaction_charge": @"transaction_charge",
              @"bearer": @"bearer",
              @"metadata": @"metadata",
+             @"plan": @"plan",
+             @"currency": @"currency",
              };
 }
 

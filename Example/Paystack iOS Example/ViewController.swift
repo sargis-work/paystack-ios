@@ -147,7 +147,12 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
             // transactionParams.subaccount  = "ACCT_80d907euhish8d";
             // transactionParams.bearer  = "subaccount";
             // transactionParams.transaction_charge  = 280;
-
+            
+            /* MULTI CURRENCY SUPPORT */
+            // transactionParams.currency  = "NGN";
+            /* SUBSCRIPTION SUPPORT */
+            // transactionParams.plan  = "PLN_sjkhdow898euj";
+            
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "EEE, dd MMM yyy hh:mm:ss +zzzz"
             transactionParams.reference = "ChargedFromiOSSDK@" + dateFormatter.string(from: Date.init()); // if not supplied, we will give one

@@ -1,3 +1,7 @@
+=== 2.1.1 2016-12-08
+
+* Hotfix Add TransactionParams to PaystackIOSStatic's headers
+
 === 2.1.1 2016-11-13
 
 * Add plan and currency

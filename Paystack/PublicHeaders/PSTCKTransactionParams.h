@@ -17,8 +17,8 @@
 @property (nonatomic) NSInteger transaction_charge;
 @property (nonatomic, copy, nullable) NSString *bearer;
 @property (nonatomic, readonly, nullable) NSString *metadata;
-@property (nonatomic, readonly, nullable) NSString *plan;
-@property (nonatomic, readonly, nullable) NSString *currency;
+@property (nonatomic, nullable) NSString *plan;
+@property (nonatomic, nullable) NSString *currency;
 
 - (nullable PSTCKTransactionParams *) setMetadataValue:(nonnull NSString*)value
                    forKey:(nonnull NSString*)key

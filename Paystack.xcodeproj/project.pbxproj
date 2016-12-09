@@ -254,8 +254,8 @@
 		08A5723F1DF92EF30045E184 /* PSTCKCategoryLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 04FCFA181BD59A8C00297732 /* PSTCKCategoryLoader.m */; };
 		08A572401DF92F1D0045E184 /* PSTCKCategoryLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 04FCFA171BD59A8C00297732 /* PSTCKCategoryLoader.h */; };
 		08A572411DF92F3F0045E184 /* PSTCKTransactionParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2F31DBB9E7100C2741B /* PSTCKTransactionParams.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		08A572421DF92F3F0045E184 /* PSTCKValidationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2FC1DBBA3F600C2741B /* PSTCKValidationParams.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		08A572431DF92F3F0045E184 /* PSTCKTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2F21DBB9E7100C2741B /* PSTCKTransaction.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		08A572421DF92F3F0045E184 /* PSTCKValidationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2FC1DBBA3F600C2741B /* PSTCKValidationParams.h */; };
+		08A572431DF92F3F0045E184 /* PSTCKTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2F21DBB9E7100C2741B /* PSTCKTransaction.h */; };
 		101987811CA47DAC0089A68A /* PSTCKRSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB11C8135D800EEF7CF /* PSTCKRSA.m */; };
 		10500AB21C8135D800EEF7CF /* PSTCKRSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB11C8135D800EEF7CF /* PSTCKRSA.m */; };
 		10500AB51C8136EF00EEF7CF /* PSTCKRSATest.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB41C8136EF00EEF7CF /* PSTCKRSATest.m */; };
@@ -744,11 +744,11 @@
 				0438EF491B74183100D506CC /* PSTCKCardBrand.h in Headers */,
 				10500ABD1C8215F400EEF7CF /* PSTCKRSA.h in Headers */,
 				08A572411DF92F3F0045E184 /* PSTCKTransactionParams.h in Headers */,
-				08A572421DF92F3F0045E184 /* PSTCKValidationParams.h in Headers */,
-				08A572431DF92F3F0045E184 /* PSTCKTransaction.h in Headers */,
 				049952D61BCF14930088C703 /* PSTCKAPIPostRequest.h in Headers */,
 				04F213331BCEAB61001D6F22 /* PSTCKFormEncodable.h in Headers */,
 				049E84EC1A605EF0000B66CD /* PaystackError.h in Headers */,
+				08A572421DF92F3F0045E184 /* PSTCKValidationParams.h in Headers */,
+				08A572431DF92F3F0045E184 /* PSTCKTransaction.h in Headers */,
 				C1718D581C3B2E60002A7CB3 /* UIImage+Paystack.h in Headers */,
 				04FCFA191BD59A8C00297732 /* PSTCKCategoryLoader.h in Headers */,
 				049952D41BCF13DD0088C703 /* PSTCKAPIClient+Private.h in Headers */,

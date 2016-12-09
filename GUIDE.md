@@ -268,7 +268,7 @@ If you choose the `chargeCard` route, we charge cards you send using parameters 
 
     [[PSTCKAPIClient sharedClient] chargeCard:cardParams
                                forTransaction:transactionParams
-                                           on: viewController,
+                             onViewController: viewController,
                               didEndWithError:^(NSError *error){
                                                 [self handleError:error];
                                             }

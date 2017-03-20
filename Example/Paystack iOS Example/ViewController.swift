@@ -160,8 +160,10 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
             PSTCKAPIClient.shared().chargeCard(cardDetailsForm.cardParams, forTransaction: transactionParams, on: self, didEndWithError: { (error) -> Void in
                     // what should I do if an error occured?
                     print(error)
-                    if let errorString = (error._userInfo as! NSDictionary?)?.description {
-                        self.showOkayableMessage("An error occured", message: errorString)
+                    if let errorDict = (error._userInfo as! NSDictionary?){
+                        if let errorString = errorDict.value(forKeyPath: "com.paystack.lib:ErrorMessageKey") as! String? {
+                            self.showOkayableMessage("An error occured", message: errorString)
+                        }
                     }
                     self.chargeCardButton.isEnabled = true;
                 }, didRequestValidation: { (reference) -> Void in
@@ -226,3 +228,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     
 }
 
+extension Error {
+    var code: Int { return (self as NSError).code }
+    var domain: String { return (self as NSError).domain }
+}

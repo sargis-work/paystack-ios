@@ -11,6 +11,7 @@
 
 + (void)startWithAPIClient:(PSTCKAPIClient *)apiClient
                   endpoint:(NSString *)endpoint
+                    method:(NSString *)httpMethod
                   postData:(NSData *)postData
                 serializer:(ResponseType)serializer
                 completion:(void (^)(ResponseType object, NSError *error))completion;

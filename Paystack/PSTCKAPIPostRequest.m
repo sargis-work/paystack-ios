@@ -12,13 +12,14 @@
 
 + (void)startWithAPIClient:(PSTCKAPIClient *)apiClient
                   endpoint:(NSString *)endpoint
+                    method:(NSString *)httpMethod
                   postData:(NSData *)postData
                 serializer:(id<PSTCKAPIResponseDecodable>)serializer
                 completion:(void (^)(id<PSTCKAPIResponseDecodable>, NSError *))completion {
     
     NSURL *url = [apiClient.apiURL URLByAppendingPathComponent:endpoint];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    request.HTTPMethod = @"POST";
+    request.HTTPMethod = httpMethod; // @"POST"
     request.HTTPBody = postData;
 //    NSLog(@"%@",postData);
     

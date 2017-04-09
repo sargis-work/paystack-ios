@@ -9,6 +9,7 @@
 #endif
 
 static NSString *const __nonnull PSTCKSDKVersion = @"3.0.0";
+static NSString *const __nonnull PSTCKSDKBuild = @"11";
 
 @class PSTCKCard, PSTCKCardParams, PSTCKTransactionParams, PSTCKToken;
 

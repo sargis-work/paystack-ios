@@ -34,11 +34,12 @@
 #define FAUXPAS_IGNORED_IN_METHOD(...)
 
 static NSString *const apiURLBase = @"standard.paystack.co";
-static NSString *const tokenEndpoint = @"bosco/createmobiletoken";
 static NSString *const chargeEndpoint = @"charge/mobile_charge";
 static NSString *const validateEndpoint = @"charge/validate";
+static NSString *const requeryEndpoint = @"charge/requery/";
 static NSString *const paystackAPIVersion = @"2016-10-22";
-static NSString *PSTCKDefaultPublishableKey;
+static NSString *PSTCKDefaultPublicKey;
+static Boolean PROCESSING = false;
 
 @implementation Paystack
 
@@ -47,12 +48,12 @@ static NSString *PSTCKDefaultPublishableKey;
     return nil;
 }
 
-+ (void)setDefaultPublishableKey:(NSString *)publishableKey {
-    PSTCKDefaultPublishableKey = publishableKey;
++ (void)setDefaultPublicKey:(NSString *)publicKey {
+    PSTCKDefaultPublicKey = publicKey;
 }
 
-+ (NSString *)defaultPublishableKey {
-    return PSTCKDefaultPublishableKey;
++ (NSString *)defaultPublicKey {
+    return PSTCKDefaultPublicKey;
 }
 
 @end
@@ -82,18 +83,18 @@ static NSString *PSTCKDefaultPublishableKey;
 }
 
 - (instancetype)init {
-    return [self initWithPublishableKey:[Paystack defaultPublishableKey]];
+    return [self initWithPublicKey:[Paystack defaultPublicKey]];
 }
 
-- (instancetype)initWithPublishableKey:(NSString *)publishableKey {
+- (instancetype)initWithPublicKey:(NSString *)publicKey {
     self = [super init];
     if (self) {
-        [self.class validateKey:publishableKey];
+        [self.class validateKey:publicKey];
         _apiURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@", apiURLBase]];
-        _publishableKey = [publishableKey copy];
+        _publicKey = [publicKey copy];
         _operationQueue = [NSOperationQueue mainQueue];
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-        NSString *auth = [@"Bearer " stringByAppendingString:self.publishableKey];
+        NSString *auth = [@"Bearer " stringByAppendingString:self.publicKey];
         config.HTTPAdditionalHeaders = @{
                                          @"X-Paystack-User-Agent": [self.class paystackUserAgentDetails],
                                          @"Paystack-Version": paystackAPIVersion,
@@ -111,28 +112,18 @@ static NSString *PSTCKDefaultPublishableKey;
     _operationQueue = operationQueue;
 }
 
-- (void)createTokenWithData:(NSData *)data completion:(PSTCKTokenCompletionBlock)completion {
-    NSCAssert(data != nil, @"'data' is required to create a token");
-    NSCAssert(completion != nil, @"'completion' is required to use the token that is created");
-    [PSTCKAPIPostRequest<PSTCKToken *> startWithAPIClient:self
-                                                 endpoint:tokenEndpoint
-                                                 postData:data
-                                               serializer:[PSTCKToken new]
-                                               completion:completion];
-}
-
 #pragma mark - private helpers
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
-+ (void)validateKey:(NSString *)publishableKey {
-    NSCAssert(publishableKey != nil && ![publishableKey isEqualToString:@""],
-              @"You must use a valid publishable key to create a token.");
-    BOOL secretKey = [publishableKey hasPrefix:@"sk_"];
++ (void)validateKey:(NSString *)publicKey {
+    NSCAssert(publicKey != nil && ![publicKey isEqualToString:@""],
+              @"You must use a valid public key to create a token.");
+    BOOL secretKey = [publicKey hasPrefix:@"sk_"];
     NSCAssert(!secretKey,
-              @"You are using a secret key to create a token, instead of the publishable one.");
+              @"You are using a secret key to create a token, instead of the public one.");
 #ifndef DEBUG
-    if ([publishableKey.lowercaseString hasPrefix:@"pk_test"]) {
+    if ([publicKey.lowercaseString hasPrefix:@"pk_test"]) {
         FAUXPAS_IGNORED_IN_METHOD(NSLogUsed);
         NSLog(@"⚠️ Warning! You're building your app in a non-debug configuration, but appear to be using your Paystack test key. Make sure not to submit to "
               @"the App Store with your test keys!⚠️");
@@ -187,15 +178,15 @@ static NSString *PSTCKDefaultPublishableKey;
 + (void)initializeIfNeeded {
     Class fabric = NSClassFromString(@"Fabric");
     if (fabric) {
-        // The app must be using Fabric, as it exists at runtime. We fetch our default publishable key from Fabric.
+        // The app must be using Fabric, as it exists at runtime. We fetch our default public key from Fabric.
         NSDictionary *fabricConfiguration = [fabric configurationDictionaryForKitClass:[PSTCKAPIClient class]];
-        NSString *publishableKey = fabricConfiguration[@"publishable"];
-        if (!publishableKey) {
-            NSLog(@"Configuration dictionary returned by Fabric was nil, or doesn't have publishableKey. Can't initialize Paystack.");
+        NSString *publicKey = fabricConfiguration[@"public"];
+        if (!publicKey) {
+            NSLog(@"Configuration dictionary returned by Fabric was nil, or doesn't have publicKey. Can't initialize Paystack.");
             return;
         }
-        [self validateKey:publishableKey];
-        [Paystack setDefaultPublishableKey:publishableKey];
+        [self validateKey:publicKey];
+        [Paystack setDefaultPublicKey:publicKey];
     } else {
         NSCAssert(fabric, @"initializeIfNeeded method called from a project that doesn't have Fabric.");
     }
@@ -209,17 +200,28 @@ typedef NS_ENUM(NSInteger, PSTCKChargeStage) {
     PSTCKChargeStageNoHandle,
     PSTCKChargeStagePlusHandle,
     PSTCKChargeStageValidateToken,
+    PSTCKChargeStageRequery,
+    PSTCKChargeStageAuthorize,
 };
+
+
+@interface PSTCKServerTransaction : NSObject
+
+@property (nonatomic, readwrite, nullable) NSString *id;
+@property (nonatomic, readwrite, nullable) NSString *reference;
+
+@end
+@implementation PSTCKServerTransaction
+- (instancetype)init {
+    _id = nil;
+    _reference = nil;
+    
+    return self;
+}
+@end
 
 #pragma mark - Credit Cards
 @implementation PSTCKAPIClient (CreditCards)
-
-- (void)createTokenWithCard:(PSTCKCard *)card completion:(PSTCKTokenCompletionBlock)completion {
-    NSData *data = [PSTCKFormEncoder formEncodedDataForObject:card usePublicKey:[self publishableKey]];
-    //       NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card];
-    
-    [self createTokenWithData:data completion:completion];
-}
 
 - (void)chargeCard:(nonnull PSTCKCardParams *)card
     forTransaction:(nonnull PSTCKTransactionParams *)transaction
@@ -231,17 +233,20 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     NSCAssert(errorCompletion != nil, @"'errorCompletion' is required to handle any errors encountered while charging");
     NSCAssert(viewController != nil, @"'viewController' is required to show any alerts that may be needed");
     NSCAssert(transaction != nil, @"'transaction' is required so we may know who to charge");
-    // we really don't mind if beforeValidate is not provided
-    // NSCAssert(beforeValidateCompletion != nil, @"'beforeValidateCompletion' is not required.");
     NSCAssert(successCompletion != nil, @"'successCompletion' is required so you can continue the process after charge succeeds. Remember to verify on server before giving value.");
-    
+    if(PROCESSING){
+        [self didEndWithProcessingError:errorCompletion];
+        return;
+    }
+    PROCESSING = true;
     NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card
                                                andTransaction:transaction
-                                                 usePublicKey:[self publishableKey]];
-    [self makeChargeRequest:data atStage:PSTCKChargeStageNoHandle chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestValidation:beforeValidateCompletion didTransactionSuccess:successCompletion];
+                                                 usePublicKey:[self publicKey]];
+    [self makeChargeRequest:data forServerTransaction:[PSTCKServerTransaction new] atStage:PSTCKChargeStageNoHandle chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestValidation:beforeValidateCompletion didTransactionSuccess:successCompletion];
 }
 
 - (void) makeChargeRequest:(NSData *)data
+      forServerTransaction:(nonnull PSTCKServerTransaction *)serverTransaction
                    atStage:(PSTCKChargeStage) stage
                 chargeCard:(nonnull PSTCKCardParams *)card
             forTransaction:(nonnull PSTCKTransactionParams *)transaction
@@ -259,6 +264,12 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
         case PSTCKChargeStageValidateToken:
             endpoint = validateEndpoint;
             break;
+        case PSTCKChargeStageRequery:
+            endpoint = requeryEndpoint;
+            break;
+        case PSTCKChargeStageAuthorize:
+            // No endpoint required here
+            break;
     }
     
     [PSTCKAPIPostRequest<PSTCKTransaction *>
@@ -267,6 +278,12 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
      postData:data
      serializer:[PSTCKTransaction new]
      completion:^(PSTCKTransaction * _Nullable responseObject, NSError * _Nullable error){
+         if([responseObject trans] != nil){
+             serverTransaction.id = [responseObject trans];
+         }
+         if([responseObject reference] != nil){
+             serverTransaction.reference = [responseObject reference];
+         }
          if(error != nil){
              [self didEndWithError:error completion:errorCompletion];
              return;
@@ -302,8 +319,16 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                                      NSData *hdata = [PSTCKFormEncoder formEncryptedDataForCard:card
                                                                                                  andTransaction:transaction
                                                                                                       andHandle:[PSTCKRSA encryptRSA:handle]
-                                                                                                   usePublicKey:[self publishableKey]];
-                                                     [self makeChargeRequest:hdata atStage:PSTCKChargeStagePlusHandle chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestValidation:beforeValidateCompletion didTransactionSuccess:successCompletion];
+                                                                                                   usePublicKey:[self publicKey]];
+                                                     [self makeChargeRequest:hdata
+                                                        forServerTransaction:serverTransaction
+                                                                     atStage:PSTCKChargeStagePlusHandle
+                                                                  chargeCard:card
+                                                              forTransaction:transaction
+                                                            onViewController:viewController
+                                                             didEndWithError:errorCompletion
+                                                        didRequestValidation:beforeValidateCompletion
+                                                       didTransactionSuccess:successCompletion];
                                                      
                                                  }];
                  
@@ -334,8 +359,9 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                                        validateParams.trans = responseObject.trans;
                                                        validateParams.token = provided;
                                                        NSData *vdata = [PSTCKFormEncoder formEncodedDataForObject:validateParams
-                                                                                                     usePublicKey:[self publishableKey]];
+                                                                                                     usePublicKey:[self publicKey]];
                                                        [self makeChargeRequest:vdata
+                                                          forServerTransaction:serverTransaction
                                                                        atStage:PSTCKChargeStageValidateToken
                                                                     chargeCard:card
                                                                 forTransaction:transaction
@@ -362,6 +388,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 
 - (void)didEndWithError:(NSError *)error
              completion:(PSTCKErrorCompletionBlock )completion{
+    PROCESSING=false;
     [self.operationQueue addOperationWithBlock:^{
         completion(error);
     }];
@@ -373,10 +400,16 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                NSLocalizedDescriptionKey: PSTCKUnexpectedError,
                                PSTCKErrorMessageKey: errorString
                                };
-    [self.operationQueue addOperationWithBlock:^{
-        completion([[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo]);
-    }];
-    
+    PROCESSING=false;
+    [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo] completion:completion];
+}
+
+- (void)didEndWithProcessingError:(PSTCKErrorCompletionBlock )completion{
+    NSDictionary *userInfo = @{
+                               NSLocalizedDescriptionKey: PSTCKCardErrorProcessingTransactionMessage,
+                               PSTCKErrorMessageKey: PSTCKCardErrorProcessingTransactionMessage
+                               };
+    [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKConflictError userInfo:userInfo] completion:completion];
 }
 
 @end

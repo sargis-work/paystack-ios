@@ -27,6 +27,7 @@
     if (self) {
         _additionalAPIParameters = @{};
         _transaction_charge = -1;
+        _amount = -1;
         _metadataDict = [[NSMutableDictionary alloc] init];
         _customfieldArray = [[NSMutableArray alloc] init];
     }
@@ -90,6 +91,7 @@
 
 + (NSDictionary *)propertyNamesToFormFieldNamesMapping {
     return @{
+             @"access_code": @"access_code",
              @"email": @"email",
              @"amount": @"amount",
              @"reference": @"reference",

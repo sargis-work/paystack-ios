@@ -22,6 +22,8 @@
 @property (nonatomic, readonly, nonnull) NSString *status;
 @property (nonatomic, readonly, nonnull) NSString *trans;
 @property (nonatomic, readonly, nonnull) NSString *redirecturl;
+@property (nonatomic, readonly, nonnull) NSString *auth;
+@property (nonatomic, readonly, nonnull) NSString *otpmessage;
 
 
 @end

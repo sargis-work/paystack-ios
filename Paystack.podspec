@@ -1,11 +1,9 @@
 Pod::Spec.new do |s|
   s.name                           = 'Paystack'
-  s.version                        = '2.2.0'
+  s.version                        = '3.0.0'
   s.summary                        = 'Paystack is a web-based API helping African Businesses accept payments online.'
   s.description                    = <<-DESC
    Paystack makes it easy for African Businesses to accept Mastercard, Visa and Verve cards from anyone, anywhere in the world.
-
-   This is the Paystack SDK for iOS. Collect Card details on iOS and get a token. Shoulders the burden of PCI compliance by helping you avoid the need to send card data directly to your server. Instead you send to Paystack's server and get a token which you can charge later in your server-side code.
   DESC
 
   s.license                        = { :type => 'MIT', :file => 'LICENSE' }
@@ -14,10 +12,8 @@ Pod::Spec.new do |s|
   s.source                         = { :git => 'https://github.com/paystackhq/paystack-ios.git', :tag => "v#{s.version}" }
   s.ios.frameworks                 = 'Foundation', 'Security'
   s.ios.weak_frameworks            = 'PassKit', 'AddressBook'
-  s.osx.frameworks                 = 'Foundation', 'Security', 'WebKit'
   s.requires_arc                   = true
   s.ios.deployment_target          = '8.0'
-  s.osx.deployment_target          = '10.9'
   s.default_subspecs               = 'Core'
 
   s.subspec 'Core' do |ss|

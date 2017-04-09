@@ -16,10 +16,10 @@
     XCTAssertEqualObjects([PSTCKAPIClient sharedClient], [PSTCKAPIClient sharedClient]);
 }
 
-- (void)testPublishableKey {
-    [Paystack setDefaultPublishableKey:@"test"];
+- (void)testPublicKey {
+    [Paystack setDefaultPublicKey:@"test"];
     PSTCKAPIClient *client = [PSTCKAPIClient sharedClient];
-    XCTAssertEqualObjects(client.publishableKey, @"test");
+    XCTAssertEqualObjects(client.publicKey, @"test");
 }
 
 @end

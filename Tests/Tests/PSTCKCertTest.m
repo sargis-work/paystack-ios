@@ -9,7 +9,7 @@
 #import "PSTCKAPIClient+Private.h"
 #import "Paystack.h"
 
-NSString *const PSTCKExamplePublishableKey = @"bad_key";
+NSString *const PSTCKExamplePublicKey = @"bad_key";
 
 @interface PSTCKAPIClient (Failure)
 @property (nonatomic, readwrite) NSURL *apiURL;
@@ -22,7 +22,7 @@ NSString *const PSTCKExamplePublishableKey = @"bad_key";
 
 - (void)testNoError {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Token creation"];
-    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublishableKey:PSTCKExamplePublishableKey];
+    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublicKey:PSTCKExamplePublicKey];
     [client createTokenWithData:[NSData new]
                      completion:^(PSTCKToken *token, NSError *error) {
                          [expectation fulfill];
@@ -55,7 +55,7 @@ NSString *const PSTCKExamplePublishableKey = @"bad_key";
 // helper method
 - (void)createTokenWithBaseURL:(NSURL *)baseURL completion:(PSTCKTokenCompletionBlock)completion {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Token creation"];
-    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublishableKey:PSTCKExamplePublishableKey];
+    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublicKey:PSTCKExamplePublicKey];
     client.apiURL = baseURL;
     [client createTokenWithData:[NSData new]
                      completion:^(PSTCKToken *token, NSError *error) {

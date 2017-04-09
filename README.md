@@ -31,7 +31,7 @@ To build and run the example apps, open `Paystack.xcworkspace` and choose the ap
 
 ### Getting started with the Simple iOS Example App
 
-Note: The example app requires Xcode 7.0 to build and run.
+Note: The example app requires Xcode 8.0 to build and run.
 
 Before you can run the app, you need to provide it with your Paystack public key.
 
@@ -40,7 +40,7 @@ Before you can run the app, you need to provide it with your Paystack public key
 
 #### Additional Setup if you will be testing chargeToken
 
-1. Head to https://github.com/paystackhq/sample-charge-token-backend and click "Deploy to Heroku" (you may have to sign up for a Heroku account as part of this process). Provide your Paystack test secret key for the `PAYSTACK_TEST_SECRET_KEY` field under 'Env'. Click "Deploy for Free".
+1. Head to https://github.com/paystackhq/sample-charge-card-backend and click "Deploy to Heroku" (you may have to sign up for a Heroku account as part of this process). Provide your Paystack test secret key for the `PAYSTACK_TEST_SECRET_KEY` field under 'Env'. Click "Deploy for Free".
 2. Replace the `backendChargeURLString` variable in the example iOS app with the app URL Heroku provides you with (e.g. "https://my-example-app.herokuapp.com")
 
 ### Making a test Charge

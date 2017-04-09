@@ -27,7 +27,7 @@
     card.addressCountry = @"USA";
     card.addressZip = @"10002";
 
-    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublishableKey:@"pk_test_vOo1umqsYxSrP5UXfOeL3ecm"];
+    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublicKey:@"pk_test_vOo1umqsYxSrP5UXfOeL3ecm"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Card creation"];
 
@@ -54,7 +54,7 @@
     card.expMonth = 6;
     card.expYear = 2018;
 
-    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublishableKey:@"pk_test_vOo1umqsYxSrP5UXfOeL3ecm"];
+    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublicKey:@"pk_test_vOo1umqsYxSrP5UXfOeL3ecm"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Card creation"];
 
@@ -78,7 +78,7 @@
     card.expMonth = 6;
     card.expYear = 2018;
 
-    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublishableKey:@"not_a_valid_key_asdf"];
+    PSTCKAPIClient *client = [[PSTCKAPIClient alloc] initWithPublicKey:@"not_a_valid_key_asdf"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Card failure"];
     [client createTokenWithCard:card

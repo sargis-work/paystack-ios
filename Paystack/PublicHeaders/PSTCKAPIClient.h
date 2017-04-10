@@ -19,8 +19,7 @@ static NSString *const __nonnull PSTCKSDKBuild = @"11";
  *  @param token The Paystack token from the response. Will be nil if an error occurs. @see PSTCKToken
  *  @param error The error returned from the response, or nil in one occurs. @see PaystackError.h for possible values.
  */
-typedef void (^PSTCKTokenCompletionBlock)(PSTCKToken * __nullable token, NSError * __nullable error);
-typedef void (^PSTCKErrorCompletionBlock)(NSError * __nonnull error);
+typedef void (^PSTCKErrorCompletionBlock)(NSError * __nonnull error, NSString * __nullable reference);
 typedef void (^PSTCKTransactionCompletionBlock)(NSString * __nonnull reference);
 
 /**

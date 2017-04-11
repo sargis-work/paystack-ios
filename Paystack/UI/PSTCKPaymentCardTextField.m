@@ -25,6 +25,9 @@
 
 @property(nonatomic, readwrite, weak)PSTCKFormTextField *expirationField;
 
+@property(nonatomic, readwrite, weak)UIButton *bumpToExpField;
+
+
 @property(nonatomic, readwrite, weak)PSTCKFormTextField *cvcField;
 
 @property(nonatomic, readwrite, strong)PSTCKPaymentCardTextFieldViewModel *viewModel;
@@ -32,6 +35,7 @@
 @property(nonatomic, readwrite, weak)UITextField *selectedField;
 
 @property(nonatomic, assign)BOOL numberFieldShrunk;
+@property(nonatomic, assign)BOOL bumped;
 
 @end
 
@@ -99,7 +103,16 @@ CGFloat const PSTCKPaymentCardTextFieldDefaultPadding = 10;
     expirationField.alpha = 0;
     self.expirationField = expirationField;
     self.expirationPlaceholder = @"MM/YY";
-        
+    
+    UIButton *bumpToExpField = [UIButton buttonWithType:UIButtonTypeCustom];
+    [bumpToExpField addTarget:self action:@selector(tappedBumpButton:) forControlEvents:UIControlEventTouchUpInside];
+    [bumpToExpField setTitle: @">" forState: UIControlStateNormal];
+    [bumpToExpField setTitleColor:self.textColor forState:UIControlStateNormal];
+    bumpToExpField.hidden = YES;
+    self.bumpToExpField.alpha = 50;
+    self.bumpToExpField = bumpToExpField;
+    self.bumped = NO;
+    
     PSTCKFormTextField *cvcField = [self buildTextField];
     cvcField.tag = PSTCKCardFieldTypeCVC;
     cvcField.alpha = 0;
@@ -116,6 +129,16 @@ CGFloat const PSTCKPaymentCardTextFieldDefaultPadding = 10;
     [self.fieldsView addSubview:expirationField];
     [self.fieldsView addSubview:numberField];
     [self addSubview:brandImageView];
+    [self addSubview:bumpToExpField];
+}
+
+- (void)tappedBumpButton:(id)bumpButton {
+#pragma unused(bumpButton)
+    self.bumped = YES;
+    self.bumpToExpField.hidden = YES;
+    if([self.viewModel validationStateForField:PSTCKCardFieldTypeNumber]==PSTCKCardValidationStateValid){
+        [self selectNextField];
+    }
 }
 
 - (PSTCKPaymentCardTextFieldViewModel *)viewModel {
@@ -334,6 +357,18 @@ CGFloat const PSTCKPaymentCardTextFieldDefaultPadding = 10;
 
 - (PSTCKFormTextField *)nextField {
     if (self.selectedField == self.numberField) {
+        Boolean stay = NO;
+        if(self.viewModel.brand==PSTCKCardBrandVerve){
+            stay = (self.numberField.text.length < 19);
+            if(stay){
+                stay = !self.bumped;
+            }
+            self.bumpToExpField.hidden = !stay;
+        }
+        if(stay){
+            return self.numberField;
+        }
+        self.bumped = NO;
         if ([self.viewModel validationStateForField:self.expirationField.tag] == PSTCKCardValidationStateValid) {
             return self.cvcField;
         }
@@ -479,6 +514,10 @@ CGFloat const PSTCKPaymentCardTextFieldDefaultPadding = 10;
     return CGRectMake(PSTCKPaymentCardTextFieldDefaultPadding, 2, self.brandImageView.image.size.width, bounds.size.height - 2);
 }
 
+- (CGRect)bumpRectForBounds:(CGRect)bounds {
+    return CGRectMake(CGRectGetWidth(bounds) - [self widthForText:@"  >  "] - (PSTCKPaymentCardTextFieldDefaultPadding / 2)  , 2, [self widthForText:@"  >  "], bounds.size.height - 2);
+}
+
 - (CGRect)fieldsRectForBounds:(CGRect)bounds {
     CGRect brandImageRect = [self brandImageRectForBounds:bounds];
     return CGRectMake(CGRectGetMaxX(brandImageRect), 0, CGRectGetWidth(bounds) - CGRectGetMaxX(brandImageRect), CGRectGetHeight(bounds));
@@ -517,6 +556,7 @@ CGFloat const PSTCKPaymentCardTextFieldDefaultPadding = 10;
 
     CGRect bounds = self.bounds;
 
+    self.bumpToExpField.frame = [self bumpRectForBounds:bounds];
     self.brandImageView.frame = [self brandImageRectForBounds:bounds];
     self.fieldsView.frame = [self fieldsRectForBounds:bounds];
     self.numberField.frame = [self numberFieldRectForBounds:bounds];

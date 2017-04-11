@@ -317,134 +317,146 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
      postData:data
      serializer:[PSTCKTransaction new]
      completion:^(PSTCKTransaction * _Nullable responseObject, NSError * _Nullable error){
-         if([responseObject trans] != nil){
+         if((responseObject != nil) && ([responseObject trans] != nil)){
              self.serverTransaction.id = [responseObject trans];
          }
-         if([responseObject reference] != nil){
+         if((responseObject != nil) && ([responseObject reference] != nil)){
              self.serverTransaction.reference = [responseObject reference];
          }
          if(error != nil){
              [self didEndWithError:error];
              return;
-         } else {
-             // This is where we test the status of the request.
-             if([[responseObject message].lowercaseString isEqual:@"invalid data sent"] && self.INVALID_DATA_SENT_RETRIES<3){
-                 self.INVALID_DATA_SENT_RETRIES = self.INVALID_DATA_SENT_RETRIES+1;
-                 [self makeChargeRequest:data
-                                 atStage:stage];
-                 return;
-             } else if([[responseObject status] isEqual:@"1"] || [[responseObject status] isEqual:@"success"]){
-                 [self didEndSuccessfully];
-                 return;
-             } else if([[responseObject status] isEqual:@"2"] || [[responseObject auth].lowercaseString isEqual:@"pin"]){
-                 // will request PIN now
-                 // show PIN dialog
-                 UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Enter CARD PIN"
-                                                                                message:@"To confirm that you are the owner of this card please enter your card PIN"
-                                                                         preferredStyle:UIAlertControllerStyleAlert];
-                 
-                 UIAlertAction* defaultAction = [UIAlertAction
-                                                 actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction * action) {
-                                                     [action isEnabled]; // Just to avoid Unused error
-                                                     NSString *provided = ((UITextField *)[alert.textFields objectAtIndex:0]).text;
-                                                     NSString *handle = [PSTCKCardValidator sanitizedNumericStringForString:provided];
-                                                     if(handle == nil ||
-                                                        [handle length]!=4 ||
-                                                        ([provided length] != [handle length])){
-                                                         [self didEndWithErrorMessage:@"Invalid PIN provided. Expected exactly 4 digits."];
-                                                         return;
-                                                     }
-                                                     NSData *hdata = [PSTCKFormEncoder formEncryptedDataForCard:self.card
-                                                                                                 andTransaction:self.transaction
-                                                                                                      andHandle:[PSTCKRSA encryptRSA:handle]
-                                                                                                   usePublicKey:[self publicKey]
-                                                                                                   onThisDevice:[self.class device_id]];
-                                                     [self makeChargeRequest:hdata
-                                                                     atStage:PSTCKChargeStagePlusHandle];
-                                                     
-                                                 }];
-                 
-                 [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                     textField.placeholder = @"****";
-                     textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-                     textField.secureTextEntry = YES;
-                 }];
-                 
-                 [alert addAction:defaultAction];
-                 [self.viewController presentViewController:alert animated:YES completion:nil];
-                 return;
-             } else if([self.serverTransaction id] != nil){
-                 if([[responseObject auth].lowercaseString isEqual:@"3ds"] && [self validUrl:[responseObject otpmessage]]){
-                     [self.operationQueue addOperationWithBlock:^{
-                         self.beforeValidateCompletion(responseObject.reference);
-                     }];
-                     PSTCKAuthViewController* authorizer = [[[PSTCKAuthViewController alloc] init]
-                                                            initWithURL:[NSURL URLWithString:[responseObject otpmessage]]
-                                                            handler:^{
-                                                                [self.viewController dismissViewControllerAnimated:YES completion:nil];
-                                                                [self makeChargeRequest:nil
-                                                                                atStage:PSTCKChargeStageRequery];
-                                                            }];
-                     UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:authorizer];
-                     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                         nc.modalPresentationStyle = UIModalPresentationFormSheet;
-                     }
-
-                     [self.viewController presentViewController:nc animated:YES completion:nil];
-                     return;
-                 } else if([[responseObject status] isEqual:@"3"] || ([[responseObject auth].lowercaseString isEqual:@"otp"] && [responseObject otpmessage] != nil)){
-                     [self.operationQueue addOperationWithBlock:^{
-                         self.beforeValidateCompletion(self.serverTransaction.reference);
-                     }];
-                     // Will request otp now
-                     // show otp dialog
-                     UIAlertController* tkalert = [UIAlertController alertControllerWithTitle:@"Enter OTP"
-                                                                                      message:responseObject.message
-                                                                               preferredStyle:UIAlertControllerStyleAlert];
-                     
-                     UIAlertAction* tkdefaultAction = [UIAlertAction
-                                                       actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction * action) {
-                                                           [action isEnabled]; // Just to avoid Unused error
-                                                           NSString *provided = ((UITextField *)[tkalert.textFields objectAtIndex:0]).text;
-                                                           PSTCKValidationParams *validateParams = [PSTCKValidationParams alloc];
-                                                           validateParams.trans = responseObject.trans;
-                                                           validateParams.token = provided;
-                                                           NSData *vdata = [PSTCKFormEncoder formEncodedDataForObject:validateParams
-                                                                                                         usePublicKey:[self publicKey]
-                                                                                                         onThisDevice:[self.class device_id]];
-                                                           [self makeChargeRequest:vdata
-                                                                           atStage:PSTCKChargeStageValidateToken];
-                                                           
-                                                       }];
-                     
-                     [tkalert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                         textField.placeholder = @"OTP";
-                         textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-                     }];
-                     [tkalert addAction:tkdefaultAction];
-                     [self.viewController presentViewController:tkalert animated:YES completion:nil];
-                     return;
-                 } else if([[responseObject status].lowercaseString isEqual:@"requery"]) {
-                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),
-                                    dispatch_get_main_queue(), ^{
-                                        [self makeChargeRequest:nil
-                                                        atStage:PSTCKChargeStageRequery];
-                                        
-                                    });
-                     return;
-                 }
-             }
-             
-             if([[responseObject status] isEqual:@"0"] || [[responseObject status] isEqual:@"error"] || [[responseObject status] isEqual:@"timeout"]){
-                 [self didEndWithErrorMessage:[responseObject message]];
-             } else {
-                 // this is an invalid status
-                 [self didEndWithErrorMessage:[@"The response status from Paystack had an unknown status. Status was: " stringByAppendingString:[responseObject status]]];
-             }
          }
+         if([[responseObject message].lowercaseString isEqual:@"invalid data sent"] && self.INVALID_DATA_SENT_RETRIES<3){
+             self.INVALID_DATA_SENT_RETRIES = self.INVALID_DATA_SENT_RETRIES+1;
+             [self makeChargeRequest:data
+                             atStage:stage];
+             return;
+         }
+         [self handleResponse:responseObject];
      }];
+}
+
+- (void) requestPin{
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Enter CARD PIN"
+                                                                   message:@"To confirm that you are the owner of this card please enter your card PIN"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction
+                                    actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
+                                    handler:^(UIAlertAction * action) {
+                                        [action isEnabled]; // Just to avoid Unused error
+                                        NSString *provided = ((UITextField *)[alert.textFields objectAtIndex:0]).text;
+                                        NSString *handle = [PSTCKCardValidator sanitizedNumericStringForString:provided];
+                                        if(handle == nil ||
+                                           [handle length]!=4 ||
+                                           ([provided length] != [handle length])){
+                                            [self didEndWithErrorMessage:@"Invalid PIN provided. Expected exactly 4 digits."];
+                                            return;
+                                        }
+                                        NSData *hdata = [PSTCKFormEncoder formEncryptedDataForCard:self.card
+                                                                                    andTransaction:self.transaction
+                                                                                         andHandle:[PSTCKRSA encryptRSA:handle]
+                                                                                      usePublicKey:[self publicKey]
+                                                                                      onThisDevice:[self.class device_id]];
+                                        [self makeChargeRequest:hdata
+                                                        atStage:PSTCKChargeStagePlusHandle];
+                                        
+                                    }];
+    
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"****";
+        textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+        textField.secureTextEntry = YES;
+    }];
+    
+    [alert addAction:defaultAction];
+    [self.viewController presentViewController:alert animated:YES completion:nil];
+}
+
+- (void) requestAuth:(NSString * _Nonnull) url{
+    [self.operationQueue addOperationWithBlock:^{
+        self.beforeValidateCompletion(self.serverTransaction.reference);
+    }];
+    PSTCKAuthViewController* authorizer = [[[PSTCKAuthViewController alloc] init]
+                                           initWithURL:[NSURL URLWithString:url]
+                                           handler:^{
+                                               [self.viewController dismissViewControllerAnimated:YES completion:nil];
+                                               [self makeChargeRequest:nil
+                                                               atStage:PSTCKChargeStageRequery];
+                                           }];
+    UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:authorizer];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        nc.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
+    
+    [self.viewController presentViewController:nc animated:YES completion:nil];
+}
+
+- (void) requestOtp:(NSString * _Nonnull) otpmessage{
+    [self.operationQueue addOperationWithBlock:^{
+        self.beforeValidateCompletion(self.serverTransaction.reference);
+    }];
+    UIAlertController* tkalert = [UIAlertController alertControllerWithTitle:@"Enter OTP"
+                                                                     message:otpmessage
+                                                              preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* tkdefaultAction = [UIAlertAction
+                                      actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
+                                      handler:^(UIAlertAction * action) {
+                                          [action isEnabled]; // Just to avoid Unused error
+                                          NSString *provided = ((UITextField *)[tkalert.textFields objectAtIndex:0]).text;
+                                          PSTCKValidationParams *validateParams = [PSTCKValidationParams alloc];
+                                          validateParams.trans = self.serverTransaction.id;
+                                          validateParams.token = provided;
+                                          NSData *vdata = [PSTCKFormEncoder formEncodedDataForObject:validateParams
+                                                                                        usePublicKey:[self publicKey]
+                                                                                        onThisDevice:[self.class device_id]];
+                                          [self makeChargeRequest:vdata
+                                                          atStage:PSTCKChargeStageValidateToken];
+                                          
+                                      }];
+    
+    [tkalert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = @"OTP";
+        textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    }];
+    [tkalert addAction:tkdefaultAction];
+    [self.viewController presentViewController:tkalert animated:YES completion:nil];
+}
+
+- (void) handleResponse:(PSTCKTransaction * _Nonnull)responseObject{
+    if([[responseObject status] isEqual:@"1"] || [[responseObject status] isEqual:@"success"]){
+        [self didEndSuccessfully];
+        return;
+    } else if([[responseObject status] isEqual:@"2"] || [[responseObject auth].lowercaseString isEqual:@"pin"]){
+        [self requestPin];
+        return;
+    } else if([self.serverTransaction id] != nil){
+        if([[responseObject auth].lowercaseString isEqual:@"3ds"] && [self validUrl:[responseObject otpmessage]]){
+            [self requestAuth:[responseObject otpmessage]];
+            return;
+        } else if([[responseObject status] isEqual:@"3"] || ([[responseObject auth].lowercaseString isEqual:@"otp"] && [responseObject otpmessage] != nil)){
+            [self requestOtp:([responseObject otpmessage] != nil ? [responseObject otpmessage] : [responseObject message])];
+            return;
+        } else if([[responseObject status].lowercaseString isEqual:@"requery"]) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),
+                           dispatch_get_main_queue(), ^{
+                               [self.operationQueue addOperationWithBlock:^{
+                                   [self makeChargeRequest:nil
+                                                   atStage:PSTCKChargeStageRequery];
+                               }];
+                           });
+            return;
+        }
+    }
+    
+    if([[responseObject status] isEqual:@"0"] || [[responseObject status] isEqual:@"error"] || [[responseObject status] isEqual:@"timeout"]){
+        [self didEndWithErrorMessage:[responseObject message]];
+    } else {
+        // this is an invalid status
+        [self didEndWithErrorMessage:[@"The response status from Paystack had an unknown status. Status was: " stringByAppendingString:[responseObject status]]];
+    }
 }
 
 - (Boolean) validUrl:(NSString *) candidate{
@@ -476,11 +488,11 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 
 - (void)didEndWithErrorMessage:(NSString *)errorString{
     NSDictionary *userInfo = @{
-                               NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                               NSLocalizedDescriptionKey: PSTCKCardErrorProcessingErrorUserMessage,
                                PSTCKErrorMessageKey: errorString
                                };
     PROCESSING=NO;
-    [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo]];
+    [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKCardErrorProcessingError userInfo:userInfo]];
 }
 
 - (void)didEndWithProcessingError{

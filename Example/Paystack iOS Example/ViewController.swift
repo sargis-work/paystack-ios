@@ -86,16 +86,17 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     }
     
     func outputOnLabel(str: String){
-        if let former = tokenLabel.text {
-            tokenLabel.text = former + "\n" + str
-        } else {
-            tokenLabel.text = str
+        DispatchQueue.main.async {
+            if let former = self.tokenLabel.text {
+                self.tokenLabel.text = former + "\n" + str
+            } else {
+                self.tokenLabel.text = str
+            }
         }
     }
     
     func fetchAccessCodeAndChargeCard(){
         if let url = URL(string: backendURLString  + "/new-access-code") {
-            print(backendURLString  + "/new-access-code");
             let session = URLSession(configuration: URLSessionConfiguration.default)
             self.outputOnLabel(str: "Requesting access code")
             self.chargeCardButton.isEnabled = false;

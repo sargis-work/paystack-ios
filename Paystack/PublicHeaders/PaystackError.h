@@ -11,13 +11,13 @@
 FOUNDATION_EXPORT NSString * __nonnull const PaystackDomain;
 
 typedef NS_ENUM(NSInteger, PSTCKErrorCode) {
-    PSTCKConnectionError = 40,     // Trouble connecting to Paystack.
-    PSTCKInvalidRequestError = 50, // Your request had invalid parameters.
-    PSTCKAPIError = 60,            // General-purpose API error (should be rare).
-    PSTCKCardError = 70,           // Something was wrong with the given card (most common).
-    PSTCKCheckoutError = 80,       // Paystack Checkout encountered an error.
-    PSTCKTransactionError = 90,    // Something was wrong with the given transaction details.
-    PSTCKConflictError = 100,      // A transaction was started while SDK was processing another
+    PSTCKConnectionError = 40,          // Trouble connecting to Paystack.
+    PSTCKInvalidRequestError = 50,      // Your request had invalid parameters.
+    PSTCKAPIError = 60,                 // General-purpose API error (should be rare).
+    PSTCKCardError = 70,                // Something was wrong with the given card (most common).
+    PSTCKCardErrorProcessingError = 80, // Paystack Checkout encountered an error.
+    PSTCKTransactionError = 90,         // Something was wrong with the given transaction details.
+    PSTCKConflictError = 100,           // A transaction was started while SDK was processing another
 };
 
 #pragma mark userInfo keys

@@ -363,12 +363,12 @@ CGFloat const PSTCKPaymentCardTextFieldDefaultPadding = 10;
             if(stay){
                 stay = !self.bumped;
             }
-            self.bumpToExpField.hidden = !stay;
         }
+        self.bumpToExpField.hidden = !stay;
+        self.bumped = NO;
         if(stay){
             return self.numberField;
         }
-        self.bumped = NO;
         if ([self.viewModel validationStateForField:self.expirationField.tag] == PSTCKCardValidationStateValid) {
             return self.cvcField;
         }

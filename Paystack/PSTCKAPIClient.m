@@ -127,7 +127,7 @@ static Boolean PROCESSING = false;
                                          @"X-Paystack-User-Agent": [self.class paystackUserAgentDetails],
                                          @"Paystack-Version": paystackAPIVersion,
                                          @"Authorization": auth,
-                                         @"X-Paystack-Build":PSTCKSDKBuild,
+                                         @"X-Paystack-Build": PSTCKSDKBuild,
                                          };
         _urlSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:_operationQueue];
     }
@@ -436,7 +436,9 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
         if([[responseObject auth].lowercaseString isEqual:@"3ds"] && [self validUrl:[responseObject otpmessage]]){
             [self requestAuth:[responseObject otpmessage]];
             return;
-        } else if([[responseObject status] isEqual:@"3"] || ([[responseObject auth].lowercaseString isEqual:@"otp"] && [responseObject otpmessage] != nil)){
+        } else if([[responseObject status] isEqual:@"3"]
+                  || ([[responseObject auth].lowercaseString isEqual:@"otp"] && [responseObject otpmessage] != nil)
+                  || ([[responseObject auth].lowercaseString isEqual:@"phone"] && [responseObject otpmessage] != nil)){
             [self requestOtp:([responseObject otpmessage] != nil ? [responseObject otpmessage] : [responseObject message])];
             return;
         } else if([[responseObject status].lowercaseString isEqual:@"requery"]) {

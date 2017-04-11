@@ -44,7 +44,7 @@ We also support installing our SDK using Carthage. You can simply add github "pa
 
 ### Step 2: Configure API keys
 
-First, you'll want to configure Paystack with your publishable API key. We recommend doing this in your `AppDelegate`'s `application:didFinishLaunchingWithOptions:` method so that it'll be set for the entire lifecycle of your app.
+First, you'll want to configure Paystack with your public API key. We recommend doing this in your `AppDelegate`'s `application:didFinishLaunchingWithOptions:` method so that it'll be set for the entire lifecycle of your app.
 
 ```Swift
 // AppDelegate.swift
@@ -54,7 +54,7 @@ import Paystack
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        Paystack.setDefaultPublishableKey("pk_test_xxxx")
+        Paystack.setDefaultPublicKey("pk_test_xxxx")
         return true
     }
 }
@@ -70,20 +70,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [Paystack setDefaultPublishableKey:@"pk_test_xxxxx"];
+    [Paystack setDefaultPublicKey:@"pk_test_xxxxx"];
     return YES;
 }
 
 @end
 ```
 
-We've placed a test publishable API key as the PaystackPublishableKey constant in the above snippet. You'll need to swap it out with your live publishable key in production. You can see all your API keys in your dashboard.
+We've placed a test public API key as the PaystackPublicKey constant in the above snippet. You'll need to swap it out with your live public key in production. You can see all your API keys in your dashboard.
 
 ### Step 3: Collecting credit card information
 
 #### Test Mode
 
-When you're using your test publishable key, our libraries give you the ability to test your payment flow without having to charge real credit cards.
+When you're using your test public key, our libraries give you the ability to test your payment flow without having to charge real credit cards.
 
 If you're building your own form or using `PSTCKPaymentCardTextField`, using the card number `4123450131001381` with CVC `883` (along with any future expiration date) will accomplish the same effect.
 

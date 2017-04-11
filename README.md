@@ -36,7 +36,7 @@ Note: The example app requires Xcode 8.0 to build and run.
 Before you can run the app, you need to provide it with your Paystack public key.
 
 1. If you haven't already, sign up for a [Paystack account](https://dashboard.paystack.com/#/signup) (it takes seconds). Then go to https://dashboard.paystack.co/#/settings/developer.
-2. Replace the `paystackPublishableKey` constant in ViewController.swift (for the Sample app) with your Test Public Key.
+2. Replace the `paystackPublicKey` constant in ViewController.swift (for the Sample app) with your Test Public Key.
 
 #### Additional Setup if you will be testing chargeToken
 

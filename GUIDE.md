@@ -239,7 +239,7 @@ If you choose the `chargeCard` route, we charge cards you send using parameters 
     // transactionParams.reference = "ChargedFromiOSSDK@"
 
     PSTCKAPIClient.shared().chargeCard(cardParams, forTransaction: transactionParams, on: viewController,
-               didEndWithError: { (error) -> Void in
+               didEndWithError: { (error, reference) -> Void in
                 handleError(error)
             }, didRequestValidation: { (reference) -> Void in
                 // an OTP was requested, transaction has not yet succeeded

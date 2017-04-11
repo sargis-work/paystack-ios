@@ -25,7 +25,7 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="caps" translatesAutoresizingMaskIntoConstraints="NO" id="VbY-Dc-i7d">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="75.80 naira for a cap" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W8k-gN-iqf">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pay for a cap" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W8k-gN-iqf">
                                 <rect key="frame" x="26" y="37" width="268" height="21.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -51,8 +51,8 @@
                                     <action selector="chargeCard:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="MyM-MF-CeH"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="succeeded: chargedsiuhdbbdbjshkdkdjhjnd,mmn cnmmcnjc" textAlignment="natural" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hfe-wW-WzS">
-                                <rect key="frame" x="26" y="154" width="268" height="50"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="succeeded: chargedsiuhdbbdbjshkdkdjhjnd,mmn cnmmcnjc" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hfe-wW-WzS">
+                                <rect key="frame" x="26" y="154" width="268" height="24"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -62,18 +62,18 @@
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="W8k-gN-iqf" secondAttribute="trailing" constant="10" id="1Rg-2B-ETU"/>
                             <constraint firstItem="W8k-gN-iqf" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="10" id="3QW-zh-Mxi"/>
-                            <constraint firstItem="Hfe-wW-WzS" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="10" id="4N2-6E-riw"/>
                             <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="VbY-Dc-i7d" secondAttribute="bottom" id="7MR-CP-xDm"/>
-                            <constraint firstItem="Hfe-wW-WzS" firstAttribute="top" secondItem="3OP-Hn-6gA" secondAttribute="bottom" constant="10" id="CcG-RE-nGb"/>
+                            <constraint firstItem="Hfe-wW-WzS" firstAttribute="top" secondItem="3OP-Hn-6gA" secondAttribute="bottom" constant="10" id="Iot-GD-J8r"/>
                             <constraint firstItem="Sy1-zj-m3t" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="10" id="JRW-PJ-OtG"/>
                             <constraint firstItem="W8k-gN-iqf" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="17" id="MrX-UX-Ws6"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Sy1-zj-m3t" secondAttribute="trailing" constant="10" id="Skw-OH-fCr"/>
                             <constraint firstItem="Sy1-zj-m3t" firstAttribute="top" secondItem="W8k-gN-iqf" secondAttribute="bottom" constant="7" id="Xj5-zi-3xA"/>
                             <constraint firstAttribute="trailing" secondItem="VbY-Dc-i7d" secondAttribute="trailing" id="i83-qk-iV9"/>
                             <constraint firstAttribute="trailingMargin" secondItem="3OP-Hn-6gA" secondAttribute="trailing" constant="10" id="mKN-ek-jgy"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="Hfe-wW-WzS" secondAttribute="trailing" constant="10" id="mrY-D8-0ss"/>
                             <constraint firstItem="3OP-Hn-6gA" firstAttribute="top" secondItem="Sy1-zj-m3t" secondAttribute="bottom" constant="8" id="nMn-eK-6RP"/>
+                            <constraint firstItem="Hfe-wW-WzS" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="10" id="p5Q-HV-Xjb"/>
                             <constraint firstItem="VbY-Dc-i7d" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="qPH-X1-Jt1"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Hfe-wW-WzS" secondAttribute="trailing" constant="10" id="uC4-S6-aE4"/>
                             <constraint firstItem="VbY-Dc-i7d" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" id="vC4-f9-P8N"/>
                         </constraints>
                     </view>

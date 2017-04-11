@@ -256,6 +256,17 @@
 		08A572411DF92F3F0045E184 /* PSTCKTransactionParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2F31DBB9E7100C2741B /* PSTCKTransactionParams.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		08A572421DF92F3F0045E184 /* PSTCKValidationParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2FC1DBBA3F600C2741B /* PSTCKValidationParams.h */; };
 		08A572431DF92F3F0045E184 /* PSTCKTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 0806F2F21DBB9E7100C2741B /* PSTCKTransaction.h */; };
+		08C260A91E9C214A002AE28C /* PSTCKAuthViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 08C260A71E9C214A002AE28C /* PSTCKAuthViewController.h */; };
+		08C260AA1E9C214A002AE28C /* PSTCKAuthViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 08C260A71E9C214A002AE28C /* PSTCKAuthViewController.h */; };
+		08C260AB1E9C214A002AE28C /* PSTCKAuthViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 08C260A71E9C214A002AE28C /* PSTCKAuthViewController.h */; };
+		08C260AC1E9C214A002AE28C /* PSTCKAuthViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 08C260A71E9C214A002AE28C /* PSTCKAuthViewController.h */; };
+		08C260AD1E9C214A002AE28C /* PSTCKAuthViewController.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 08C260A71E9C214A002AE28C /* PSTCKAuthViewController.h */; };
+		08C260AE1E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 08C260A81E9C214A002AE28C /* PSTCKAuthViewController.m */; };
+		08C260AF1E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 08C260A81E9C214A002AE28C /* PSTCKAuthViewController.m */; };
+		08C260B01E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 08C260A81E9C214A002AE28C /* PSTCKAuthViewController.m */; };
+		08C260B11E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 08C260A81E9C214A002AE28C /* PSTCKAuthViewController.m */; };
+		08C260B21E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 08C260A81E9C214A002AE28C /* PSTCKAuthViewController.m */; };
+		08C260B31E9C214A002AE28C /* PSTCKAuthViewController.m in Copy Files */ = {isa = PBXBuildFile; fileRef = 08C260A81E9C214A002AE28C /* PSTCKAuthViewController.m */; };
 		101987811CA47DAC0089A68A /* PSTCKRSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB11C8135D800EEF7CF /* PSTCKRSA.m */; };
 		10500AB21C8135D800EEF7CF /* PSTCKRSA.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB11C8135D800EEF7CF /* PSTCKRSA.m */; };
 		10500AB51C8136EF00EEF7CF /* PSTCKRSATest.m in Sources */ = {isa = PBXBuildFile; fileRef = 10500AB41C8136EF00EEF7CF /* PSTCKRSATest.m */; };
@@ -314,6 +325,8 @@
 			dstSubfolderSpec = 16;
 			files = (
 				04B33F361BC7488D00DD8120 /* Info.plist in Copy Files */,
+				08C260B31E9C214A002AE28C /* PSTCKAuthViewController.m in Copy Files */,
+				08C260AD1E9C214A002AE28C /* PSTCKAuthViewController.h in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -430,6 +443,8 @@
 		0806F2FE1DBBB5DF00C2741B /* pstck_card_verve.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pstck_card_verve.png; sourceTree = "<group>"; };
 		0806F2FF1DBBB5DF00C2741B /* pstck_card_verve@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pstck_card_verve@2x.png"; sourceTree = "<group>"; };
 		0806F3001DBBB5DF00C2741B /* pstck_card_verve@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pstck_card_verve@3x.png"; sourceTree = "<group>"; };
+		08C260A71E9C214A002AE28C /* PSTCKAuthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PSTCKAuthViewController.h; path = UI/PSTCKAuthViewController.h; sourceTree = "<group>"; };
+		08C260A81E9C214A002AE28C /* PSTCKAuthViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSTCKAuthViewController.m; path = UI/PSTCKAuthViewController.m; sourceTree = "<group>"; };
 		10500AB11C8135D800EEF7CF /* PSTCKRSA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PSTCKRSA.m; path = RSA/PSTCKRSA.m; sourceTree = "<group>"; };
 		10500AB31C8135F800EEF7CF /* PSTCKRSA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PSTCKRSA.h; path = RSA/PSTCKRSA.h; sourceTree = "<group>"; };
 		10500AB41C8136EF00EEF7CF /* PSTCKRSATest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKRSATest.m; sourceTree = "<group>"; };
@@ -491,6 +506,8 @@
 			isa = PBXGroup;
 			children = (
 				04E32A9C1B7A9490009C9E35 /* PSTCKPaymentCardTextField.h */,
+				08C260A71E9C214A002AE28C /* PSTCKAuthViewController.h */,
+				08C260A81E9C214A002AE28C /* PSTCKAuthViewController.m */,
 				0438EF291B7416BB00D506CC /* PSTCKPaymentCardTextField.m */,
 				0438EF261B7416BB00D506CC /* PSTCKFormTextField.h */,
 				0438EF271B7416BB00D506CC /* PSTCKFormTextField.m */,
@@ -719,6 +736,7 @@
 				10500ABE1C8216C200EEF7CF /* PSTCKRSA.h in Headers */,
 				04415C721A6605D9001225ED /* Paystack.h in Headers */,
 				04415C851A6605D9001225ED /* PaystackError.h in Headers */,
+				08C260AA1E9C214A002AE28C /* PSTCKAuthViewController.h in Headers */,
 				04415C7F1A6605D9001225ED /* PSTCKAPIClient.h in Headers */,
 				04CDE5BF1BC1FD4500548833 /* PSTCKCardParams.h in Headers */,
 				0438EF391B7416BB00D506CC /* PSTCKPaymentCardTextFieldViewModel.h in Headers */,
@@ -735,6 +753,7 @@
 				049E84D91A605EF0000B66CD /* Paystack.h in Headers */,
 				0433EB4B1BD06313003912B4 /* NSDictionary+Paystack.h in Headers */,
 				0438EF2E1B7416BB00D506CC /* PSTCKFormTextField.h in Headers */,
+				08C260AC1E9C214A002AE28C /* PSTCKAuthViewController.h in Headers */,
 				049E84E61A605EF0000B66CD /* PSTCKAPIClient.h in Headers */,
 				049E84EA1A605EF0000B66CD /* PSTCKCard.h in Headers */,
 				049E84EB1A605EF0000B66CD /* PSTCKToken.h in Headers */,
@@ -766,6 +785,7 @@
 				0433EB491BD06313003912B4 /* NSDictionary+Paystack.h in Headers */,
 				04CDB50E1A5F30A700B854EE /* PSTCKCard.h in Headers */,
 				0438EF2C1B7416BB00D506CC /* PSTCKFormTextField.h in Headers */,
+				08C260A91E9C214A002AE28C /* PSTCKAuthViewController.h in Headers */,
 				049952D21BCF13DD0088C703 /* PSTCKAPIClient+Private.h in Headers */,
 				0806F2F51DBB9E7100C2741B /* PSTCKTransactionParams.h in Headers */,
 				C1718D561C3B2E5B002A7CB3 /* UIImage+Paystack.h in Headers */,
@@ -808,6 +828,7 @@
 				0433EB4A1BD06313003912B4 /* NSDictionary+Paystack.h in Headers */,
 				04F213361BCECB1C001D6F22 /* PSTCKAPIResponseDecodable.h in Headers */,
 				04D12C3A1A5F55D10010446E /* PSTCKFormEncoder.h in Headers */,
+				08C260AB1E9C214A002AE28C /* PSTCKAuthViewController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1129,6 +1150,7 @@
 				0438EF4D1B741B0100D506CC /* PSTCKPaymentCardTextFieldViewModelTest.m in Sources */,
 				04415C641A6605B5001225ED /* PSTCKCard.m in Sources */,
 				04415C651A6605B5001225ED /* PSTCKToken.m in Sources */,
+				08C260AF1E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */,
 				04415C661A6605B5001225ED /* PaystackError.m in Sources */,
 				10500AB51C8136EF00EEF7CF /* PSTCKRSATest.m in Sources */,
 				04415C671A6605B5001225ED /* PSTCKAPIClientTest.m in Sources */,
@@ -1163,6 +1185,7 @@
 				049E84D11A605DE0000B66CD /* PSTCKToken.m in Sources */,
 				049E84D21A605DE0000B66CD /* PaystackError.m in Sources */,
 				049952D81BCF14990088C703 /* PSTCKAPIPostRequest.m in Sources */,
+				08C260B21E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1188,6 +1211,7 @@
 				0438EF3B1B7416BB00D506CC /* PSTCKPaymentCardTextFieldViewModel.m in Sources */,
 				04CDE5B81BC1F1F100548833 /* PSTCKCardParams.m in Sources */,
 				049952D01BCF13510088C703 /* PSTCKAPIPostRequest.m in Sources */,
+				08C260AE1E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1202,6 +1226,7 @@
 				04D12C261A5F55AD0010446E /* PSTCKFormEncoder.m in Sources */,
 				04D12C291A5F55AD0010446E /* PSTCKCard.m in Sources */,
 				04D12C2A1A5F55AD0010446E /* PSTCKToken.m in Sources */,
+				08C260B01E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */,
 				0433EB4D1BD06313003912B4 /* NSDictionary+Paystack.m in Sources */,
 				049952D71BCF14980088C703 /* PSTCKAPIPostRequest.m in Sources */,
 				04D12C2B1A5F55AD0010446E /* PaystackError.m in Sources */,
@@ -1218,6 +1243,7 @@
 				04D12C461A5F55FA0010446E /* PSTCKCardTest.m in Sources */,
 				04D12C471A5F55FA0010446E /* PSTCKCertTest.m in Sources */,
 				04D12C481A5F55FA0010446E /* PSTCKTokenTest.m in Sources */,
+				08C260B11E9C214A002AE28C /* PSTCKAuthViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

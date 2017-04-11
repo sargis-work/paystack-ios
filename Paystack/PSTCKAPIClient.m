@@ -20,6 +20,7 @@
 #import "PSTCKValidationParams.h"
 #import "PaystackError.h"
 #import "PSTCKAPIResponseDecodable.h"
+#import "PSTCKAuthViewController.h"
 #import "PSTCKAPIPostRequest.h"
 
 #if __has_include("Fabric.h")
@@ -98,6 +99,7 @@ static int INVALID_DATA_SENT_RETRIES=0;
         NSString *auth = [@"Bearer " stringByAppendingString:self.publicKey];
         config.HTTPAdditionalHeaders = @{
                                          @"X-Paystack-User-Agent": [self.class paystackUserAgentDetails],
+                                         @"User-Agent": @"Android_22_Paystack_2.1.2",
                                          @"Paystack-Version": paystackAPIVersion,
                                          @"Authorization": auth,
                                          @"X-Paystack-Build":PSTCKSDKBuild,
@@ -276,11 +278,9 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
             httpMethod = @"POST";
             break;
         case PSTCKChargeStageRequery:
+        case PSTCKChargeStageAuthorize:
             endpoint =  [requeryEndpoint stringByAppendingString:[serverTransaction id]] ;
             httpMethod = @"GET";
-            break;
-        case PSTCKChargeStageAuthorize:
-            // No endpoint required here
             break;
     }
     
@@ -367,65 +367,85 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                  [viewController presentViewController:alert animated:YES completion:nil];
                  return;
              } else if([serverTransaction id] != nil){
-              if([[responseObject status] isEqual:@"3"] || ([[responseObject auth].lowercaseString isEqual:@"otp"] && [responseObject otpmessage] != nil)){
-                 [self.operationQueue addOperationWithBlock:^{
-                     beforeValidateCompletion(responseObject.reference);
-                 }];
-                 // Will request otp now
-                 // show otp dialog
-                 UIAlertController* tkalert = [UIAlertController alertControllerWithTitle:@"Enter OTP"
-                                                                                  message:responseObject.message
-                                                                           preferredStyle:UIAlertControllerStyleAlert];
-                 
-                 UIAlertAction* tkdefaultAction = [UIAlertAction
-                                                   actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction * action) {
-                                                       [action isEnabled]; // Just to avoid Unused error
-                                                       NSString *provided = ((UITextField *)[tkalert.textFields objectAtIndex:0]).text;
-                                                       PSTCKValidationParams *validateParams = [PSTCKValidationParams alloc];
-                                                       validateParams.trans = responseObject.trans;
-                                                       validateParams.token = provided;
-                                                       NSData *vdata = [PSTCKFormEncoder formEncodedDataForObject:validateParams
-                                                                                                     usePublicKey:[self publicKey]
-                                                                                                     onThisDevice:[self.class device_id]];
-                                                       [self makeChargeRequest:vdata
-                                                          forServerTransaction:serverTransaction
-                                                                       atStage:PSTCKChargeStageValidateToken
-                                                                    chargeCard:card
-                                                                forTransaction:transaction
-                                                              onViewController:viewController
-                                                               didEndWithError:errorCompletion
-                                                          didRequestValidation:beforeValidateCompletion
-                                                         didTransactionSuccess:successCompletion];
-                                                       
-                                                   }];
-                 
-                 [tkalert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                     textField.placeholder = @"OTP";
-                     textField.clearButtonMode = UITextFieldViewModeWhileEditing;
-                 }];
-                 [tkalert addAction:tkdefaultAction];
-                 [viewController presentViewController:tkalert animated:YES completion:nil];
-                  return;
-              } else if([[responseObject status].lowercaseString isEqual:@"requery"]) {
-                  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),
-                                 dispatch_get_main_queue(), ^{
-                                     [self makeChargeRequest:nil
-                                        forServerTransaction:serverTransaction
-                                                     atStage:PSTCKChargeStageRequery
-                                                  chargeCard:card
-                                              forTransaction:transaction
-                                            onViewController:viewController
-                                             didEndWithError:errorCompletion
-                                        didRequestValidation:beforeValidateCompletion
-                                       didTransactionSuccess:successCompletion];
-                                    
-                                 });
-                  return;
-              }
+                 if([[responseObject auth].lowercaseString isEqual:@"3ds"] && [self validUrl:[responseObject otpmessage]]){
+                     [self.operationQueue addOperationWithBlock:^{
+                         beforeValidateCompletion(responseObject.reference);
+                     }];
+                     PSTCKAuthViewController* authorizer = [[PSTCKAuthViewController init]
+                                                            initWithURL:[NSURL URLWithString:[responseObject otpmessage]]
+                                                            handler:^{
+                                                                [viewController dismissViewControllerAnimated:YES completion:nil];
+                                                                [self makeChargeRequest:nil
+                                                                   forServerTransaction:serverTransaction
+                                                                                atStage:PSTCKChargeStageRequery
+                                                                             chargeCard:card
+                                                                         forTransaction:transaction
+                                                                       onViewController:viewController
+                                                                        didEndWithError:errorCompletion
+                                                                   didRequestValidation:beforeValidateCompletion
+                                                                  didTransactionSuccess:successCompletion];
+                                                            }];
+                     [viewController presentViewController:authorizer animated:YES completion:nil];
+                     return;
+                 } else if([[responseObject status] isEqual:@"3"] || ([[responseObject auth].lowercaseString isEqual:@"otp"] && [responseObject otpmessage] != nil)){
+                         [self.operationQueue addOperationWithBlock:^{
+                             beforeValidateCompletion(responseObject.reference);
+                         }];
+                     // Will request otp now
+                     // show otp dialog
+                     UIAlertController* tkalert = [UIAlertController alertControllerWithTitle:@"Enter OTP"
+                                                                                      message:responseObject.message
+                                                                               preferredStyle:UIAlertControllerStyleAlert];
+                     
+                     UIAlertAction* tkdefaultAction = [UIAlertAction
+                                                       actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           [action isEnabled]; // Just to avoid Unused error
+                                                           NSString *provided = ((UITextField *)[tkalert.textFields objectAtIndex:0]).text;
+                                                           PSTCKValidationParams *validateParams = [PSTCKValidationParams alloc];
+                                                           validateParams.trans = responseObject.trans;
+                                                           validateParams.token = provided;
+                                                           NSData *vdata = [PSTCKFormEncoder formEncodedDataForObject:validateParams
+                                                                                                         usePublicKey:[self publicKey]
+                                                                                                         onThisDevice:[self.class device_id]];
+                                                           [self makeChargeRequest:vdata
+                                                              forServerTransaction:serverTransaction
+                                                                           atStage:PSTCKChargeStageValidateToken
+                                                                        chargeCard:card
+                                                                    forTransaction:transaction
+                                                                  onViewController:viewController
+                                                                   didEndWithError:errorCompletion
+                                                              didRequestValidation:beforeValidateCompletion
+                                                             didTransactionSuccess:successCompletion];
+                                                           
+                                                       }];
+                     
+                     [tkalert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                         textField.placeholder = @"OTP";
+                         textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+                     }];
+                     [tkalert addAction:tkdefaultAction];
+                     [viewController presentViewController:tkalert animated:YES completion:nil];
+                     return;
+                 } else if([[responseObject status].lowercaseString isEqual:@"requery"]) {
+                     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),
+                                    dispatch_get_main_queue(), ^{
+                                        [self makeChargeRequest:nil
+                                           forServerTransaction:serverTransaction
+                                                        atStage:PSTCKChargeStageRequery
+                                                     chargeCard:card
+                                                 forTransaction:transaction
+                                               onViewController:viewController
+                                                didEndWithError:errorCompletion
+                                           didRequestValidation:beforeValidateCompletion
+                                          didTransactionSuccess:successCompletion];
+                                        
+                                    });
+                     return;
+                 }
              }
              
-
+             
              
              
              if([[responseObject status] isEqual:@"0"] || [[responseObject status] isEqual:@"error"] || [[responseObject status] isEqual:@"timeout"]){
@@ -434,12 +454,25 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                    completion:errorCompletion];
              } else {
                  // this is an invalid status
-                 [self didEndWithErrorMessage:[@"The response status from Paystack had an invalid status. Status was: " stringByAppendingString:[responseObject status]]
+                 [self didEndWithErrorMessage:[@"The response status from Paystack had an iuk3op status. Status was: " stringByAppendingString:[responseObject status]]
                                     reference:serverTransaction.reference
                                    completion:errorCompletion];
              }
          }
      }];
+}
+
+- (Boolean) validUrl:(NSString *) candidate{
+    NSURL *candidateURL = [NSURL URLWithString:candidate];
+    // WARNING > "test" is an URL according to RFCs, being just a path
+    // so you still should check scheme and all other NSURL attributes you need
+    if (candidateURL && candidateURL.scheme && candidateURL.host) {
+        // candidate is a well-formed url with:
+        //  - a scheme (like http://)
+        //  - a host (like stackoverflow.com)
+        return YES;
+    }
+    return NO;
 }
 
 - (void)didEndWithError:(NSError *)error
@@ -452,7 +485,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 }
 
 - (void)didEndSuccessfully:(NSString *)reference
-             completion:(PSTCKTransactionCompletionBlock )successCompletion{
+                completion:(PSTCKTransactionCompletionBlock )successCompletion{
     PROCESSING=NO;
     [self.operationQueue addOperationWithBlock:^{
         successCompletion(reference);

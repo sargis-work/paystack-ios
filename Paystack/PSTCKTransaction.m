@@ -62,11 +62,7 @@
     if (!dict) {
         return nil;
     }
-    
-    if ([[dict[@"status"] description] isEqual: @"0"]) {
-        return nil;
-    }
-    
+
     PSTCKTransaction *transaction = [self new];
     transaction.reference = dict[@"reference"];
     transaction.trans = dict[@"trans"];

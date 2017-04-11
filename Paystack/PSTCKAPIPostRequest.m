@@ -28,7 +28,7 @@
         NSString *bodyString = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding];
 
         id<PSTCKAPIResponseDecodable> responseObject = [[serializer class] decodedObjectFromAPIResponse:jsonDictionary];
-        NSError *returnedError = [NSError pstck_errorFromPaystackResponse:jsonDictionary] ?: error;
+        NSError *returnedError = error;
         if (!responseObject && !returnedError) {
             NSDictionary *userInfo = @{
                                        NSLocalizedDescriptionKey: PSTCKUnexpectedError,

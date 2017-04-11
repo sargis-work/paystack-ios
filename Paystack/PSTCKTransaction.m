@@ -13,6 +13,8 @@
 @property (nonatomic) NSString *trans;
 @property (nonatomic) NSString *redirecturl;
 @property (nonatomic) NSString *status;
+@property (nonatomic) NSString *auth;
+@property (nonatomic) NSString *otpmessage;
 @property (nonatomic, readwrite, nonnull, copy) NSDictionary *allResponseFields;
 @end
 
@@ -66,6 +68,8 @@
     PSTCKTransaction *transaction = [self new];
     transaction.reference = dict[@"reference"];
     transaction.trans = dict[@"trans"];
+    transaction.auth = dict[@"auth"];
+    transaction.otpmessage = dict[@"otpmessage"];
     transaction.redirecturl = dict[@"redirecturl"];
     transaction.message = dict[@"message"];
     transaction.status = dict[@"status"];

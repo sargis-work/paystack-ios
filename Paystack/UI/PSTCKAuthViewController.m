@@ -47,6 +47,8 @@ BOOL handlingRedirectURL;
     self.authenticationWebView.delegate = self;
     self.authenticationWebView.scalesPageToFit = YES;
     [self.view addSubview:self.authenticationWebView];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    self.navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -57,7 +59,7 @@ BOOL handlingRedirectURL;
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    self.authenticationWebView.frame = self.view.bounds;
+    self.authenticationWebView.frame = [UIScreen mainScreen].bounds;
 }
 
 #pragma mark UI Action Methods

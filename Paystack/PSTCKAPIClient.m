@@ -41,7 +41,6 @@ static NSString *const requeryEndpoint = @"charge/requery/";
 static NSString *const paystackAPIVersion = @"2017-04-09";
 static NSString *PSTCKDefaultPublicKey;
 static Boolean PROCESSING = false;
-static int INVALID_DATA_SENT_RETRIES=0;
 
 @implementation Paystack
 
@@ -67,6 +66,33 @@ static int INVALID_DATA_SENT_RETRIES=0;
 #endif
 @property (nonatomic, readwrite) NSURL *apiURL;
 @property (nonatomic, readwrite) NSURLSession *urlSession;
+@end
+
+@interface PSTCKServerTransaction : NSObject
+
+@property (nonatomic, readwrite, nullable) NSString *id;
+@property (nonatomic, readwrite, nullable) NSString *reference;
+
+@end
+@implementation PSTCKServerTransaction
+- (instancetype)init {
+    _id = nil;
+    _reference = nil;
+    
+    return self;
+}
+@end
+
+@interface PSTCKAPIClient ()
+
+@property(nonatomic, strong) UIViewController *viewController;
+@property(nonatomic, strong) PSTCKServerTransaction *serverTransaction;
+@property(nonatomic, retain) PSTCKCardParams *card;
+@property(nonatomic, retain) PSTCKTransactionParams *transaction;
+@property(nonatomic, copy) PSTCKErrorCompletionBlock errorCompletion;
+@property(nonatomic, copy) PSTCKTransactionCompletionBlock beforeValidateCompletion;
+@property(nonatomic, copy) PSTCKTransactionCompletionBlock successCompletion;
+@property int INVALID_DATA_SENT_RETRIES;
 @end
 
 @implementation PSTCKAPIClient
@@ -99,7 +125,6 @@ static int INVALID_DATA_SENT_RETRIES=0;
         NSString *auth = [@"Bearer " stringByAppendingString:self.publicKey];
         config.HTTPAdditionalHeaders = @{
                                          @"X-Paystack-User-Agent": [self.class paystackUserAgentDetails],
-                                         @"User-Agent": @"Android_22_Paystack_2.1.2",
                                          @"Paystack-Version": paystackAPIVersion,
                                          @"Authorization": auth,
                                          @"X-Paystack-Build":PSTCKSDKBuild,
@@ -213,21 +238,6 @@ typedef NS_ENUM(NSInteger, PSTCKChargeStage) {
 };
 
 
-@interface PSTCKServerTransaction : NSObject
-
-@property (nonatomic, readwrite, nullable) NSString *id;
-@property (nonatomic, readwrite, nullable) NSString *reference;
-
-@end
-@implementation PSTCKServerTransaction
-- (instancetype)init {
-    _id = nil;
-    _reference = nil;
-    
-    return self;
-}
-@end
-
 #pragma mark - Credit Cards
 @implementation PSTCKAPIClient (CreditCards)
 
@@ -242,28 +252,44 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     NSCAssert(viewController != nil, @"'viewController' is required to show any alerts that may be needed");
     NSCAssert(transaction != nil, @"'transaction' is required so we may know who to charge");
     NSCAssert(successCompletion != nil, @"'successCompletion' is required so you can continue the process after charge succeeds. Remember to verify on server before giving value.");
+    [self startWithCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestValidation:beforeValidateCompletion didTransactionSuccess:successCompletion];
+    
     if(PROCESSING){
-        [self didEndWithProcessingError:errorCompletion];
+        [self didEndWithProcessingError];
         return;
     }
     PROCESSING = YES;
-    INVALID_DATA_SENT_RETRIES = 0;
+    self.INVALID_DATA_SENT_RETRIES = 0;
     NSData *data = [PSTCKFormEncoder formEncryptedDataForCard:card
                                                andTransaction:transaction
                                                  usePublicKey:[self publicKey]
                                                  onThisDevice:[self.class device_id]];
-    [self makeChargeRequest:data forServerTransaction:[PSTCKServerTransaction new] atStage:PSTCKChargeStageNoHandle chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestValidation:beforeValidateCompletion didTransactionSuccess:successCompletion];
+    
+    [self makeChargeRequest:data atStage:PSTCKChargeStageNoHandle];
 }
 
+- (void)startWithCard:(nonnull PSTCKCardParams *)card
+       forTransaction:(nonnull PSTCKTransactionParams *)transaction
+     onViewController:(nonnull UIViewController *)viewController
+      didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+ didRequestValidation:(nullable PSTCKTransactionCompletionBlock)beforeValidateCompletion
+didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
+    self.card = card;
+    self.transaction = transaction;
+    self.viewController = viewController;
+    self.errorCompletion = errorCompletion;
+    self.beforeValidateCompletion = beforeValidateCompletion;
+    self.successCompletion = successCompletion;
+    self.serverTransaction = [PSTCKServerTransaction new];
+    
+}
+
+
+
 - (void) makeChargeRequest:(NSData *)data
-      forServerTransaction:(nonnull PSTCKServerTransaction *)serverTransaction
                    atStage:(PSTCKChargeStage) stage
-                chargeCard:(nonnull PSTCKCardParams *)card
-            forTransaction:(nonnull PSTCKTransactionParams *)transaction
-          onViewController:(nonnull UIViewController *)viewController
-           didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-      didRequestValidation:(nullable PSTCKTransactionCompletionBlock)beforeValidateCompletion
-     didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion{
+
+{
     NSString *endpoint;
     NSString *httpMethod;
     
@@ -279,7 +305,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
             break;
         case PSTCKChargeStageRequery:
         case PSTCKChargeStageAuthorize:
-            endpoint =  [requeryEndpoint stringByAppendingString:[serverTransaction id]] ;
+            endpoint =  [requeryEndpoint stringByAppendingString:self.serverTransaction.id] ;
             httpMethod = @"GET";
             break;
     }
@@ -292,32 +318,23 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
      serializer:[PSTCKTransaction new]
      completion:^(PSTCKTransaction * _Nullable responseObject, NSError * _Nullable error){
          if([responseObject trans] != nil){
-             serverTransaction.id = [responseObject trans];
+             self.serverTransaction.id = [responseObject trans];
          }
          if([responseObject reference] != nil){
-             serverTransaction.reference = [responseObject reference];
+             self.serverTransaction.reference = [responseObject reference];
          }
          if(error != nil){
-             [self didEndWithError:error
-                         reference:serverTransaction.reference
-                        completion:errorCompletion];
+             [self didEndWithError:error];
              return;
          } else {
              // This is where we test the status of the request.
-             if([[responseObject message].lowercaseString isEqual:@"invalid data sent"] && INVALID_DATA_SENT_RETRIES<3){
-                 INVALID_DATA_SENT_RETRIES = INVALID_DATA_SENT_RETRIES+1;
+             if([[responseObject message].lowercaseString isEqual:@"invalid data sent"] && self.INVALID_DATA_SENT_RETRIES<3){
+                 self.INVALID_DATA_SENT_RETRIES = self.INVALID_DATA_SENT_RETRIES+1;
                  [self makeChargeRequest:data
-                    forServerTransaction:serverTransaction
-                                 atStage:stage
-                              chargeCard:card
-                          forTransaction:transaction
-                        onViewController:viewController
-                         didEndWithError:errorCompletion
-                    didRequestValidation:beforeValidateCompletion
-                   didTransactionSuccess:successCompletion];
+                                 atStage:stage];
                  return;
              } else if([[responseObject status] isEqual:@"1"] || [[responseObject status] isEqual:@"success"]){
-                 [self didEndSuccessfully:responseObject.reference completion:successCompletion];
+                 [self didEndSuccessfully];
                  return;
              } else if([[responseObject status] isEqual:@"2"] || [[responseObject auth].lowercaseString isEqual:@"pin"]){
                  // will request PIN now
@@ -335,25 +352,16 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                                      if(handle == nil ||
                                                         [handle length]!=4 ||
                                                         ([provided length] != [handle length])){
-                                                         [self didEndWithErrorMessage:@"Invalid PIN provided. Expected exactly 4 digits."
-                                                                            reference:serverTransaction.reference
-                                                                           completion:errorCompletion];
+                                                         [self didEndWithErrorMessage:@"Invalid PIN provided. Expected exactly 4 digits."];
                                                          return;
                                                      }
-                                                     NSData *hdata = [PSTCKFormEncoder formEncryptedDataForCard:card
-                                                                                                 andTransaction:transaction
+                                                     NSData *hdata = [PSTCKFormEncoder formEncryptedDataForCard:self.card
+                                                                                                 andTransaction:self.transaction
                                                                                                       andHandle:[PSTCKRSA encryptRSA:handle]
                                                                                                    usePublicKey:[self publicKey]
                                                                                                    onThisDevice:[self.class device_id]];
                                                      [self makeChargeRequest:hdata
-                                                        forServerTransaction:serverTransaction
-                                                                     atStage:PSTCKChargeStagePlusHandle
-                                                                  chargeCard:card
-                                                              forTransaction:transaction
-                                                            onViewController:viewController
-                                                             didEndWithError:errorCompletion
-                                                        didRequestValidation:beforeValidateCompletion
-                                                       didTransactionSuccess:successCompletion];
+                                                                     atStage:PSTCKChargeStagePlusHandle];
                                                      
                                                  }];
                  
@@ -364,33 +372,31 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                  }];
                  
                  [alert addAction:defaultAction];
-                 [viewController presentViewController:alert animated:YES completion:nil];
+                 [self.viewController presentViewController:alert animated:YES completion:nil];
                  return;
-             } else if([serverTransaction id] != nil){
+             } else if([self.serverTransaction id] != nil){
                  if([[responseObject auth].lowercaseString isEqual:@"3ds"] && [self validUrl:[responseObject otpmessage]]){
                      [self.operationQueue addOperationWithBlock:^{
-                         beforeValidateCompletion(responseObject.reference);
+                         self.beforeValidateCompletion(responseObject.reference);
                      }];
-                     PSTCKAuthViewController* authorizer = [[PSTCKAuthViewController init]
+                     PSTCKAuthViewController* authorizer = [[[PSTCKAuthViewController alloc] init]
                                                             initWithURL:[NSURL URLWithString:[responseObject otpmessage]]
                                                             handler:^{
-                                                                [viewController dismissViewControllerAnimated:YES completion:nil];
+                                                                [self.viewController dismissViewControllerAnimated:YES completion:nil];
                                                                 [self makeChargeRequest:nil
-                                                                   forServerTransaction:serverTransaction
-                                                                                atStage:PSTCKChargeStageRequery
-                                                                             chargeCard:card
-                                                                         forTransaction:transaction
-                                                                       onViewController:viewController
-                                                                        didEndWithError:errorCompletion
-                                                                   didRequestValidation:beforeValidateCompletion
-                                                                  didTransactionSuccess:successCompletion];
+                                                                                atStage:PSTCKChargeStageRequery];
                                                             }];
-                     [viewController presentViewController:authorizer animated:YES completion:nil];
+                     UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:authorizer];
+                     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+                         nc.modalPresentationStyle = UIModalPresentationFormSheet;
+                     }
+
+                     [self.viewController presentViewController:nc animated:YES completion:nil];
                      return;
                  } else if([[responseObject status] isEqual:@"3"] || ([[responseObject auth].lowercaseString isEqual:@"otp"] && [responseObject otpmessage] != nil)){
-                         [self.operationQueue addOperationWithBlock:^{
-                             beforeValidateCompletion(responseObject.reference);
-                         }];
+                     [self.operationQueue addOperationWithBlock:^{
+                         self.beforeValidateCompletion(self.serverTransaction.reference);
+                     }];
                      // Will request otp now
                      // show otp dialog
                      UIAlertController* tkalert = [UIAlertController alertControllerWithTitle:@"Enter OTP"
@@ -409,14 +415,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                                                                                          usePublicKey:[self publicKey]
                                                                                                          onThisDevice:[self.class device_id]];
                                                            [self makeChargeRequest:vdata
-                                                              forServerTransaction:serverTransaction
-                                                                           atStage:PSTCKChargeStageValidateToken
-                                                                        chargeCard:card
-                                                                    forTransaction:transaction
-                                                                  onViewController:viewController
-                                                                   didEndWithError:errorCompletion
-                                                              didRequestValidation:beforeValidateCompletion
-                                                             didTransactionSuccess:successCompletion];
+                                                                           atStage:PSTCKChargeStageValidateToken];
                                                            
                                                        }];
                      
@@ -425,38 +424,24 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                          textField.clearButtonMode = UITextFieldViewModeWhileEditing;
                      }];
                      [tkalert addAction:tkdefaultAction];
-                     [viewController presentViewController:tkalert animated:YES completion:nil];
+                     [self.viewController presentViewController:tkalert animated:YES completion:nil];
                      return;
                  } else if([[responseObject status].lowercaseString isEqual:@"requery"]) {
                      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),
                                     dispatch_get_main_queue(), ^{
                                         [self makeChargeRequest:nil
-                                           forServerTransaction:serverTransaction
-                                                        atStage:PSTCKChargeStageRequery
-                                                     chargeCard:card
-                                                 forTransaction:transaction
-                                               onViewController:viewController
-                                                didEndWithError:errorCompletion
-                                           didRequestValidation:beforeValidateCompletion
-                                          didTransactionSuccess:successCompletion];
+                                                        atStage:PSTCKChargeStageRequery];
                                         
                                     });
                      return;
                  }
              }
              
-             
-             
-             
              if([[responseObject status] isEqual:@"0"] || [[responseObject status] isEqual:@"error"] || [[responseObject status] isEqual:@"timeout"]){
-                 [self didEndWithErrorMessage:[responseObject message]
-                                    reference:serverTransaction.reference
-                                   completion:errorCompletion];
+                 [self didEndWithErrorMessage:[responseObject message]];
              } else {
                  // this is an invalid status
-                 [self didEndWithErrorMessage:[@"The response status from Paystack had an iuk3op status. Status was: " stringByAppendingString:[responseObject status]]
-                                    reference:serverTransaction.reference
-                                   completion:errorCompletion];
+                 [self didEndWithErrorMessage:[@"The response status from Paystack had an unknown status. Status was: " stringByAppendingString:[responseObject status]]];
              }
          }
      }];
@@ -475,40 +460,35 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     return NO;
 }
 
-- (void)didEndWithError:(NSError *)error
-              reference:(NSString *)reference
-             completion:(PSTCKErrorCompletionBlock )completion{
+- (void)didEndWithError:(NSError *)error{
     PROCESSING=NO;
     [self.operationQueue addOperationWithBlock:^{
-        completion(error, reference);
+        self.errorCompletion(error, self.serverTransaction.reference);
     }];
 }
 
-- (void)didEndSuccessfully:(NSString *)reference
-                completion:(PSTCKTransactionCompletionBlock )successCompletion{
+- (void)didEndSuccessfully{
     PROCESSING=NO;
     [self.operationQueue addOperationWithBlock:^{
-        successCompletion(reference);
+        self.successCompletion(self.serverTransaction.reference);
     }];
 }
 
-- (void)didEndWithErrorMessage:(NSString *)errorString
-                     reference:(NSString *)reference
-                    completion:(PSTCKErrorCompletionBlock )completion{
+- (void)didEndWithErrorMessage:(NSString *)errorString{
     NSDictionary *userInfo = @{
                                NSLocalizedDescriptionKey: PSTCKUnexpectedError,
                                PSTCKErrorMessageKey: errorString
                                };
     PROCESSING=NO;
-    [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo] reference:reference completion:completion];
+    [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo]];
 }
 
-- (void)didEndWithProcessingError:(PSTCKErrorCompletionBlock )completion{
+- (void)didEndWithProcessingError{
     NSDictionary *userInfo = @{
                                NSLocalizedDescriptionKey: PSTCKCardErrorProcessingTransactionMessage,
                                PSTCKErrorMessageKey: PSTCKCardErrorProcessingTransactionMessage
                                };
-    [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKConflictError userInfo:userInfo] reference:nil completion:completion];
+    [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKConflictError userInfo:userInfo]];
 }
 
 @end

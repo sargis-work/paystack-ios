@@ -37,11 +37,8 @@ Before you can run the app, you need to provide it with your Paystack public key
 
 1. If you haven't already, sign up for a [Paystack account](https://dashboard.paystack.com/#/signup) (it takes seconds). Then go to https://dashboard.paystack.co/#/settings/developer.
 2. Replace the `paystackPublicKey` constant in ViewController.swift (for the Sample app) with your Test Public Key.
-
-#### Additional Setup if you will be testing chargeToken
-
-1. Head to https://github.com/paystackhq/sample-charge-card-backend and click "Deploy to Heroku" (you may have to sign up for a Heroku account as part of this process). Provide your Paystack test secret key for the `PAYSTACK_TEST_SECRET_KEY` field under 'Env'. Click "Deploy for Free".
-2. Replace the `backendChargeURLString` variable in the example iOS app with the app URL Heroku provides you with (e.g. "https://my-example-app.herokuapp.com")
+3. Head to https://github.com/paystackhq/sample-charge-card-backend and click "Deploy to Heroku" (you may have to sign up for a Heroku account as part of this process). Provide your Paystack test secret key for the `PAYSTACK_TEST_SECRET_KEY` field under 'Env'. Click "Deploy for Free".
+4. Replace the `backendURLString` variable in the example iOS app with the app URL Heroku provides you with (e.g. "https://my-example-app.herokuapp.com")
 
 ### Making a test Charge
 

@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, PSTCKErrorCode) {
     PSTCKCardErrorProcessingError = 80, // Paystack Checkout encountered an error.
     PSTCKTransactionError = 90,         // Something was wrong with the given transaction details.
     PSTCKConflictError = 100,           // A transaction was started while SDK was processing another
+    PSTCKExpiredAccessCodeError = 110,  // The access code is not usable
 };
 
 #pragma mark userInfo keys
@@ -50,6 +51,7 @@ FOUNDATION_EXPORT NSString * __nonnull const PSTCKIncorrectCVC;
 
 #pragma mark Strings
 
+#define PSTCKExpiredAccessCodeErrorMessage NSLocalizedString(@"There was a problem completing your request", @"Error when access code has no valid transaction")
 #define PSTCKCardErrorInvalidNumberUserMessage NSLocalizedString(@"Your card's number is invalid", @"Error when the card number is not valid")
 #define PSTCKCardErrorProcessingTransactionMessage NSLocalizedString(@"Please wait", @"Error when chargeCard is called while the SDK is still processing a transaction")
 #define PSTCKCardErrorInvalidCVCUserMessage NSLocalizedString(@"Your card's security code is invalid", @"Error when the card's CVC is not valid")

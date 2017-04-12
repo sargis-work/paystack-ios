@@ -333,6 +333,14 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                              atStage:stage];
              return;
          }
+         if([[responseObject message].lowercaseString isEqual:@"access code has expired"] && [[responseObject status] isEqual:@"0"]){
+             NSDictionary *userInfo = @{
+                                        NSLocalizedDescriptionKey: PSTCKExpiredAccessCodeErrorMessage,
+                                        PSTCKErrorMessageKey: PSTCKExpiredAccessCodeErrorMessage
+                                        };
+             [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKExpiredAccessCodeError userInfo:userInfo]];
+             return;
+         }
          [self handleResponse:responseObject];
      }];
 }
@@ -502,7 +510,9 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                NSLocalizedDescriptionKey: PSTCKCardErrorProcessingTransactionMessage,
                                PSTCKErrorMessageKey: PSTCKCardErrorProcessingTransactionMessage
                                };
-    [self didEndWithError:[[NSError alloc] initWithDomain:PaystackDomain code:PSTCKConflictError userInfo:userInfo]];
+    [self.operationQueue addOperationWithBlock:^{
+        self.errorCompletion([[NSError alloc] initWithDomain:PaystackDomain code:PSTCKConflictError userInfo:userInfo], self.serverTransaction.reference);
+    }];
 }
 
 @end

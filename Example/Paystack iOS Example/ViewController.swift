@@ -112,6 +112,14 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
             self.outputOnLabel(str: "Charge errored")
             // what should I do if an error occured?
             print(error)
+            if error._code == PSTCKErrorCode.PSTCKExpiredAccessCodeError.rawValue{
+                // access code could not be used
+                // we may as well try afresh
+            }
+            if error._code == PSTCKErrorCode.PSTCKConflictError.rawValue{
+                // another transaction is currently being
+                // processed by the SDK... please wait
+            }
             if let errorDict = (error._userInfo as! NSDictionary?){
                 if let errorString = errorDict.value(forKeyPath: "com.paystack.lib:ErrorMessageKey") as! String? {
                     if let reference=reference {

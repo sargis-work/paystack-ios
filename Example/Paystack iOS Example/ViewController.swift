@@ -11,12 +11,10 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     // MARK: REPLACE THESE
     // Replace these values with your application's keys
     // Find this at https://dashboard.paystack.co/#/settings/developer
-    let paystackPublicKey = "pk_live_2bf31d4aea08ab31f5d0cfd645c7e4f67025d259"
+    let paystackPublicKey = ""
     
     // To set this up, see https://github.com/PaystackHQ/sample-charge-card-backend
-    let backendURLString = "https://infinite-peak-60063.herokuapp.com"
-    
-    let capPrice : UInt = 7580 // this is in kobo (so 75Naira 80kobo);
+    let backendURLString = ""
     
     let card : PSTCKCard = PSTCKCard()
     

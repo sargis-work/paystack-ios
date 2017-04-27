@@ -99,7 +99,7 @@ When you're using your test public key, our libraries give you the ability to te
 If you're building your own form or using `PSTCKPaymentCardTextField`, using any of:
 
 1. card number `4084084084084081` with CVC `408` (along with any future expiration date); or;
-2. card number `5066666666666666666` with CVC `123` and any future expiration date, PIN `1234`, OTP `123456`
+2. card number `5060666666666666666` with CVC `123` and any future expiration date, PIN `1234`, OTP `123456`
 
 will accomplish the same effect.
 

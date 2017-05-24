@@ -1,26 +1,37 @@
 # Guide
 
-If you want to build a mobile app like [Afro](http://www.getafrocab.com) and enable people to make purchases directly in your app, our iOS and [Android](https://github.com/PaystackHQ/paystack-android) libraries can help.
+If you want to build mobile apps like [Taxify](http://www.taxify.eu), [Afro](http://www.getafrocab.com), [Okada Books](https://www.okadabooks.com) and enable people to make purchases directly in your app, our iOS and [Android](https://github.com/PaystackHQ/paystack-android) libraries can help.
 
-Accepting payments in your app after collecting card information can be acieved in either of two ways, which we'll cover in this guide. The `authorization code` from either option can be used on your server in future to charge the cards.
+Accepting payments in your app after collecting card information can be achieved by charging the card with our SDK. Reusable `authorization code`s from such transaction from can be used from your backend to charge the cards directly.
 
-#### Option 1 - Charge the card directly from App
-- Charging the credit card and get the transaction `reference`
-- Verifying the transaction on your server which provides an `authorizaton code` if successful
+## Summarized flow
 
-or
+Once it's time to pay, and the user has provided card details on your app,
 
-#### Option 2 - Tokenize on App, charge on server
-- Converting the credit card information to a _**single-use**_ `token`
-- Sending this token to your server to create a charge which provides an `authorizaton code` if successful
+#### OPTION 1: Backend starts transaction (recommended)
+
+a. App prompts backend to initialize a transaction, backend returns `access_code`.
+
+b. Provide `access_code` and card details to our SDK's `chargeCard` function.
+
+#### OPTION 2: App starts transaction
+
+a. Provide transaction parameters and card params to our SDK's `chargeCard` function.
+
+#### SDK will prompt user for PIN, OTP or Bank authentication as required
+
+#### Once successful, we will send event to your webhook url and call the didTransactionSuccess callback
+
 
 ## Getting Started
+
+### Step 0: Add Keychain Sharing entitlements to your app
 
 ### Step 1: Install the library
 
 #### Manual installation
 
-We also publish our SDK as a static framework that you can copy directly into your app without any additional tools:
+We publish our SDK as a static framework that you can copy directly into your app without any additional tools:
 
 - Head to our [releases page](https://github.com/PaystackHQ/paystack-ios/releases/) and download the framework that's right for you.
 - Unzip the file you downloaded.
@@ -44,7 +55,7 @@ We also support installing our SDK using Carthage. You can simply add github "pa
 
 ### Step 2: Configure API keys
 
-First, you'll want to configure Paystack with your public API key. We recommend doing this in your `AppDelegate`'s `application:didFinishLaunchingWithOptions:` method so that it'll be set for the entire lifecycle of your app.
+First, you'll want to configure Paystack with your public API key. We recommend doing this in your `AppDelegate`'s `application:didFinishLaunchingWithOptions:` method so that it will be set for the entire lifecycle of your app.
 
 ```Swift
 // AppDelegate.swift
@@ -85,7 +96,12 @@ We've placed a test public API key as the PaystackPublicKey constant in the abov
 
 When you're using your test public key, our libraries give you the ability to test your payment flow without having to charge real credit cards.
 
-If you're building your own form or using `PSTCKPaymentCardTextField`, using the card number `4123450131001381` with CVC `883` (along with any future expiration date) will accomplish the same effect.
+If you're building your own form or using `PSTCKPaymentCardTextField`, using any of:
+
+1. card number `4084084084084081` with CVC `408` (along with any future expiration date); or;
+2. card number `5060666666666666666` with CVC `123` and any future expiration date, PIN `1234`, OTP `123456`
+
+will accomplish the same effect.
 
 At some point in the flow of your app, you'll want to obtain payment details from the user. There are two ways to do this. You can (in increasing order of complexity):
 
@@ -208,18 +224,42 @@ cardParams.expMonth = 9;
 
 ### Step 4: Getting payments
 
-Our libraries shoulder the burden of PCI compliance by helping you avoid the need to send card data directly to your server. Instead, our libraries send credit card data directly to our servers, where we can charge them or create tokens which you charge on your server.
+Our libraries shoulder the burden of PCI compliance by helping you avoid the need to send card data directly to your server. Instead, our libraries send credit card data directly to our servers, where we can charge them or create authorizations which you charge on your server.
 
+We charge cards you send using parameters provided in your `PSTCKTransactionParams`. Assemble Transaction parameters into `PSTCKTransactionParams`, and send them along with the `cardParams` from the previous step to get a charge.
 
-#### Step 4 Option 1: Charge Card
+- **CardParams** - As gathered in [Step 3](#step-4-assembling-card-information-into-pstckcardparams)
 
-If you choose the `chargeCard` route, we charge cards you send using parameters provided in your `PSTCKTransactionParams`. Assemble Transaction parameters into `PSTCKTransactionParams`, and send them along with the `cardParams` to get a charge.
+- **TransactionParams** - This object allows you provide information about the transaction to be made. This  can be used in either of 2 ways:
+    - **Resume an initialized transaction**: If employing this flow, you would send all required parameters 
+    for the transaction from your backend to the Paystack API via the `transaction/initialize` call - 
+    documented [here](https://developers.paystack.co/reference#initialize-a-transaction).. The 
+    response of the call includes an `access_code`. This can be used to charge the card by doing 
+    `transactionParams.access_code = {value from backend});`. Once an access code is set, others will be ignored.
+    - **Initiate a fresh transaction on Paystack**: By setting the parameters: `amount`, `email`, `currency`, `plan`,
+     `subaccount`, `transactionCharge`, `reference`, `bearer`. And calling the `setCustomFieldValue` and `setMetadataValue`
+     you can set up a fresh transaction directly from the SDK. 
+     Documentation for these parameters are same as for `transaction/initialize`.
+
+- **ViewController** - A view controller to be used when presenting dialogs. The currently open ViewController is perfect.
+
+You will need to specify callbacks too. Each will be called depending on how the transaction went.
+
+- **didTransactionSuccess** will be called once the charge succeeds.
+
+- **didRequestValidation** is called every time the SDK needs to request user input. This function currently only allows the app know that the SDK is requesting further user input. 
+
+- **didEndWithError** is called if an error occurred during processing. Some types that you should watch include
+    - *PSTCKErrorCode.PSTCKExpiredAccessCodeError*: This would be thrown if the access code has already been used to attempt a charge.
+    - *PSTCKErrorCode.PSTCKConflictError*: This would be thrown if another transaction is currently being processed by the SDK
+
 
 ```Swift
 @IBAction func charge(sender: UIButton) {
     // cardParams already fetched from our view or assembled by you
     let transactionParams = PSTCKTransactionParams.init();
 
+    // building new Paystack Transaction
     transactionParams.amount = 1390;
     do {
         try transactionParams.setCustomFieldValue("iOS SDK", displayedAs: "Paid Via");
@@ -244,7 +284,7 @@ If you choose the `chargeCard` route, we charge cards you send using parameters 
             }, didRequestValidation: { (reference) -> Void in
                 // an OTP was requested, transaction has not yet succeeded
             }, didTransactionSuccess: { (reference) -> Void in
-                // transaction may have succeeded, please verify on server
+                // transaction may have succeeded, please verify on backend
         })
 }
 ```
@@ -255,76 +295,28 @@ If you choose the `chargeCard` route, we charge cards you send using parameters 
 
     PSTCKTransactionParams transactionParams = [[PSTCKTransactionParams alloc] init];
 
-    transactionParams.amount = 1390;
-    transactionParams.email = @"e@ma.il";
-
-    // check https://developers.paystack.co/docs/split-payments-overview for details on how these work
-    // transactionParams.subaccount  = @"ACCT_80d907euhish8d";
-    // transactionParams.bearer  = @"subaccount";
-    // transactionParams.transaction_charge  = 280;
-
-    // if a reference is not supplied, we will give one
-    // transactionParams.reference = "ChargedFromiOSSDK@"
+    // resuming a transaction initialized by backend
+    transactionParams.access_code = '{access code from server}';
 
     [[PSTCKAPIClient sharedClient] chargeCard:cardParams
                                forTransaction:transactionParams
                              onViewController: viewController,
-                              didEndWithError:^(NSError *error){
+                              didEndWithError:^(NSError *error, NSString *reference){
                                                 [self handleError:error];
                                             }
                          didRequestValidation: ^(NSString *reference){
                                                 // an OTP was requested, transaction has not yet succeeded
                                             }
                         didTransactionSuccess: ^(NSString *reference){
-                                                // transaction may have succeeded, please verify on server
+                                                // transaction may have succeeded, please verify on backend
       }];
 
 }
 ```
 
-#### Step 4 Option 2: Using Tokens
+### Step 5: Send the reference to your backend
 
-If you choose the `createToken` route, we convert cards sent to tokens. You should charge these tokens later in your server-side code to get an authorization code.
-
-```Swift
-@IBAction func save(sender: UIButton) {
-    // cardParams Fetched from our view or built by you
-    if let card = cardParams as? PSTCKCardParams {
-        PSTCKAPIClient.sharedClient().createTokenWithCard(card) { (token, error) -> Void in
-            if let error = error  {
-                handleError(error)
-            }
-            else if let token = token {
-                ...
-            }
-        }
-    }
-}
-```
-
-```Objective-C
-- (IBAction)save:(UIButton *)sender {
-    // cardParams Fetched from our view or built by you
-    [[PSTCKAPIClient sharedClient]
-     createTokenWithCard:cardParams
-     completion:^(PSTCKToken *token, NSError *error) {
-         if (error) {
-             [self handleError:error];
-         } else {
-            // call your createBackendChargeWithToken function
-            // A sample is presented in step 6
-         }
-     }];
-}
-```
-
-In the example above, we're calling `createTokenWithCard:` when a save button is tapped. The important thing to ensure is the createToken isn't called before the user has finished entering their card details.
-
-Handling error messages and showing activity indicators while we're creating the token is up to you.
-
-### Step 6 Option 1: Sending the reference to your server
-
-The blocks you gave to `chargeCard` will be called whenever Paystack returns with a reference (or error). You'll need to send the reference off to your server so you can verify the transactions.
+The blocks you gave to `chargeCard` will be called whenever Paystack returns with a reference (or error). You'll need to send the `reference` off to your backend so you can verify the transactions.
 
 Here's how it looks:
 
@@ -385,79 +377,11 @@ func verifyCharge(reference: String) {
 
 ```
 
-On the server, you just need to implement an endpoint that will accept the parameter: `reference`. Make sure any communication with your server is SSL secured to prevent eavesdropping.
+On the server, you just need to implement an endpoint that will accept the parameter: `reference`. Make sure any communication with your backend is SSL secured to prevent eavesdropping.
 
-### Step 6 Option 2: Sending the token to your server
 
-The block you gave to `createToken` will be called whenever Paystack returns with a token (or error). You'll need to send the token off to your server so you can, for example, charge the card.
-
-Here's how it looks:
-
-```Swift
-// ViewController.swift
-
-func createBackendChargeWithToken(token: PSTCKToken, amountinkobo: Int, emailAddress: String) {
-    let url = NSURL(string: "https://example.com/token")!
-    let request = NSMutableURLRequest(URL: url)
-    request.HTTPMethod = "POST"
-    let postBody = "token=\(token.tokenId!)&amountinkobo=\(amountinkobo)&email=\(emailAddress!)"
-    let postData = postBody.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
-    session.uploadTaskWithRequest(request, fromData: postData, completionHandler: { data, response, error in
-        let successfulResponse = (response as? NSHTTPURLResponse)?.statusCode == 200
-        if successfulResponse && error == nil && data != nil{
-            // All was well
-            let newStr = NSString(data: data!, encoding: NSUTF8StringEncoding)
-            print(newStr) // All we did here is log it to the output window
-        } else {
-            if let e=error {
-                print(e.description)
-            } else {
-                // There was no error returned though status code was not 200
-                print("There was an error communicating with your payment backend.")
-                // All we did here is log it to the output window
-            }
-
-        }
-    }).resume()
-}
-```
-
-```Objective-C
-// ViewController.m
-
-- (void)createBackendChargeWithToken:(PSTCKToken *)token,
-                            (NSInt *) amountinkobo,
-                            (NSString *) emailAddress
-                           {
-    NSURL *url = [NSURL URLWithString:@"https://example.com/token"];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-    request.HTTPMethod = @"POST";
-    NSString *body     = [NSString stringWithFormat:@"token=%@&amountinkobo=%@&email=%@", token.tokenId, amountinkobo, emailAddress];
-    request.HTTPBody   = [body dataUsingEncoding:NSUTF8StringEncoding];
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
-    NSURLSessionDataTask *task =
-    [session dataTaskWithRequest:request
-               completionHandler:^(NSData *data,
-                                   NSURLResponse *response,
-                                   NSError *error) {
-                   if (error) {
-                       ...
-                   } else {
-                       ...
-                   }
-               }];
-    [task resume];
-}
-
-```
-
-On the server, you just need to implement an endpoint that will accept the parameters `token`, `email` and `amountinkobo`. Make sure any communication with your server is SSL secured to prevent eavesdropping.
-
---------------------
-
-### Step 6 Option 1: Implement verification on your server
-Verify a charge by calling our REST API. An `authorization_code` will be returned once the card has been charged successfully. You can learn more about our API [here](https://developers.paystack.co/docs/getting-started).
+### Step 6: Implement verification on your server
+Verify a charge by calling our REST API. An active `authorization_code` will be returned once the card has been charged successfully. You can learn more about our API [here](https://developers.paystack.co/docs/getting-started).
 
  **Endpoint:** GET: https://api.paystack.co/transaction/verify
 
@@ -470,83 +394,12 @@ Verify a charge by calling our REST API. An `authorization_code` will be returne
 **Example**
 
 ```bash
-   $ curl https://api.paystack.co/transaction/verify/ChargedFromiOSSDK%40 \
+   $ curl https://api.paystack.co/transaction/verify/trx_sjdhf2987hb \
     -H "Authorization: Bearer SECRET_KEY" \
     -H "Content-Type: application/json" \
     -X GET
 
 ```
-### Step 6 Option 2: Implement payment on your server
-Create a charge by calling our REST API. An `authorization_code` will be returned once the _single-use_ token has been charged successfully. You can learn more about our API [here](https://developers.paystack.co/docs/getting-started).
-
- **Endpoint:** POST: https://api.paystack.co/transaction/charge_token
-
- **Documentation:** https://developers.paystack.co/docs/charge-token
-
- **Parameters:**
-
- - token - the token you want to charge (required)
- - reference - unique reference
- - email  - customer's email address (required)
- - amount - Amount in Kobo (required)
-
-**Example**
-
-```bash
-   $ curl https://api.paystack.co/transaction/charge_token \
-    -H "Authorization: Bearer SECRET_KEY" \
-    -H "Content-Type: application/json" \
-    -d '{"token": "PSTK_r4ec2m75mrgsd8n9", "email": "customer@email.com", "amount": 10000, "reference": "amutaJHSYGWakinlade256"}' \
-    -X POST
-
-```
-### Using the [Paystack-PHP library](https://github.com/yabacon/paystack-php) or [Paystack PHP class](https://github.com/yabacon/paystack-class)
-```php
-list($headers, $body, $code) = $paystack->transaction->chargeToken([
-                'reference'=>'amutaJHSYGWakinlade256',
-                'token'=>'PSTK_r4ec2m75mrgsd8n9',
-                'email'=>'customer@email.com',
-                'amount'=>10000 // in kobo
-              ]);
-
-// check if authorization code was generated
-if ((intval($code) === 200) && array_key_exists('status', $body) && $body['status']) {
-    // body contains Array with data similar to result below
-    $authorization_code = $body['authorization']['authorization_code'];
-    // save the authorization_code so you may charge in future
-} else {
-    // invalid body was returned
-    // handle this or troubleshoot
-    throw new \Exception('Transaction Initialise returned non-true status');
-}
-
-```
-
-**Result**
-```json
-    {  
-        "status": true,
-        "message": "Charge successful",
-        "data": {
-            "amount": 10000,
-            "transaction_date": "2016-01-26T15:34:02.000Z",
-            "status": "success",
-            "reference": "amutaJHSYGWakinlade256",
-            "domain": "test",
-            "authorization": {
-            "authorization_code": "AUTH_d47nbp3x",
-            "card_type": "visa",
-            "last4": "1111",
-            "bank": null
-        },
-        "customer": {
-            "first_name": "John",
-            "last_name": "Doe",
-            "email": "customer@email.com"
-        },
-        "plan": 0
-    }
-```
 
 ### Charging Returning Customers
-See details for charging returning customers [here](https://developers.paystack.co/docs/charging-returning-customers).
+See details for charging returning customers [here](https://developers.paystack.co/docs/charging-returning-customers). Note that only `reusable` authorizations can be charged with this endpoint.

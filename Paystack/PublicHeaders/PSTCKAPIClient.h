@@ -8,8 +8,8 @@
 #import <UIKit/UIViewController.h>
 #endif
 
-static NSString *const __nonnull PSTCKSDKVersion = @"3.0.2";
-static NSString *const __nonnull PSTCKSDKBuild = @"11";
+static NSString *const __nonnull PSTCKSDKVersion = @"3.0.3";
+static NSString *const __nonnull PSTCKSDKBuild = @"12";
 
 @class PSTCKCard, PSTCKCardParams, PSTCKTransactionParams, PSTCKToken;
 
@@ -21,6 +21,7 @@ static NSString *const __nonnull PSTCKSDKBuild = @"11";
  */
 typedef void (^PSTCKErrorCompletionBlock)(NSError * __nonnull error, NSString * __nullable reference);
 typedef void (^PSTCKTransactionCompletionBlock)(NSString * __nonnull reference);
+typedef void (^PSTCKNotifyCompletionBlock)();
 
 /**
  A top-level class that imports the rest of the Paystack SDK. This class used to contain several methods to create Paystack tokens, but those are now deprecated in
@@ -67,16 +68,32 @@ typedef void (^PSTCKTransactionCompletionBlock)(NSString * __nonnull reference);
 @interface PSTCKAPIClient (CreditCards)
 
 /**
- *  Converts an PSTCKCardParams object into a Paystack token using the Paystack API.
+ *  Charges a PSTCKCardParams object using the Paystack API.
  *
  *  @param card        The user's card details. Cannot be nil. @see https://paystack.com/docs/api#create_card_token
- *  @param completion  The callback to run with the returned Paystack token (and any errors that may have occurred).
  */
 - (void)      chargeCard:(nonnull PSTCKCardParams *)card
           forTransaction:(nonnull PSTCKTransactionParams *)transaction
         onViewController:(nonnull UIViewController *)viewController
          didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-    didRequestValidation:(nullable PSTCKTransactionCompletionBlock)beforeValidateCompletion
+    didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
+   didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion;
+
+- (void)      chargeCard:(nonnull PSTCKCardParams *)card
+          forTransaction:(nonnull PSTCKTransactionParams *)transaction
+        onViewController:(nonnull UIViewController *)viewController
+         didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+    didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
+       willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
+         dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
+   didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion;
+
+- (void)      chargeCard:(nonnull PSTCKCardParams *)card
+          forTransaction:(nonnull PSTCKTransactionParams *)transaction
+        onViewController:(nonnull UIViewController *)viewController
+         didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+       willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
+         dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
    didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion;
 
 @end

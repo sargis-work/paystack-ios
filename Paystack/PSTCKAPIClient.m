@@ -91,6 +91,8 @@ static Boolean PROCESSING = false;
 @property(nonatomic, retain) PSTCKTransactionParams *transaction;
 @property(nonatomic, copy) PSTCKErrorCompletionBlock errorCompletion;
 @property(nonatomic, copy) PSTCKTransactionCompletionBlock beforeValidateCompletion;
+@property(nonatomic, copy) PSTCKNotifyCompletionBlock showingDialogCompletion;
+@property(nonatomic, copy) PSTCKNotifyCompletionBlock dialogDismissedCompletion;
 @property(nonatomic, copy) PSTCKTransactionCompletionBlock successCompletion;
 @property int INVALID_DATA_SENT_RETRIES;
 @end
@@ -245,14 +247,13 @@ typedef NS_ENUM(NSInteger, PSTCKChargeStage) {
     forTransaction:(nonnull PSTCKTransactionParams *)transaction
   onViewController:(nonnull UIViewController *)viewController
    didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-didRequestValidation:(nullable PSTCKTransactionCompletionBlock)beforeValidateCompletion
 didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
     NSCAssert(card != nil, @"'card' is required for a charge");
     NSCAssert(errorCompletion != nil, @"'errorCompletion' is required to handle any errors encountered while charging");
     NSCAssert(viewController != nil, @"'viewController' is required to show any alerts that may be needed");
     NSCAssert(transaction != nil, @"'transaction' is required so we may know who to charge");
     NSCAssert(successCompletion != nil, @"'successCompletion' is required so you can continue the process after charge succeeds. Remember to verify on server before giving value.");
-    [self startWithCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestValidation:beforeValidateCompletion didTransactionSuccess:successCompletion];
+    [self startWithCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didTransactionSuccess:successCompletion];
     
     if(PROCESSING){
         [self didEndWithProcessingError];
@@ -268,17 +269,54 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     [self makeChargeRequest:data atStage:PSTCKChargeStageNoHandle];
 }
 
+- (void)chargeCard:(nonnull PSTCKCardParams *)card
+    forTransaction:(nonnull PSTCKTransactionParams *)transaction
+  onViewController:(nonnull UIViewController *)viewController
+   didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
+ willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
+   dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
+didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
+    self.beforeValidateCompletion = beforeValidateCompletion;
+    self.showingDialogCompletion = showingDialogCompletion;
+    self.dialogDismissedCompletion = dialogDismissedCompletion;
+    [self chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didTransactionSuccess:successCompletion];
+    
+}
+
+- (void)chargeCard:(nonnull PSTCKCardParams *)card
+    forTransaction:(nonnull PSTCKTransactionParams *)transaction
+  onViewController:(nonnull UIViewController *)viewController
+   didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+ willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
+   dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
+didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
+    self.showingDialogCompletion = showingDialogCompletion;
+    self.dialogDismissedCompletion = dialogDismissedCompletion;
+    [self chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didTransactionSuccess:successCompletion];
+    
+}
+
+- (void)chargeCard:(nonnull PSTCKCardParams *)card
+    forTransaction:(nonnull PSTCKTransactionParams *)transaction
+  onViewController:(nonnull UIViewController *)viewController
+   didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
+didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
+    self.beforeValidateCompletion = beforeValidateCompletion;
+    [self chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didTransactionSuccess:successCompletion];
+    
+}
+
 - (void)startWithCard:(nonnull PSTCKCardParams *)card
        forTransaction:(nonnull PSTCKTransactionParams *)transaction
      onViewController:(nonnull UIViewController *)viewController
       didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
- didRequestValidation:(nullable PSTCKTransactionCompletionBlock)beforeValidateCompletion
 didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
     self.card = card;
     self.transaction = transaction;
     self.viewController = viewController;
     self.errorCompletion = errorCompletion;
-    self.beforeValidateCompletion = beforeValidateCompletion;
     self.successCompletion = successCompletion;
     self.serverTransaction = [PSTCKServerTransaction new];
     
@@ -346,9 +384,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 }
 
 - (void) requestPin{
-    [self.operationQueue addOperationWithBlock:^{
-        self.beforeValidateCompletion(self.serverTransaction.reference);
-    }];
+    [self notifyShowingDialog];
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Enter CARD PIN"
                                                                    message:@"To confirm that you are the owner of this card please enter your card PIN"
                                                             preferredStyle:UIAlertControllerStyleAlert];
@@ -357,6 +393,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                     actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
                                     handler:^(UIAlertAction * action) {
                                         [action isEnabled]; // Just to avoid Unused error
+                                        [self notifyDialogDismissed];
                                         NSString *provided = ((UITextField *)[alert.textFields objectAtIndex:0]).text;
                                         NSString *handle = [PSTCKCardValidator sanitizedNumericStringForString:provided];
                                         if(handle == nil ||
@@ -386,13 +423,13 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 }
 
 - (void) requestAuth:(NSString * _Nonnull) url{
-    [self.operationQueue addOperationWithBlock:^{
-        self.beforeValidateCompletion(self.serverTransaction.reference);
-    }];
+    [self notifyShowingDialog];
+    [self notifyBeforeValidate];
     PSTCKAuthViewController* authorizer = [[[PSTCKAuthViewController alloc] init]
                                            initWithURL:[NSURL URLWithString:url]
                                            handler:^{
                                                [self.viewController dismissViewControllerAnimated:YES completion:nil];
+                                               [self notifyDialogDismissed];
                                                [self makeChargeRequest:nil
                                                                atStage:PSTCKChargeStageRequery];
                                            }];
@@ -405,9 +442,8 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 }
 
 - (void) requestOtp:(NSString * _Nonnull) otpmessage{
-    [self.operationQueue addOperationWithBlock:^{
-        self.beforeValidateCompletion(self.serverTransaction.reference);
-    }];
+    [self notifyShowingDialog];
+    [self notifyBeforeValidate];
     UIAlertController* tkalert = [UIAlertController alertControllerWithTitle:@"Enter OTP"
                                                                      message:otpmessage
                                                               preferredStyle:UIAlertControllerStyleAlert];
@@ -416,6 +452,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                       actionWithTitle:@"Continue" style:UIAlertActionStyleDefault
                                       handler:^(UIAlertAction * action) {
                                           [action isEnabled]; // Just to avoid Unused error
+                                          [self notifyDialogDismissed];
                                           NSString *provided = ((UITextField *)[tkalert.textFields objectAtIndex:0]).text;
                                           PSTCKValidationParams *validateParams = [PSTCKValidationParams alloc];
                                           validateParams.trans = self.serverTransaction.id;
@@ -498,6 +535,32 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
         self.successCompletion(self.serverTransaction.reference);
     }];
 }
+
+- (void)notifyShowingDialog{
+    if(self.showingDialogCompletion == NULL){
+        return;
+    }
+    [self.operationQueue addOperationWithBlock:^{
+        self.showingDialogCompletion();
+    }];
+}
+- (void)notifyDialogDismissed{
+    if(self.dialogDismissedCompletion == NULL){
+        return;
+    }
+    [self.operationQueue addOperationWithBlock:^{
+        self.dialogDismissedCompletion();
+    }];
+}
+- (void)notifyBeforeValidate{
+    if(self.beforeValidateCompletion == NULL){
+        return;
+    }
+    [self.operationQueue addOperationWithBlock:^{
+        self.beforeValidateCompletion(self.serverTransaction.reference);
+    }];
+}
+
 
 - (void)didEndWithErrorMessage:(NSString *)errorString{
     NSDictionary *userInfo = @{

@@ -1,3 +1,7 @@
+=== 3.0.3 2017-05-24
+
+* Hotfix Ensure we notify caller when showing or dismissing our dialogs
+
 === 2.1.1 2016-12-08
 
 * Hotfix Add TransactionParams to PaystackIOSStatic's headers

@@ -106,7 +106,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         let transactionParams = PSTCKTransactionParams.init();
         transactionParams.access_code = newCode as String;
         // use library to create charge and get its reference
-        PSTCKAPIClient.shared().chargeCard(self.cardDetailsForm.cardParams, forTransaction: transactionParams, on: self, didEndWithError: { (error, reference) -> Void in
+        PSTCKAPIClient.shared().chargeCard(self.cardDetailsForm.cardParams, forTransaction: transactionParams, on: self, didEndWithError: { (error, reference) in
             self.outputOnLabel(str: "Charge errored")
             // what should I do if an error occured?
             print(error)
@@ -131,13 +131,20 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
                 }
             }
             self.chargeCardButton.isEnabled = true;
-        }, didRequestValidation: { (reference) -> Void in
+        }, didRequestValidation: { (reference) in
             self.outputOnLabel(str: "requested validation: " + reference)
-        }, didTransactionSuccess: { (reference) -> Void in
+        }, willPresentDialog: {
+            // make sure dialog can show
+            // if using a "processing" dialog, please hide it
+            self.outputOnLabel(str: "will show a dialog")
+        }, dismissedDialog: {
+            // if using a processing dialog, please make it visible again
+            self.outputOnLabel(str: "dismissed dialog")
+        }) { (reference) in
             self.outputOnLabel(str: "succeeded: " + reference)
             self.chargeCardButton.isEnabled = true;
             self.verifyTransaction(reference: reference)
-        })
+        }
         return
     }
     

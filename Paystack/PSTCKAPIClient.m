@@ -147,10 +147,10 @@ static Boolean PROCESSING = false;
 #pragma clang diagnostic ignored "-Wunused-variable"
 + (void)validateKey:(NSString *)publicKey {
     NSCAssert(publicKey != nil && ![publicKey isEqualToString:@""],
-              @"You must use a valid public key to create a token.");
+              @"You must use a valid public key to charge a card.");
     BOOL secretKey = [publicKey hasPrefix:@"sk_"];
     NSCAssert(!secretKey,
-              @"You are using a secret key to create a token, instead of the public one.");
+              @"You are using a secret key to charge the card, instead of the public one.");
 #ifndef DEBUG
     if ([publicKey.lowercaseString hasPrefix:@"pk_test"]) {
         FAUXPAS_IGNORED_IN_METHOD(NSLogUsed);
@@ -346,6 +346,9 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 }
 
 - (void) requestPin{
+    [self.operationQueue addOperationWithBlock:^{
+        self.beforeValidateCompletion(self.serverTransaction.reference);
+    }];
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Enter CARD PIN"
                                                                    message:@"To confirm that you are the owner of this card please enter your card PIN"
                                                             preferredStyle:UIAlertControllerStyleAlert];

@@ -8,8 +8,8 @@
 #import <UIKit/UIViewController.h>
 #endif
 
-static NSString *const __nonnull PSTCKSDKVersion = @"3.0.3";
-static NSString *const __nonnull PSTCKSDKBuild = @"12";
+static NSString *const __nonnull PSTCKSDKVersion = @"3.0.4";
+static NSString *const __nonnull PSTCKSDKBuild = @"13";
 
 @class PSTCKCard, PSTCKCardParams, PSTCKTransactionParams, PSTCKToken;
 

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                           = 'Paystack'
-  s.version                        = '3.0.3'
+  s.version                        = '3.0.4'
   s.summary                        = 'Paystack is a web-based API helping African Businesses accept payments online.'
   s.description                    = <<-DESC
    Paystack makes it easy for African Businesses to accept Mastercard, Visa and Verve cards from anyone, anywhere in the world.

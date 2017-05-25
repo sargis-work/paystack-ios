@@ -38,7 +38,7 @@ static NSString *const apiURLBase = @"standard.paystack.co";
 static NSString *const chargeEndpoint = @"charge/mobile_charge";
 static NSString *const validateEndpoint = @"charge/validate";
 static NSString *const requeryEndpoint = @"charge/requery/";
-static NSString *const paystackAPIVersion = @"2017-04-09";
+static NSString *const paystackAPIVersion = @"2017-05-25";
 static NSString *PSTCKDefaultPublicKey;
 static Boolean PROCESSING = false;
 

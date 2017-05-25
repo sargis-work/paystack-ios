@@ -12,9 +12,11 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     // Replace these values with your application's keys
     // Find this at https://dashboard.paystack.co/#/settings/developer
     let paystackPublicKey = ""
+    // let paystackPublicKey = "pk_live_ed8a7004bb85bf636a0a22c635ad9d1788caa5de"
     
     // To set this up, see https://github.com/PaystackHQ/sample-charge-card-backend
     let backendURLString = ""
+    // let backendURLString = "https://calm-scrubland-33409.herokuapp.com"
     
     let card : PSTCKCard = PSTCKCard()
     
@@ -105,6 +107,10 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
     func chargeWithSDK(newCode: NSString){
         let transactionParams = PSTCKTransactionParams.init();
         transactionParams.access_code = newCode as String;
+        //transactionParams.additionalAPIParameters = ["enforce_otp": "true"];
+        //transactionParams.email = "ibrahim@paystack.co";
+        //transactionParams.amount = 2000;
+        
         // use library to create charge and get its reference
         PSTCKAPIClient.shared().chargeCard(self.cardDetailsForm.cardParams, forTransaction: transactionParams, on: self, didEndWithError: { (error, reference) in
             self.outputOnLabel(str: "Charge errored")

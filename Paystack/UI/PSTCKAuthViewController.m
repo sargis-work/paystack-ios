@@ -45,7 +45,7 @@ BOOL handlingRedirectURL;
     
     self.authenticationWebView = [[UIWebView alloc] init];
     self.authenticationWebView.delegate = self;
-    self.authenticationWebView.scalesPageToFit = YES;
+    self.authenticationWebView.scalesPageToFit = NO;
     [self.view addSubview:self.authenticationWebView];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     self.navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;

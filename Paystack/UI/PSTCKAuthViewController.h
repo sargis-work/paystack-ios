@@ -21,8 +21,8 @@ typedef void(^PSTCKAuthCallback)(void);
 
 /**
  * Default initializer.
- * @param the authorization url from Paystack.
- * @param callback A standard block.
+ * @param authURL the authorization url from Paystack.
+ * @param completion A standard block.
  * @returns An initialized instance
  **/
 - (id)initWithURL:(NSURL *)authURL handler:(PSTCKAuthCallback)completion;

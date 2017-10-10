@@ -5,6 +5,6 @@
       location = "group:Paystack.xcodeproj">
    </FileRef>
    <FileRef
-      location = "container:/Users/i/workspace/paystack/ios/paystack-ios/Example/Paystack iOS Example.xcodeproj">
+      location = "group:Example/Paystack iOS Example.xcodeproj">
    </FileRef>
 </Workspace>

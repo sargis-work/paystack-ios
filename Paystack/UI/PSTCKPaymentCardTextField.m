@@ -595,7 +595,7 @@ typedef void (^PSTCKNumberShrunkCompletionBlock)(BOOL completed);
     }
     
     _numberFieldShrunk = shrunk;
-    void (^animations)() = ^void() {
+    void (^animations)(void) = ^void() {
         for (UIView *view in @[self.expirationField, self.cvcField]) {
             view.alpha = 1.0f * shrunk;
         }

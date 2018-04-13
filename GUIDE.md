@@ -261,10 +261,18 @@ You will need to specify callbacks too. Each will be called depending on how the
 
     // building new Paystack Transaction
     transactionParams.amount = 1390;
+    let custom_filters: NSMutableDictionary = [
+        "recurring": true
+    ];
+    let items: NSMutableArray = [
+        "Bag","Glasses"
+    ];
     do {
         try transactionParams.setCustomFieldValue("iOS SDK", displayedAs: "Paid Via");
         try transactionParams.setCustomFieldValue("Paystack hats", displayedAs: "To Buy");
         try transactionParams.setMetadataValue("iOS SDK", forKey: "paid_via");
+        try transactionParams.setMetadataValueDict(custom_filters, forKey: "custom_filters");
+        try transactionParams.setMetadataValueArray(items, forKey: "items");
     } catch {
         print(error);
     }

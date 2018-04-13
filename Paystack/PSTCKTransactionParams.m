@@ -49,6 +49,36 @@
     return [self _setMetadataValue:value forKey:key error:error];
 }
 
+- (PSTCKTransactionParams *) setMetadataValueDict:(NSMutableDictionary*)dict
+                                       forKey:(NSString*)key
+                                        error:(NSError**) error {
+    if([@"custom_fields" isEqualToString:key]){
+        *error = [[NSError alloc] initWithDomain:PaystackDomain
+                                           code:PSTCKTransactionError
+                                       userInfo:@{
+                                                  NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                                  PSTCKErrorMessageKey: PSTCKTransactionErrorDontSetCustomFieldDirectlyMessage
+                                                  }];
+        return nil;
+    }
+    return [self _setMetadataValue:dict forKey:key error:error];
+}
+
+- (PSTCKTransactionParams *) setMetadataValueArray:(NSMutableArray*)arr
+                                       forKey:(NSString*)key
+                                        error:(NSError**) error {
+    if([@"custom_fields" isEqualToString:key]){
+        *error = [[NSError alloc] initWithDomain:PaystackDomain
+                                           code:PSTCKTransactionError
+                                       userInfo:@{
+                                                  NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                                  PSTCKErrorMessageKey: PSTCKTransactionErrorDontSetCustomFieldDirectlyMessage
+                                                  }];
+        return nil;
+    }
+    return [self _setMetadataValue:arr forKey:key error:error];
+}
+
 - (PSTCKTransactionParams *) _setMetadataValue:(NSObject*) value
                                         forKey:(NSString*)key
                                          error:(NSError**) error {

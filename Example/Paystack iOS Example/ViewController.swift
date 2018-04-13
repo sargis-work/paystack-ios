@@ -79,7 +79,7 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
                 return
             }
             showOkayableMessage("Backend not configured", message:"To run this sample, please configure your backend.")
-            
+//            chargeWithSDK(newCode:"");
             
         }
         
@@ -108,9 +108,20 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         let transactionParams = PSTCKTransactionParams.init();
         transactionParams.access_code = newCode as String;
         //transactionParams.additionalAPIParameters = ["enforce_otp": "true"];
-        //transactionParams.email = "ibrahim@paystack.co";
-        //transactionParams.amount = 2000;
-        
+//        transactionParams.email = "ibrahim@paystack.co";
+//        transactionParams.amount = 2000;
+//        let dictParams: NSMutableDictionary = [
+//            "recurring": true
+//        ];
+//        let arrParams: NSMutableArray = [
+//            "0","go"
+//        ];
+//        do {
+//            try transactionParams.setMetadataValueDict(dictParams, forKey: "custom_filters");
+//            try transactionParams.setMetadataValueArray(arrParams, forKey: "custom_array");
+//        } catch {
+//            print(error)
+//        }
         // use library to create charge and get its reference
         PSTCKAPIClient.shared().chargeCard(self.cardDetailsForm.cardParams, forTransaction: transactionParams, on: self, didEndWithError: { (error, reference) in
             self.outputOnLabel(str: "Charge errored")

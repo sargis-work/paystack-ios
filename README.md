@@ -1,6 +1,6 @@
 # Paystack iOS SDK
 <!-- [![Travis](https://img.shields.io/travis/paystackhq/paystack-ios/master.svg?style=flat)](https://travis-ci.org/paystackhq/paystack-ios) -->
-[![CocoaPods](https://img.shields.io/cocoapods/v/Paystack.svg?style=flat)](http://cocoapods.org/?q=author%3Apaystack%20name%3Apaystack)
+[![CocoaPods](https://img.shields.io/cocoapods/v/Paystack.svg?style=flat)](https://cocoapods.org/pods/Paystack)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![CocoaPods](https://img.shields.io/cocoapods/l/Paystack.svg?style=flat)](https://github.com/paystackhq/paystack-ios/blob/master/LICENSE)
 [![CocoaPods](https://img.shields.io/cocoapods/p/Paystack.svg?style=flat)](https://github.com/paystackhq/paystack-ios#)

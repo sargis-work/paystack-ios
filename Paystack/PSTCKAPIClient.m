@@ -444,7 +444,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 - (void) requestOtp:(NSString * _Nonnull) otpmessage{
     [self notifyShowingDialog];
     [self notifyBeforeValidate];
-    UIAlertController* tkalert = [UIAlertController alertControllerWithTitle:@"Enter OTP"
+    UIAlertController* tkalert = [UIAlertController alertControllerWithTitle:@"Authentication required"
                                                                      message:otpmessage
                                                               preferredStyle:UIAlertControllerStyleAlert];
     
@@ -466,7 +466,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                                       }];
     
     [tkalert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = @"OTP";
+        textField.placeholder = @"_____";
         textField.clearButtonMode = UITextFieldViewModeWhileEditing;
     }];
     [tkalert addAction:tkdefaultAction];

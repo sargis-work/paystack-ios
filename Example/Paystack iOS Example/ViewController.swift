@@ -35,9 +35,9 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
         let alert = UIAlertController(
             title: title,
             message: message,
-            preferredStyle: UIAlertControllerStyle.alert
+            preferredStyle: UIAlertController.Style.alert
         )
-        let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil)
+        let action = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
     }

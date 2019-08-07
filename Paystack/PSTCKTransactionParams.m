@@ -41,7 +41,7 @@
         *error = [[NSError alloc] initWithDomain:PaystackDomain
                                            code:PSTCKTransactionError
                                        userInfo:@{
-                                                  NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                                  NSLocalizedDescriptionKey: PSTCKTransactionErrorDontSetCustomFieldDirectlyMessage,
                                                   PSTCKErrorMessageKey: PSTCKTransactionErrorDontSetCustomFieldDirectlyMessage
                                                   }];
         return nil;
@@ -56,7 +56,7 @@
         *error = [[NSError alloc] initWithDomain:PaystackDomain
                                            code:PSTCKTransactionError
                                        userInfo:@{
-                                                  NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                                  NSLocalizedDescriptionKey: PSTCKTransactionErrorDontSetCustomFieldDirectlyMessage,
                                                   PSTCKErrorMessageKey: PSTCKTransactionErrorDontSetCustomFieldDirectlyMessage
                                                   }];
         return nil;
@@ -71,7 +71,7 @@
         *error = [[NSError alloc] initWithDomain:PaystackDomain
                                            code:PSTCKTransactionError
                                        userInfo:@{
-                                                  NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                                  NSLocalizedDescriptionKey: PSTCKTransactionErrorDontSetCustomFieldDirectlyMessage,
                                                   PSTCKErrorMessageKey: PSTCKTransactionErrorDontSetCustomFieldDirectlyMessage
                                                   }];
         return nil;

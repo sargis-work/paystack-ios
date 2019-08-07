@@ -31,7 +31,7 @@
         NSError *returnedError = error;
         if (!responseObject && !returnedError) {
             NSDictionary *userInfo = @{
-                                       NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                       NSLocalizedDescriptionKey: @"The response from Paystack failed to get parsed into valid JSON",
                                        PSTCKErrorMessageKey: [@"The response from Paystack failed to get parsed into valid JSON. Response was: " stringByAppendingString:bodyString]
                                        };
             returnedError = [[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo];

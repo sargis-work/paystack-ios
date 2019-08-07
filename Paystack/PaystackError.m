@@ -33,7 +33,7 @@ NSString *const PSTCKIncorrectCVC = @"com.paystack.lib:IncorrectCVC";
     // There should always be a message for the error
     if (devMessage == nil) {
         NSDictionary *userInfo = @{
-                                   NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                   NSLocalizedDescriptionKey: @"Could not interpret the error response that was returned from Paystack.",
                                    PSTCKErrorMessageKey: @"Could not interpret the error response that was returned from Paystack."
                                    };
         return [[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo];
@@ -60,7 +60,7 @@ NSString *const PSTCKIncorrectCVC = @"com.paystack.lib:IncorrectCVC";
     // There should always be a message and type for the error
     if (devMessage == nil || type == nil) {
         NSDictionary *userInfo = @{
-                                   NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                   NSLocalizedDescriptionKey: @"Could not interpret the error response that was returned from Paystack.",
                                    PSTCKErrorMessageKey: @"Could not interpret the error response that was returned from Paystack."
                                    };
         return [[NSError alloc] initWithDomain:PaystackDomain code:PSTCKAPIError userInfo:userInfo];

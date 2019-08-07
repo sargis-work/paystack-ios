@@ -564,7 +564,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 
 - (void)didEndWithErrorMessage:(NSString *)errorString{
     NSDictionary *userInfo = @{
-                               NSLocalizedDescriptionKey: PSTCKCardErrorProcessingErrorUserMessage,
+                               NSLocalizedDescriptionKey: errorString,
                                PSTCKErrorMessageKey: errorString
                                };
     PROCESSING=NO;

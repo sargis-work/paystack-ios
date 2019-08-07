@@ -131,7 +131,8 @@
             *outError = [[NSError alloc] initWithDomain:PaystackDomain
                                                    code:PSTCKAPIError
                                                userInfo:@{
-                                                          NSLocalizedDescriptionKey: PSTCKUnexpectedError,
+                                                          NSLocalizedDescriptionKey: @"There was an error within the Paystack client library when trying to generate the "
+                                                          @"proper validation error.",
                                                           PSTCKErrorMessageKey: @"There was an error within the Paystack client library when trying to generate the "
                                                           @"proper validation error. Contact support@paystack.com if you see this."
                                                           }];

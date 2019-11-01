@@ -10,13 +10,13 @@
 
 @interface PSTCKAuthViewController ()
 
-@property(nonatomic, strong) UIWebView *authenticationWebView;
+@property(nonatomic, strong) WKWebView *authenticationWebView;
 @property(nonatomic, copy) PSTCKAuthCallback completion;
 @property(nonatomic, strong) NSURL *authURL;
 
 @end
 
-@interface PSTCKAuthViewController (UIWebViewDelegate) <UIWebViewDelegate>
+@interface PSTCKAuthViewController (WKNavigationDelegate) <WKNavigationDelegate, WKUIDelegate>
 
 @end
 
@@ -43,9 +43,9 @@ BOOL handlingRedirectURL;
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(tappedCancelButton:)];
     self.navigationItem.leftBarButtonItem = cancelButton;
     
-    self.authenticationWebView = [[UIWebView alloc] init];
-    self.authenticationWebView.delegate = self;
-    self.authenticationWebView.scalesPageToFit = NO;
+    self.authenticationWebView = [[WKWebView alloc] init];
+    self.authenticationWebView.UIDelegate = self;
+    self.authenticationWebView.navigationDelegate = self;
     [self.view addSubview:self.authenticationWebView];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     self.navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -71,11 +71,12 @@ BOOL handlingRedirectURL;
 
 @end
 
-@implementation PSTCKAuthViewController (UIWebViewDelegate)
+@implementation PSTCKAuthViewController (WKNavigationDelegate)
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    #pragma unused(webView, navigationType)
-    NSString *url = [[request URL] absoluteString];
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+     #pragma unused(webView, navigationAction)
+    NSURLRequest *request = navigationAction.request;
+    NSString *url = [[request URL]absoluteString];
     
     // Prevent loading URL if it is the redirectURL
     // The intention is to only requery 3DS auths
@@ -84,14 +85,22 @@ BOOL handlingRedirectURL;
     // Processing has finished?
     if (handlingRedirectURL) {
         self.completion();
+        return decisionHandler(WKNavigationActionPolicyCancel);
+
     }
-    
-    return !handlingRedirectURL;
+    else {
+        return decisionHandler(WKNavigationActionPolicyAllow);
+    }
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-    #pragma unused(webView)
-    
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    #pragma unused(webView, navigation)
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    #pragma unused(webView, navigation)
     // Turn off network activity indicator upon failure to load web view
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     
@@ -104,14 +113,6 @@ BOOL handlingRedirectURL;
     if (!handlingRedirectURL) {
         self.completion();
     }
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-    #pragma unused(webView)
-
-    // Turn off network activity indicator upon finishing web view load
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-        
 }
 
 @end

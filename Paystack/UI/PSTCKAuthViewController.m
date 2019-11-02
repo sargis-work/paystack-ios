@@ -42,8 +42,15 @@ BOOL handlingRedirectURL;
     
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(tappedCancelButton:)];
     self.navigationItem.leftBarButtonItem = cancelButton;
+    // Adds javascript to make content width the device width.
+    NSString *jScript = @"var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);";
+    WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+    WKUserContentController *wkUController = [[WKUserContentController alloc] init];
+    [wkUController addUserScript:wkUScript];
+    WKWebViewConfiguration *wkWebConfig = [[WKWebViewConfiguration alloc] init];
+    wkWebConfig.userContentController = wkUController;
     
-    self.authenticationWebView = [[WKWebView alloc] init];
+    self.authenticationWebView = [[WKWebView alloc] initWithFrame:self.view.frame configuration:wkWebConfig];
     self.authenticationWebView.UIDelegate = self;
     self.authenticationWebView.navigationDelegate = self;
     [self.view addSubview:self.authenticationWebView];
@@ -92,7 +99,6 @@ BOOL handlingRedirectURL;
         return decisionHandler(WKNavigationActionPolicyAllow);
     }
 }
-
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     #pragma unused(webView, navigation)

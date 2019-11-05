@@ -1,3 +1,7 @@
+=== 3.0.13 2019-11-4
+
+* Updates deprecated class UIWebView to WKWebView
+
 === 3.0.6 2019-03-29
 
 * Change title and placeholder of OTP dialog

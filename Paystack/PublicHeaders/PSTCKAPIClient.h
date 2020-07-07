@@ -11,7 +11,7 @@
 static NSString *const __nonnull PSTCKSDKVersion = @"3.0.13";
 static NSString *const __nonnull PSTCKSDKBuild = @"17";
 
-@class PSTCKCard, PSTCKCardParams, PSTCKTransactionParams, PSTCKToken;
+@class PSTCKCard, PSTCKCardParams, PSTCKTransactionParams, PSTCKToken, PSTCKState;
 
 /**
  *  A callback to be run with a token response from the Paystack API.
@@ -21,6 +21,7 @@ static NSString *const __nonnull PSTCKSDKBuild = @"17";
  */
 typedef void (^PSTCKErrorCompletionBlock)(NSError * __nonnull error, NSString * __nullable reference);
 typedef void (^PSTCKTransactionCompletionBlock)(NSString * __nonnull reference);
+typedef void (^PSTCKAddressVerficationBlock)(NSString * _Nonnull transaction, NSArray<PSTCKState *> * _Nonnull states);
 typedef void (^PSTCKNotifyCompletionBlock)(void);
 
 /**
@@ -76,13 +77,25 @@ typedef void (^PSTCKNotifyCompletionBlock)(void);
           forTransaction:(nonnull PSTCKTransactionParams *)transaction
         onViewController:(nonnull UIViewController *)viewController
          didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)addressVerificationBlock
     didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
    didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion;
 
+/// Charges a card using the Paystack API
+/// @param card  The user's card details. Cannot be nil
+/// @param transaction The transaction parameters
+/// @param viewController The viewcontroller where the user entered their card details
+/// @param errorCompletion This callback is called when there is an error
+/// @param avsBlock This callback is called when the api requests for the user's billing address.
+/// @param beforeValidateCompletion
+/// @param showingDialogCompletion Called before displaying the dialog modal
+/// @param dialogDismissedCompletion Called when the dialog modal is dismissed
+/// @param successCompletion The callback is called after a successful charge
 - (void)      chargeCard:(nonnull PSTCKCardParams *)card
           forTransaction:(nonnull PSTCKTransactionParams *)transaction
         onViewController:(nonnull UIViewController *)viewController
          didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)avsBlock
     didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
        willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
          dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
@@ -92,8 +105,11 @@ typedef void (^PSTCKNotifyCompletionBlock)(void);
           forTransaction:(nonnull PSTCKTransactionParams *)transaction
         onViewController:(nonnull UIViewController *)viewController
          didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
+        didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)avsBlock
        willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
          dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
    didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion;
+
+- (void) setProcessingStatus:(Boolean)status;
 
 @end

@@ -15,10 +15,20 @@
 @property (nonatomic) NSString *status;
 @property (nonatomic) NSString *auth;
 @property (nonatomic) NSString *otpmessage;
+@property (nonatomic) NSString *countrycode;
 @property (nonatomic, readwrite, nonnull, copy) NSDictionary *allResponseFields;
 @end
 
 @implementation PSTCKTransaction
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
+}
 
 - (NSString *)description {
     return self.reference ?: self.message ?: @"Unknown reference";
@@ -73,6 +83,7 @@
     transaction.redirecturl = dict[@"redirecturl"];
     transaction.message = dict[@"message"];
     transaction.status = dict[@"status"];
+    transaction.countrycode = dict[@"countryCode"];
     
     transaction.allResponseFields = dict;
     return transaction;

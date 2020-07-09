@@ -15,7 +15,8 @@ Pod::Spec.new do |s|
   s.requires_arc                   = true
   s.ios.deployment_target          = '11.0'
   s.swift_versions = '5.0'
-s.source_files = 'Paystack/Paystack/Classes/**/*'
+  s.source_files = 'Paystack/Classes/**/*'
+  s.resources = 'Paystack/Resources/**/*'
 
     
 end

@@ -15,6 +15,7 @@
 @property (nonatomic) NSString *status;
 @property (nonatomic) NSString *auth;
 @property (nonatomic) NSString *otpmessage;
+@property (nonatomic) NSString *errors;
 @property (nonatomic) NSString *countrycode;
 @property (nonatomic, readwrite, nonnull, copy) NSDictionary *allResponseFields;
 @end
@@ -66,7 +67,7 @@
 
 + (NSArray *)requiredFields {
     //return @[@"id", @"livemode", @"created"];
-    return @[@"status", @"message"];
+    return @[@"message"];
 }
 
 + (instancetype)decodedObjectFromAPIResponse:(NSDictionary *)response {
@@ -83,8 +84,8 @@
     transaction.redirecturl = dict[@"redirecturl"];
     transaction.message = dict[@"message"];
     transaction.status = dict[@"status"];
+    transaction.errors = dict[@"errors"];
     transaction.countrycode = dict[@"countryCode"];
-    
     transaction.allResponseFields = dict;
     return transaction;
 }

@@ -289,6 +289,7 @@
 		91FEDC6124B71FD100A236BA /* Cancel.png in Resources */ = {isa = PBXBuildFile; fileRef = 91FEDC5E24B71FD000A236BA /* Cancel.png */; };
 		91FEDC6224B71FD100A236BA /* Cancel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 91FEDC5F24B71FD000A236BA /* Cancel@2x.png */; };
 		91FEDC6324B71FD100A236BA /* Cancel@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 91FEDC6024B71FD000A236BA /* Cancel@3x.png */; };
+		91FEDC6524B72B9800A236BA /* KeyboardHandlingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FEDC6424B72B9800A236BA /* KeyboardHandlingVC.swift */; };
 		C1718D561C3B2E5B002A7CB3 /* UIImage+Paystack.h in Headers */ = {isa = PBXBuildFile; fileRef = C1718D541C3B2E5B002A7CB3 /* UIImage+Paystack.h */; };
 		C1718D571C3B2E5B002A7CB3 /* UIImage+Paystack.m in Sources */ = {isa = PBXBuildFile; fileRef = C1718D551C3B2E5B002A7CB3 /* UIImage+Paystack.m */; };
 		C1718D581C3B2E60002A7CB3 /* UIImage+Paystack.h in Headers */ = {isa = PBXBuildFile; fileRef = C1718D541C3B2E5B002A7CB3 /* UIImage+Paystack.h */; };
@@ -478,6 +479,7 @@
 		91FEDC5E24B71FD000A236BA /* Cancel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Cancel.png; sourceTree = "<group>"; };
 		91FEDC5F24B71FD000A236BA /* Cancel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Cancel@2x.png"; sourceTree = "<group>"; };
 		91FEDC6024B71FD000A236BA /* Cancel@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Cancel@3x.png"; sourceTree = "<group>"; };
+		91FEDC6424B72B9800A236BA /* KeyboardHandlingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardHandlingVC.swift; sourceTree = "<group>"; };
 		C1718D541C3B2E5B002A7CB3 /* UIImage+Paystack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+Paystack.h"; path = "PublicHeaders/UI/UIImage+Paystack.h"; sourceTree = "<group>"; };
 		C1718D551C3B2E5B002A7CB3 /* UIImage+Paystack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Paystack.m"; path = "UI/UIImage+Paystack.m"; sourceTree = "<group>"; };
 		C178CD441C45607D00851C69 /* UIImage+PaystackTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+PaystackTest.m"; sourceTree = "<group>"; };
@@ -544,6 +546,7 @@
 				C1718D541C3B2E5B002A7CB3 /* UIImage+Paystack.h */,
 				C1718D551C3B2E5B002A7CB3 /* UIImage+Paystack.m */,
 				91FEDC5A24B6A3DF00A236BA /* ButtonExtension.swift */,
+				91FEDC6424B72B9800A236BA /* KeyboardHandlingVC.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -1247,6 +1250,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91FEDC6524B72B9800A236BA /* KeyboardHandlingVC.swift in Sources */,
 				08A5723F1DF92EF30045E184 /* PSTCKCategoryLoader.m in Sources */,
 				0438EF431B74170D00D506CC /* PSTCKCardValidator.m in Sources */,
 				0438EF2F1B7416BB00D506CC /* PSTCKFormTextField.m in Sources */,

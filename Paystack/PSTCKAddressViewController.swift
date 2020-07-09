@@ -8,7 +8,7 @@
 
 import UIKit
 
-@objc public class PSTCKAddressViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
+@objc public class PSTCKAddressViewController: PSTCKKeyboardHandlingBaseVC, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
     @IBOutlet var streetField: UITextField!
     @IBOutlet var cityField: UITextField!
     @IBOutlet var stateField: UITextField!

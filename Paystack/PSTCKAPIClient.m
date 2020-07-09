@@ -35,7 +35,7 @@
 
 #define FAUXPAS_IGNORED_IN_METHOD(...)
 
-static NSString *const apiURLBase = @"crayon.paystack.co";
+static NSString *const apiURLBase = @"standard.paystack.co";
 static NSString *const chargeEndpoint = @"charge/mobile_charge";
 static NSString *const avsEndpoint = @"charge/avs";
 static NSString *const validateEndpoint = @"charge/validate";

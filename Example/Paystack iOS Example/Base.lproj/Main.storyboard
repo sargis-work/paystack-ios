@@ -2,7 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="vXZ-lx-hvc">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment version="2304" identifier="iOS"/>
+        <deployment version="4368" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -87,120 +87,8 @@
             </objects>
             <point key="canvasLocation" x="-489.85507246376818" y="131.25"/>
         </scene>
-        <!--Address View Controller-->
-        <scene sceneID="lbK-ve-1lK">
-            <objects>
-                <viewController storyboardIdentifier="AddressViewController" id="io7-bH-FNG" customClass="AddressViewController" customModule="Paystack_iOS_Example" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="p6G-mC-Bro"/>
-                        <viewControllerLayoutGuide type="bottom" id="Q7S-Bi-MUj"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="89E-G3-r8k">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="PhG-H7-tpl">
-                                <rect key="frame" x="20" y="60" width="335" height="230"/>
-                                <subviews>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Street Address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="edo-VZ-DFY">
-                                        <rect key="frame" x="0.0" y="0.0" width="335" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="Nva-PT-my0"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="City" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="YfO-Xm-ouu">
-                                        <rect key="frame" x="0.0" y="60" width="335" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="Usx-qF-RTh"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="State" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iCk-bG-uce">
-                                        <rect key="frame" x="0.0" y="120" width="335" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="KKa-vz-488"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Zip Code" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xBC-go-iEP">
-                                        <rect key="frame" x="0.0" y="180" width="335" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="50" id="K51-wK-3oz"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                </subviews>
-                            </stackView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uYa-h1-Y4H">
-                                <rect key="frame" x="20" y="305" width="335" height="50"/>
-                                <color key="backgroundColor" red="0.23000000000000001" green="0.71999999999999997" blue="0.37" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="9QX-jT-LSy"/>
-                                </constraints>
-                                <state key="normal" title="Complete Payment">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="6"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="onButtonTap:" destination="io7-bH-FNG" eventType="touchUpInside" id="kID-zn-fVh"/>
-                                </connections>
-                            </button>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="9er-gK-zVb">
-                                <rect key="frame" x="177.5" y="320" width="20" height="20"/>
-                                <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </activityIndicatorView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FjQ-Ua-Ar4">
-                                <rect key="frame" x="20" y="0.0" width="50" height="50"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="R26-2q-1dj"/>
-                                    <constraint firstAttribute="height" constant="50" id="WZn-Gx-bIx"/>
-                                </constraints>
-                                <color key="tintColor" red="0.0039215686269999999" green="0.11" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <state key="normal" title="Button" image="xmark" catalog="system"/>
-                                <connections>
-                                    <action selector="onCancelButtonTap:" destination="io7-bH-FNG" eventType="touchUpInside" id="qHu-oC-HhP"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstItem="9er-gK-zVb" firstAttribute="centerY" secondItem="uYa-h1-Y4H" secondAttribute="centerY" id="4cy-Qi-fJp"/>
-                            <constraint firstItem="uYa-h1-Y4H" firstAttribute="leading" secondItem="89E-G3-r8k" secondAttribute="leading" constant="20" id="AOg-BA-acB"/>
-                            <constraint firstItem="PhG-H7-tpl" firstAttribute="top" secondItem="p6G-mC-Bro" secondAttribute="bottom" constant="60" id="Av0-wg-88A"/>
-                            <constraint firstAttribute="trailing" secondItem="PhG-H7-tpl" secondAttribute="trailing" constant="20" id="WtB-7E-fDR"/>
-                            <constraint firstItem="FjQ-Ua-Ar4" firstAttribute="leading" secondItem="89E-G3-r8k" secondAttribute="leading" constant="20" id="ZWv-UG-z6H"/>
-                            <constraint firstItem="9er-gK-zVb" firstAttribute="centerX" secondItem="uYa-h1-Y4H" secondAttribute="centerX" id="hgr-kA-lUK"/>
-                            <constraint firstItem="PhG-H7-tpl" firstAttribute="leading" secondItem="89E-G3-r8k" secondAttribute="leading" constant="20" id="krZ-Q2-YkL"/>
-                            <constraint firstItem="FjQ-Ua-Ar4" firstAttribute="top" secondItem="p6G-mC-Bro" secondAttribute="bottom" id="pZv-g0-hwZ"/>
-                            <constraint firstAttribute="trailing" secondItem="uYa-h1-Y4H" secondAttribute="trailing" constant="20" id="tzw-OY-5We"/>
-                            <constraint firstItem="uYa-h1-Y4H" firstAttribute="top" secondItem="PhG-H7-tpl" secondAttribute="bottom" constant="15" id="ysh-uO-foz"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="activityIndicator" destination="9er-gK-zVb" id="NVd-K1-TBd"/>
-                        <outlet property="cityField" destination="YfO-Xm-ouu" id="fPO-Ko-SKU"/>
-                        <outlet property="paymentButton" destination="uYa-h1-Y4H" id="vaK-eK-Qjb"/>
-                        <outlet property="stateField" destination="iCk-bG-uce" id="JLI-pI-HzE"/>
-                        <outlet property="streetField" destination="edo-VZ-DFY" id="F2i-Xp-Mua"/>
-                        <outlet property="zipField" destination="xBC-go-iEP" id="0tv-Pi-3tQ"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="VIY-Gs-OVY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="279" y="125"/>
-        </scene>
     </scenes>
     <resources>
         <image name="caps" width="479" height="307"/>
-        <image name="xmark" catalog="system" width="128" height="113"/>
     </resources>
 </document>

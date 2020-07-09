@@ -14,7 +14,6 @@
 		10DAC7941C896BB300855971 /* Paystack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10DAC7921C896BAC00855971 /* Paystack.framework */; };
 		10DAC7951C896BB300855971 /* Paystack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 10DAC7921C896BAC00855971 /* Paystack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		10FC52021C88D40A004A0733 /* Paystack iOS Example.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 10FC52011C88D40A004A0733 /* Paystack iOS Example.entitlements */; };
-		919A9FBD249EEC8600B7A571 /* AddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 919A9FBC249EEC8600B7A571 /* AddressViewController.swift */; };
 		C11745DF1C456D6D0029936F /* PSTCKPaymentCardTextFieldUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C11745DE1C456D6D0029936F /* PSTCKPaymentCardTextFieldUITests.m */; };
 /* End PBXBuildFile section */
 
@@ -51,7 +50,6 @@
 		04823F781A6849200098400B /* Paystack iOS Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Paystack iOS Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		10DAC7921C896BAC00855971 /* Paystack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Paystack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		10FC52011C88D40A004A0733 /* Paystack iOS Example.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Paystack iOS Example.entitlements"; sourceTree = "<group>"; };
-		919A9FBC249EEC8600B7A571 /* AddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressViewController.swift; sourceTree = "<group>"; };
 		C11745D31C456C730029936F /* Paystack iOS Application Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Paystack iOS Application Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C11745D71C456C730029936F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C11745DD1C456D6D0029936F /* Paystack iOS Application Tests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Paystack iOS Application Tests-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -84,7 +82,6 @@
 				042CA41A1A685E8D00D778E7 /* Info.plist */,
 				042CA4141A685E8D00D778E7 /* AppDelegate.swift */,
 				042CA41C1A685E8D00D778E7 /* ViewController.swift */,
-				919A9FBC249EEC8600B7A571 /* AddressViewController.swift */,
 				042CA4191A685E8D00D778E7 /* Images.xcassets */,
 				042CA4171A685E8D00D778E7 /* Main.storyboard */,
 			);
@@ -247,7 +244,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				919A9FBD249EEC8600B7A571 /* AddressViewController.swift in Sources */,
 				042CA4221A685E8D00D778E7 /* ViewController.swift in Sources */,
 				042CA41D1A685E8D00D778E7 /* AppDelegate.swift in Sources */,
 			);

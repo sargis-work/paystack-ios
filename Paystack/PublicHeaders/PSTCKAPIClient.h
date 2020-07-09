@@ -8,8 +8,8 @@
 #import <UIKit/UIViewController.h>
 #endif
 
-static NSString *const __nonnull PSTCKSDKVersion = @"3.0.13";
-static NSString *const __nonnull PSTCKSDKBuild = @"17";
+static NSString *const __nonnull PSTCKSDKVersion = @"3.0.14";
+static NSString *const __nonnull PSTCKSDKBuild = @"18";
 
 @class PSTCKCard, PSTCKCardParams, PSTCKTransactionParams, PSTCKToken, PSTCKState;
 
@@ -77,7 +77,6 @@ typedef void (^PSTCKNotifyCompletionBlock)(void);
           forTransaction:(nonnull PSTCKTransactionParams *)transaction
         onViewController:(nonnull UIViewController *)viewController
          didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)addressVerificationBlock
     didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
    didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion;
 
@@ -86,8 +85,6 @@ didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)addressVerif
 /// @param transaction The transaction parameters
 /// @param viewController The viewcontroller where the user entered their card details
 /// @param errorCompletion This callback is called when there is an error
-/// @param avsBlock This callback is called when the api requests for the user's billing address.
-/// @param beforeValidateCompletion
 /// @param showingDialogCompletion Called before displaying the dialog modal
 /// @param dialogDismissedCompletion Called when the dialog modal is dismissed
 /// @param successCompletion The callback is called after a successful charge
@@ -95,7 +92,6 @@ didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)addressVerif
           forTransaction:(nonnull PSTCKTransactionParams *)transaction
         onViewController:(nonnull UIViewController *)viewController
          didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)avsBlock
     didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
        willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
          dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
@@ -105,7 +101,6 @@ didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)avsBlock
           forTransaction:(nonnull PSTCKTransactionParams *)transaction
         onViewController:(nonnull UIViewController *)viewController
          didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-        didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)avsBlock
        willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
          dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
    didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion;

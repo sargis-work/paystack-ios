@@ -37,6 +37,7 @@
 
 static NSString *const apiURLBase = @"crayon.paystack.co";
 static NSString *const chargeEndpoint = @"charge/mobile_charge";
+static NSString *const avsEndpoint = @"charge/avs";
 static NSString *const validateEndpoint = @"charge/validate";
 static NSString *const requeryEndpoint = @"charge/requery/";
 static NSString *const paystackAPIVersion = @"2017-05-25";
@@ -95,7 +96,6 @@ static Boolean PROCESSING = false;
 @property(nonatomic, copy) PSTCKNotifyCompletionBlock showingDialogCompletion;
 @property(nonatomic, copy) PSTCKNotifyCompletionBlock dialogDismissedCompletion;
 @property(nonatomic, copy) PSTCKTransactionCompletionBlock successCompletion;
-@property(nonatomic, copy) PSTCKAddressVerficationBlock addressVerificationBlock;
 
 @property int INVALID_DATA_SENT_RETRIES;
 @end
@@ -240,6 +240,7 @@ typedef NS_ENUM(NSInteger, PSTCKChargeStage) {
     PSTCKChargeStageValidateToken,
     PSTCKChargeStageRequery,
     PSTCKChargeStageAuthorize,
+    PSTCKChargeStageAVS,
 };
 
 
@@ -250,7 +251,6 @@ typedef NS_ENUM(NSInteger, PSTCKChargeStage) {
     forTransaction:(nonnull PSTCKTransactionParams *)transaction
   onViewController:(nonnull UIViewController *)viewController
    didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)addressVerificationBlock
 didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
     NSCAssert(card != nil, @"'card' is required for a charge");
     NSCAssert(errorCompletion != nil, @"'errorCompletion' is required to handle any errors encountered while charging");
@@ -281,7 +281,6 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     forTransaction:(nonnull PSTCKTransactionParams *)transaction
   onViewController:(nonnull UIViewController *)viewController
    didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)addressVerificationBlock
 didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
  willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
    dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
@@ -289,8 +288,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     self.beforeValidateCompletion = beforeValidateCompletion;
     self.showingDialogCompletion = showingDialogCompletion;
     self.dialogDismissedCompletion = dialogDismissedCompletion;
-    self.addressVerificationBlock = addressVerificationBlock;
-    [self chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestAddressVerification:addressVerificationBlock didTransactionSuccess:successCompletion];
+    [self chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion  didTransactionSuccess:successCompletion];
     
 }
 
@@ -298,14 +296,12 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     forTransaction:(nonnull PSTCKTransactionParams *)transaction
   onViewController:(nonnull UIViewController *)viewController
    didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)addressVerificationBlock
  willPresentDialog:(nonnull PSTCKNotifyCompletionBlock)showingDialogCompletion
    dismissedDialog:(nonnull PSTCKNotifyCompletionBlock)dialogDismissedCompletion
 didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
     self.showingDialogCompletion = showingDialogCompletion;
     self.dialogDismissedCompletion = dialogDismissedCompletion;
-    self.addressVerificationBlock = addressVerificationBlock;
-    [self chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion didRequestAddressVerification:addressVerificationBlock didTransactionSuccess:successCompletion];
+    [self chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion  didTransactionSuccess:successCompletion];
     
 }
 
@@ -313,12 +309,10 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     forTransaction:(nonnull PSTCKTransactionParams *)transaction
   onViewController:(nonnull UIViewController *)viewController
    didEndWithError:(nonnull PSTCKErrorCompletionBlock)errorCompletion
-didRequestAddressVerification:(nonnull PSTCKAddressVerficationBlock)addressVerificationBlock
 didRequestValidation:(nonnull PSTCKTransactionCompletionBlock)beforeValidateCompletion
 didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion {
     self.beforeValidateCompletion = beforeValidateCompletion;
-    self.addressVerificationBlock = addressVerificationBlock;
-    [self chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion  didRequestAddressVerification:addressVerificationBlock didTransactionSuccess:successCompletion];
+    [self chargeCard:card forTransaction:transaction onViewController:viewController didEndWithError:errorCompletion   didTransactionSuccess:successCompletion];
     
 }
 
@@ -359,6 +353,10 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
         case PSTCKChargeStageAuthorize:
             endpoint =  [requeryEndpoint stringByAppendingString:self.serverTransaction.id] ;
             httpMethod = @"GET";
+            break;
+        case PSTCKChargeStageAVS:
+            endpoint = avsEndpoint;
+            httpMethod = @"POST";
             break;
     }
     
@@ -436,6 +434,27 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     [self.viewController presentViewController:alert animated:YES completion:nil];
 }
 
+- (void) requestAVS:(NSArray<PSTCKState *>*) states {
+    [self notifyShowingDialog];
+    [self notifyBeforeValidate];
+    PSTCKAddressViewController* avsVC = [[PSTCKAddressViewController alloc] initWithNibName: @"AddressViewController" bundle:[NSBundle bundleForClass:[self class]]];
+    avsVC.transaction = self.serverTransaction.id;
+    avsVC.didCollectAddress = ^ (NSDictionary<NSString *,id> * _Nonnull address) {
+        [self notifyDialogDismissed];
+        NSData *data = [PSTCKFormEncoder formEncryptedDataForDict:address
+                                                     usePublicKey:[self publicKey]
+                                                     onThisDevice:[self.class device_id]];
+        [self makeChargeRequest:data
+                        atStage:PSTCKChargeStageAVS];
+    };
+    avsVC.didTapCancelButton = ^{
+        [self notifyDialogDismissed];
+        [self didEndWithErrorMessage:@"Could not complete charge because billing information is missing"];
+    };
+    avsVC.states = states;
+    [self.viewController presentViewController:avsVC animated:YES completion:nil];
+}
+
 - (void) requestAuth:(NSString * _Nonnull) url{
     [self notifyShowingDialog];
     [self notifyBeforeValidate];
@@ -488,6 +507,10 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
 }
 
 - (void) handleResponse:(PSTCKTransaction * _Nonnull)responseObject{
+    if ([responseObject errors] != nil) {
+        [self didEndWithErrorMessage: [responseObject message]];
+        return;
+    }
     if([[responseObject status] isEqual:@"1"] || [[responseObject status] isEqual:@"success"]){
         [self didEndSuccessfully];
         return;
@@ -498,7 +521,9 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
                 [self didEndWithError:error];
             }
             else {
-                [self didRequestAVS:responseObject.trans states:states];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self requestAVS:states];
+                });
             }
         }];
         return;
@@ -558,12 +583,6 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     PROCESSING=NO;
     [self.operationQueue addOperationWithBlock:^{
         self.successCompletion(self.serverTransaction.reference);
-    }];
-}
-
-- (void) didRequestAVS: (NSString *) trans states:(NSArray<PSTCKState *>*) states {
-    [self.operationQueue addOperationWithBlock: ^ {
-        self.addressVerificationBlock(trans, states);
     }];
 }
 

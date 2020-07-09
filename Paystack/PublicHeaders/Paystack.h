@@ -19,9 +19,7 @@
 #import "PSTCKCardValidator.h"
 #import "PSTCKToken.h"
 #import "PSTCKRSA.h"
-#import "PSTCKAPIPostRequest.h"
-#import "PSTCKFormEncoder.h"
-#import "PSTCKTransaction.h"
+
 #if TARGET_OS_IPHONE
 #import "PSTCKPaymentCardTextField.h"
 #endif

@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.swift_versions = '5.0'
   s.source_files = 'Paystack/Classes/**/*'
   s.resources = 'Paystack/Resources/**/*'
+  s.public_header_files = 'Paystack/Classes/Paystack.h'
 
     
 end

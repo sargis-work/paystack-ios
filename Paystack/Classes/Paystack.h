@@ -9,17 +9,17 @@
 // Stripe was replaced with Paystack - and STP with PSTCK - to avoid collisions within 
 // apps that are using both Paystack and Stripe.
 
-#import "PSTCKAPIClient.h"
-#import "PaystackError.h"
-#import "PSTCKCardBrand.h"
-#import "PSTCKCardParams.h"
-#import "PSTCKTransactionParams.h"
-#import "PSTCKCard.h"
-#import "PSTCKCardValidationState.h"
-#import "PSTCKCardValidator.h"
-#import "PSTCKToken.h"
-#import "PSTCKRSA.h"
+#import <Paystack/PSTCKAPIClient.h>
+#import <Paystack/PaystackError.h>
+#import <Paystack/PSTCKCardBrand.h>
+#import <Paystack/PSTCKCardParams.h>
+#import <Paystack/PSTCKTransactionParams.h>
+#import <Paystack/PSTCKCard.h>
+#import <Paystack/PSTCKCardValidationState.h>
+#import <Paystack/PSTCKCardValidator.h>
+#import <Paystack/PSTCKToken.h>
+#import <Paystack/PSTCKRSA.h>
 
 #if TARGET_OS_IPHONE
-#import "PSTCKPaymentCardTextField.h"
+#import <Paystack/PSTCKPaymentCardTextField.h>
 #endif

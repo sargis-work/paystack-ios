@@ -522,7 +522,6 @@
 		0438EF251B74162700D506CC /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				04E32A9C1B7A9490009C9E35 /* PSTCKPaymentCardTextField.h */,
 				08C260A71E9C214A002AE28C /* PSTCKAuthViewController.h */,
 				08C260A81E9C214A002AE28C /* PSTCKAuthViewController.m */,
 				0438EF291B7416BB00D506CC /* PSTCKPaymentCardTextField.m */,
@@ -532,7 +531,6 @@
 				0438EF271B7416BB00D506CC /* PSTCKFormTextField.m */,
 				0438EF2A1B7416BB00D506CC /* PSTCKPaymentCardTextFieldViewModel.h */,
 				0438EF2B1B7416BB00D506CC /* PSTCKPaymentCardTextFieldViewModel.m */,
-				C1718D541C3B2E5B002A7CB3 /* UIImage+Paystack.h */,
 				C1718D551C3B2E5B002A7CB3 /* UIImage+Paystack.m */,
 				91FEDC5A24B6A3DF00A236BA /* ButtonExtension.swift */,
 				91FEDC6424B72B9800A236BA /* KeyboardHandlingVC.swift */,
@@ -698,10 +696,33 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		9121E93824B7B5C7007BBE61 /* PublicHeaders */ = {
+			isa = PBXGroup;
+			children = (
+				04F213341BCECB1C001D6F22 /* PSTCKAPIResponseDecodable.h */,
+				04E32A9C1B7A9490009C9E35 /* PSTCKPaymentCardTextField.h */,
+				04CDB4CA1A5F30A700B854EE /* PSTCKCard.h */,
+				04EBC7511B7533C300A0E6AE /* PSTCKCardValidationState.h */,
+				04CDB4A91A5F30A700B854EE /* Paystack.h */,
+				04CDB4C41A5F30A700B854EE /* PSTCKFormEncoder.h */,
+				04EBC7521B7533C300A0E6AE /* PSTCKCardValidator.h */,
+				04CDB4CC1A5F30A700B854EE /* PSTCKToken.h */,
+				C1718D541C3B2E5B002A7CB3 /* UIImage+Paystack.h */,
+				0806F2F21DBB9E7100C2741B /* PSTCKTransaction.h */,
+				0806F2F31DBB9E7100C2741B /* PSTCKTransactionParams.h */,
+				0806F2FC1DBBA3F600C2741B /* PSTCKValidationParams.h */,
+				0438EF461B74183100D506CC /* PSTCKCardBrand.h */,
+				9121E93324B7A35F007BBE61 /* PaystackError.h */,
+				04CDE5BB1BC1F21500548833 /* PSTCKCardParams.h */,
+				04CDB4C21A5F30A700B854EE /* PSTCKAPIClient.h */,
+			);
+			path = PublicHeaders;
+			sourceTree = "<group>";
+		};
 		91F7793324B774CF0003C7AC /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				04CDB4A91A5F30A700B854EE /* Paystack.h */,
+				9121E93824B7B5C7007BBE61 /* PublicHeaders */,
 				91F7793424B77F4D0003C7AC /* API Client */,
 				91F7793824B781270003C7AC /* Error Handler */,
 				91F7793924B781800003C7AC /* Card */,
@@ -721,8 +742,6 @@
 			children = (
 				9121E92024B79EAD007BBE61 /* PSTCKAPIPostRequest.h */,
 				049952CE1BCF13510088C703 /* PSTCKAPIPostRequest.m */,
-				04F213341BCECB1C001D6F22 /* PSTCKAPIResponseDecodable.h */,
-				04CDB4C21A5F30A700B854EE /* PSTCKAPIClient.h */,
 				04CDB4C31A5F30A700B854EE /* PSTCKAPIClient.m */,
 				919A9FBA249C442300B7A571 /* PSTCKAPIClientExtension.swift */,
 				049952D11BCF13DD0088C703 /* PSTCKAPIClient+Private.h */,
@@ -733,10 +752,7 @@
 		91F7793524B77FA20003C7AC /* Card Validator */ = {
 			isa = PBXGroup;
 			children = (
-				04EBC7511B7533C300A0E6AE /* PSTCKCardValidationState.h */,
-				04EBC7521B7533C300A0E6AE /* PSTCKCardValidator.h */,
 				0438EF3F1B74170D00D506CC /* PSTCKCardValidator.m */,
-				0806F2FC1DBBA3F600C2741B /* PSTCKValidationParams.h */,
 				0806F2FA1DBBA3C500C2741B /* PSTCKValidationParams.m */,
 			);
 			path = "Card Validator";
@@ -771,7 +787,6 @@
 		91F7793824B781270003C7AC /* Error Handler */ = {
 			isa = PBXGroup;
 			children = (
-				9121E93324B7A35F007BBE61 /* PaystackError.h */,
 				9121E93224B7A35F007BBE61 /* PaystackError.m */,
 			);
 			path = "Error Handler";
@@ -780,10 +795,7 @@
 		91F7793924B781800003C7AC /* Card */ = {
 			isa = PBXGroup;
 			children = (
-				0438EF461B74183100D506CC /* PSTCKCardBrand.h */,
-				04CDE5BB1BC1F21500548833 /* PSTCKCardParams.h */,
 				04CDE5B41BC1F1F100548833 /* PSTCKCardParams.m */,
-				04CDB4CA1A5F30A700B854EE /* PSTCKCard.h */,
 				04CDB4CB1A5F30A700B854EE /* PSTCKCard.m */,
 			);
 			path = Card;
@@ -792,7 +804,6 @@
 		91F7793A24B7819B0003C7AC /* Form Encoder */ = {
 			isa = PBXGroup;
 			children = (
-				04CDB4C41A5F30A700B854EE /* PSTCKFormEncoder.h */,
 				04CDB4C51A5F30A700B854EE /* PSTCKFormEncoder.m */,
 				04F213301BCEAB61001D6F22 /* PSTCKFormEncodable.h */,
 			);
@@ -803,9 +814,7 @@
 			isa = PBXGroup;
 			children = (
 				0806F2F61DBB9E8200C2741B /* PSTCKTransaction.m */,
-				0806F2F31DBB9E7100C2741B /* PSTCKTransactionParams.h */,
 				0806F2F71DBB9E8200C2741B /* PSTCKTransactionParams.m */,
-				0806F2F21DBB9E7100C2741B /* PSTCKTransaction.h */,
 			);
 			path = Transaction;
 			sourceTree = "<group>";
@@ -814,7 +823,6 @@
 			isa = PBXGroup;
 			children = (
 				04CDB4CD1A5F30A700B854EE /* PSTCKToken.m */,
-				04CDB4CC1A5F30A700B854EE /* PSTCKToken.h */,
 			);
 			path = Token;
 			sourceTree = "<group>";

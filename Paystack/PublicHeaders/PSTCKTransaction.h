@@ -24,6 +24,8 @@
 @property (nonatomic, readonly, nonnull) NSString *redirecturl;
 @property (nonatomic, readonly, nonnull) NSString *auth;
 @property (nonatomic, readonly, nonnull) NSString *otpmessage;
+@property (nonatomic, readonly, nonnull) NSString *countrycode;
+@property (nonatomic, readonly, nonnull) NSString *errors;
 
 
 @end

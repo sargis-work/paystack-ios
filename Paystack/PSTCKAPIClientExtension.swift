@@ -16,15 +16,13 @@ import Foundation
         request.httpMethod = "GET"
         URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
             guard let data = data, error == nil else {
-                print(error?.localizedDescription ?? "No data")
                 completion([PSTCKState](), error)
                 return
             }
             let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
             if let responseJSON = responseJSON as? [String: Any] {
-                print(responseJSON)
                 guard responseJSON["status"] as? Bool == true else {
-                    print(responseJSON["message"] as? String ?? "Message is nil")
+                    completion([PSTCKState](), StringError(responseJSON["message"] as? String ?? "Could not fetch issuing country states"))
                     return
                 }
                 if let data = responseJSON["data"] as? [[String : Any]] {
@@ -55,6 +53,21 @@ import Foundation
        return nil
     }
 }
+
+struct StringError : LocalizedError {
+    var errorDescription: String? { return errorMessage }
+    var failureReason: String? { return errorMessage }
+    var recoverySuggestion: String? { return "" }
+    var helpAnchor: String? { return "" }
+    
+    private var errorMessage : String
+    
+    init(_ description: String)
+    {
+        errorMessage = description
+    }
+}
+
 
 
 

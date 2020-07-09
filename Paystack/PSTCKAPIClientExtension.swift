@@ -10,34 +10,6 @@ import Foundation
 
 @objc extension PSTCKAPIClient {
     
-    /// Call this method after you collect billing information
-    /// - Parameters:
-    ///   - transaction: The transaction ID
-    ///   - street: The customer's street
-    ///   - city: The customer's city
-    ///   - zip: The customer's zip code
-    ///   - state: The customer's state
-    ///   - completion: Callback containing either the payment reference or an error
-    public func chargeWithAVS(transaction: String, street: String, city: String, zip: String, state: String, completion: @escaping (String?, Error?) -> Void ) {
-        let bodyJSON: [String : Any] = [
-            "trans" :  transaction,
-            "address" : street,
-            "city" : city,
-            "zip_code" : zip,
-            "state" : state
-        ]
-        let deviceID = UIDevice.current.identifierForVendor!.uuidString
-        let data = PSTCKFormEncoder.formEncryptedData(forDict: bodyJSON, usePublicKey: self.publicKey!, onThisDevice: deviceID)
-        PSTCKAPIPostRequest<PSTCKTransaction>.start(with: self, endpoint: "charge/avs", method: "POST", post: data, serializer: PSTCKTransaction() , completion: { response, error in
-            self.setProcessingStatus(false)
-            guard error == nil else {
-                completion(nil, error)
-                return
-            }
-            completion(response?.reference, nil)
-        })
-    }
-    
      public func fetchStates(country: String, completion: @escaping ([PSTCKState], Error?) -> Void) {
         let url = URL(string: "https://api.paystack.co/address_verification/states?country=\(country)")!
         var request = URLRequest(url: url)
@@ -61,9 +33,7 @@ import Foundation
                 }
             }
         }).resume()
-    }
-    
-    
+    }    
 }
 
 

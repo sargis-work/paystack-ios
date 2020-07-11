@@ -14,9 +14,14 @@ Pod::Spec.new do |s|
   s.ios.weak_frameworks            = 'PassKit', 'AddressBook'
   s.requires_arc                   = true
   s.ios.deployment_target          = '11.0'
+  s.default_subspecs               = 'Core'
   s.swift_versions = '5.0'
-  s.public_header_files = 'Paystack/Classes/PublicHeaders/*.h', 'Paystack/Classes/RSA/*.h'
-  s.source_files = 'Paystack/Classes/**/*.{swift,h,m}'
-  s.resources = 'Paystack/Resources/**/*'
-    
+
+  s.subspec 'Core' do |ss|
+    ss.public_header_files         = 'Paystack/PublicHeaders/*.h', 'Paystack/RSA/*.h'
+    ss.ios.public_header_files     = 'Paystack/PublicHeaders/UI/*.h'
+    ss.source_files                = 'Paystack/PublicHeaders/*.h', 'Paystack/RSA/*.{h,m}', 'Paystack/*.{h,m}'
+    ss.ios.source_files            = 'Paystack/PublicHeaders/UI/*.h', 'Paystack/UI/*.{h,m}', 'Paystack/**/*.{swift}'
+    ss.resources                   = 'Paystack/Resources/**/*'
+  end
 end

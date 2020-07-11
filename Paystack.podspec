@@ -24,5 +24,4 @@ Pod::Spec.new do |s|
     ss.ios.source_files            = 'Paystack/PublicHeaders/UI/*.h', 'Paystack/UI/*.{h,m}', 'Paystack/**/*.{swift}'
     ss.resources                   = 'Paystack/Resources/**/*'
   end
-
 end

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                           = 'Paystack'
-  s.version                        = '3.0.14'
+  s.version                        = '3.0.13'
   s.summary                        = 'Paystack is a web-based API helping African Businesses accept payments online.'
   s.description                    = <<-DESC
    Paystack makes it easy for African Businesses to accept Mastercard, Visa and Verve cards from anyone, anywhere in the world.
@@ -8,15 +8,20 @@ Pod::Spec.new do |s|
 
   s.license                        = { :type => 'MIT', :file => 'LICENSE' }
   s.homepage                       = 'https://paystack.com'
-  s.authors                        = { 'Jubril Olambiwonnu' => 'jubril@paystack.com', 'Ibrahim Lawal' => 'ibrahim@paystack.com', 'Paystack' => 'support@paystack.com' }
+  s.authors                        = { 'Ibrahim Lawal' => 'ibrahim@paystack.com', 'Paystack' => 'support@paystack.com' }
   s.source                         = { :git => 'https://github.com/paystackhq/paystack-ios.git', :tag => "v#{s.version}" }
   s.ios.frameworks                 = 'Foundation', 'Security'
   s.ios.weak_frameworks            = 'PassKit', 'AddressBook'
   s.requires_arc                   = true
-  s.ios.deployment_target          = '11.0'
-  s.swift_versions = '5.0'
-  s.public_header_files = 'Paystack/Classes/PublicHeaders/*.h', 'Paystack/Classes/RSA/*.h'
-  s.source_files = 'Paystack/Classes/**/*.{swift,h,m}'
-  s.resources = 'Paystack/Resources/**/*'
-    
+  s.ios.deployment_target          = '8.0'
+  s.default_subspecs               = 'Core'
+
+  s.subspec 'Core' do |ss|
+    ss.public_header_files         = 'Paystack/PublicHeaders/*.h', 'Paystack/RSA/*.h'
+    ss.ios.public_header_files     = 'Paystack/PublicHeaders/UI/*.h'
+    ss.source_files                = 'Paystack/PublicHeaders/*.h', 'Paystack/RSA/*.{h,m}', 'Paystack/*.{h,m}'
+    ss.ios.source_files            = 'Paystack/PublicHeaders/UI/*.h', 'Paystack/UI/*.{h,m}', 'Paystack/Fabric/*'
+    ss.resources                   = 'Paystack/Resources/**/*'
+  end
+
 end

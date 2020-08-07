@@ -396,9 +396,6 @@
 		049952CE1BCF13510088C703 /* PSTCKAPIPostRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSTCKAPIPostRequest.m; sourceTree = "<group>"; };
 		049952D11BCF13DD0088C703 /* PSTCKAPIClient+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PSTCKAPIClient+Private.h"; sourceTree = "<group>"; };
 		049E84AB1A605D93000B66CD /* libPaystack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPaystack.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		04A58A461BC603BB004E7BC2 /* FABKitProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FABKitProtocol.h; sourceTree = "<group>"; };
-		04A58A471BC603BB004E7BC2 /* Fabric+FABKits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Fabric+FABKits.h"; sourceTree = "<group>"; };
-		04A58A481BC603BB004E7BC2 /* Fabric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Fabric.h; sourceTree = "<group>"; };
 		04B33F301BC7417B00DD8120 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		04B94BC71A47B78A00092C46 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		04CDB4421A5F2E1800B854EE /* Paystack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Paystack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -602,17 +599,6 @@
 			path = Images;
 			sourceTree = "<group>";
 		};
-		04A58A451BC603BB004E7BC2 /* Fabric */ = {
-			isa = PBXGroup;
-			children = (
-				04A58A461BC603BB004E7BC2 /* FABKitProtocol.h */,
-				04A58A471BC603BB004E7BC2 /* Fabric+FABKits.h */,
-				04A58A481BC603BB004E7BC2 /* Fabric.h */,
-			);
-			name = Fabric;
-			path = Paystack/Fabric;
-			sourceTree = "<group>";
-		};
 		04B33F2F1BC7414C00DD8120 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -745,7 +731,6 @@
 		11C74B9A164043050071C2CA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				04A58A451BC603BB004E7BC2 /* Fabric */,
 				04365D2C1A4CF86C00A3E1D4 /* CoreGraphics.framework */,
 				04B94BC71A47B78A00092C46 /* AddressBook.framework */,
 				04D5BF9019BF958F009521A5 /* PassKit.framework */,

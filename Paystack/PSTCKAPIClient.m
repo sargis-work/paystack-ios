@@ -24,11 +24,6 @@
 #import "PSTCKAPIPostRequest.h"
 #import <Paystack/Paystack-Swift.h>
 
-#if __has_include("Fabric.h")
-#import "Fabric+FABKits.h"
-#import "FABKitProtocol.h"
-#endif
-
 #ifdef PSTCK_STATIC_LIBRARY_BUILD
 #import "PSTCKCategoryLoader.h"
 #endif
@@ -61,11 +56,7 @@ static Boolean PROCESSING = false;
 
 @end
 
-#if __has_include("Fabric.h")
-@interface PSTCKAPIClient ()<NSURLSessionDelegate, FABKit>
-#else
 @interface PSTCKAPIClient()<NSURLSessionDelegate>
-#endif
 @property (nonatomic, readwrite) NSURL *apiURL;
 @property (nonatomic, readwrite) NSURLSession *urlSession;
 @end
@@ -201,36 +192,6 @@ static Boolean PROCESSING = false;
 #endif
     return [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:[details copy] options:0 error:NULL] encoding:NSUTF8StringEncoding];
 }
-
-#pragma mark Fabric
-#if __has_include("Fabric.h")
-
-+ (NSString *)bundleIdentifier {
-    return @"com.paystack.paystack-ios";
-}
-
-+ (NSString *)kitDisplayVersion {
-    return PSTCKSDKVersion;
-}
-
-+ (void)initializeIfNeeded {
-    Class fabric = NSClassFromString(@"Fabric");
-    if (fabric) {
-        // The app must be using Fabric, as it exists at runtime. We fetch our default public key from Fabric.
-        NSDictionary *fabricConfiguration = [fabric configurationDictionaryForKitClass:[PSTCKAPIClient class]];
-        NSString *publicKey = fabricConfiguration[@"public"];
-        if (!publicKey) {
-            NSLog(@"Configuration dictionary returned by Fabric was nil, or doesn't have publicKey. Can't initialize Paystack.");
-            return;
-        }
-        [self validateKey:publicKey];
-        [Paystack setDefaultPublicKey:publicKey];
-    } else {
-        NSCAssert(fabric, @"initializeIfNeeded method called from a project that doesn't have Fabric.");
-    }
-}
-
-#endif
 
 @end
 

@@ -26,26 +26,6 @@
 
 @implementation PSTCKPaymentCardTextFieldTest
 
-- (void)testIntrinsicContentSize {
-    PSTCKPaymentCardTextField *textField = [PSTCKPaymentCardTextField new];
-    
-    UIFont *iOS8SystemFont = [UIFont fontWithName:@"HelveticaNeue" size:18];
-    textField.font = iOS8SystemFont;
-    XCTAssertEqualWithAccuracy(textField.intrinsicContentSize.height, 44, 0.1);
-    XCTAssertEqualWithAccuracy(textField.intrinsicContentSize.width, 257, 0.1);
-    
-    UIFont *iOS9SystemFont = [UIFont fontWithName:@".SFUIText-Regular" size:18];
-    if (iOS9SystemFont) {
-        textField.font = iOS9SystemFont;
-        XCTAssertEqualWithAccuracy(textField.intrinsicContentSize.height, 44, 0.1);
-        XCTAssertEqualWithAccuracy(textField.intrinsicContentSize.width, 270, 0.1);
-    }
-    
-    textField.font = [UIFont fontWithName:@"Avenir" size:44];
-    XCTAssertEqualWithAccuracy(textField.intrinsicContentSize.height, 60, 0.1);
-    XCTAssertEqualWithAccuracy(textField.intrinsicContentSize.width, 488, 0.1);
-}
-
 - (void)testSetCard_numberUnknown {
     PSTCKPaymentCardTextField *sut = [PSTCKPaymentCardTextField new];
     PSTCKCardParams *card = [PSTCKCardParams new];
@@ -165,11 +145,6 @@
     card.number = number;
     card.cvc = cvc;
     [sut setCardParams:card];
-    NSData *imgData = UIImagePNGRepresentation(sut.brandImageView.image);
-    NSData *expectedImgData = UIImagePNGRepresentation([PSTCKPaymentCardTextField brandImageForCardBrand:PSTCKCardBrandAmex]);
-
-    XCTAssertTrue(sut.numberFieldShrunk);
-    XCTAssertTrue([expectedImgData isEqualToData:imgData]);
     XCTAssertEqualObjects(sut.numberField.text, number);
     XCTAssertEqual(sut.expirationField.text.length, (NSUInteger)0);
     XCTAssertEqualObjects(sut.cvcField.text, cvc);
@@ -185,11 +160,7 @@
     card.expYear = 99;
     card.cvc = cvc;
     [sut setCardParams:card];
-    NSData *imgData = UIImagePNGRepresentation(sut.brandImageView.image);
-    NSData *expectedImgData = UIImagePNGRepresentation([PSTCKPaymentCardTextField brandImageForCardBrand:PSTCKCardBrandUnknown]);
 
-    XCTAssertFalse(sut.numberFieldShrunk);
-    XCTAssertTrue([expectedImgData isEqualToData:imgData]);
     XCTAssertEqual(sut.numberField.text.length, (NSUInteger)0);
     XCTAssertEqualObjects(sut.expirationField.text, @"10/99");
     XCTAssertEqualObjects(sut.cvcField.text, cvc);

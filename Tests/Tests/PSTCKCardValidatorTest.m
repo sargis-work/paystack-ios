@@ -22,15 +22,7 @@
              @[@(PSTCKCardBrandMasterCard), @"5555555555554444", @(PSTCKCardValidationStateValid)],
              @[@(PSTCKCardBrandMasterCard), @"5200828282828210", @(PSTCKCardValidationStateValid)],
              @[@(PSTCKCardBrandMasterCard), @"5105105105105100", @(PSTCKCardValidationStateValid)],
-             @[@(PSTCKCardBrandAmex), @"378282246310005", @(PSTCKCardValidationStateValid)],
-             @[@(PSTCKCardBrandAmex), @"371449635398431", @(PSTCKCardValidationStateValid)],
-             @[@(PSTCKCardBrandDiscover), @"6011111111111117", @(PSTCKCardValidationStateValid)],
-             @[@(PSTCKCardBrandDiscover), @"6011000990139424", @(PSTCKCardValidationStateValid)],
-             @[@(PSTCKCardBrandDinersClub), @"30569309025904", @(PSTCKCardValidationStateValid)],
-             @[@(PSTCKCardBrandDinersClub), @"38520000023237", @(PSTCKCardValidationStateValid)],
-             @[@(PSTCKCardBrandJCB), @"3530111333300000", @(PSTCKCardValidationStateValid)],
-             @[@(PSTCKCardBrandJCB), @"3566002020360505", @(PSTCKCardValidationStateValid)],
-             @[@(PSTCKCardBrandUnknown), @"1234567812345678", @(PSTCKCardValidationStateInvalid)],
+             @[@(PSTCKCardBrandUnknown), @"1234567812345678", @(PSTCKCardValidationStateInvalid)]
              ];
 }
 
@@ -72,10 +64,6 @@
     NSArray *possibleCardNumbers = @[
                                      @"4242",
                                      @"5",
-                                     @"3",
-                                     @"",
-                                     @"    ",
-                                     @"6011",
                                      ];
     
     for (NSString *card in possibleCardNumbers) {
@@ -110,7 +98,7 @@
                        @[@(PSTCKCardBrandDiscover), @16],
                        @[@(PSTCKCardBrandDinersClub), @14],
                        @[@(PSTCKCardBrandJCB), @16],
-                       @[@(PSTCKCardBrandUnknown), @16],
+                       @[@(PSTCKCardBrandUnknown), @20],
                        ];
     for (NSArray *test in tests) {
         XCTAssertEqualObjects(@([PSTCKCardValidator lengthForCardBrand:[test[0] integerValue]]), test[1]);
@@ -213,14 +201,13 @@
 
 - (void)testCardValidation {
     NSArray *tests = @[
-                       @[@"4242424242424242", @(12), @(15), @"123", @(PSTCKCardValidationStateValid)],
+                       @[@"4242424242424242", @(12), @(2022), @"123", @(PSTCKCardValidationStateValid)],
                        @[@"4242424242424242", @(12), @(15), @"x", @(PSTCKCardValidationStateInvalid)],
-                       @[@"4242424242424242", @(12), @(15), @"1", @(PSTCKCardValidationStateIncomplete)],
+                       @[@"4242424242424242", @(12), @(2023), @"1", @(PSTCKCardValidationStateIncomplete)],
                        @[@"4242424242424242", @(12), @(14), @"123", @(PSTCKCardValidationStateInvalid)],
                        @[@"4242424242424242", @(21), @(15), @"123", @(PSTCKCardValidationStateInvalid)],
-                       @[@"42424242", @(12), @(15), @"123", @(PSTCKCardValidationStateIncomplete)],
-                       @[@"378282246310005", @(12), @(15), @"1234", @(PSTCKCardValidationStateValid)],
-                       @[@"378282246310005", @(12), @(15), @"123", @(PSTCKCardValidationStateValid)],
+                       @[@"42424242", @(12), @(2023), @"123", @(PSTCKCardValidationStateIncomplete)],
+                       @[@"378282246310005", @(12), @(2023), @"1234", @(PSTCKCardValidationStateInvalid)],
                        @[@"378282246310005", @(12), @(15), @"12345", @(PSTCKCardValidationStateInvalid)],
                        @[@"1234567812345678", @(12), @(15), @"12345", @(PSTCKCardValidationStateInvalid)],
                        ];
@@ -231,7 +218,7 @@
         card.expYear = [test[2] integerValue];
         card.cvc = test[3];
         PSTCKCardValidationState state = [PSTCKCardValidator validationStateForCard:card
-                                        inCurrentYear:15 currentMonth:8];
+                                        inCurrentYear:2021 currentMonth:8];
         XCTAssertEqualObjects(@(state), test[4]);
     }
 }

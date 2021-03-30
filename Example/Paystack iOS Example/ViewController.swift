@@ -186,9 +186,9 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
                     print("<Unable to read response>")
                 }
             } else {
-                if let e=error {
-                    print(e.localizedDescription)
-                    self.outputOnLabel(str: e.localizedDescription)
+                if let error = error {
+                    print(error.localizedDescription)
+                    self.outputOnLabel(str: error.localizedDescription)
                 } else {
                     // There was no error returned though status code was not 200
                     print("There was an error communicating with your payment backend.")
@@ -197,6 +197,4 @@ class ViewController: UIViewController, PSTCKPaymentCardTextFieldDelegate {
             }
         }).resume()
     }
-    
-    
 }

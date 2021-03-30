@@ -26,7 +26,7 @@
                        @[@"4242424242424242", @"4242424242424242"],
                        @[@"4242 4242 4242 4242", @"4242424242424242"],
                        @[@"4242xxx4242", @"42424242"],
-                       @[@"12345678901234567890", @"1234567890123456"],
+                       @[@"12345678901234567890", @"12345678901234567890"],
                        ];
     for (NSArray *test in tests) {
         self.viewModel.cardNumber = test[0];
@@ -76,10 +76,10 @@
     XCTAssertEqualObjects([self.viewModel numberWithoutLastDigits], @"424242424242");
     
     self.viewModel.cardNumber = @"378282246310005";
-    XCTAssertEqualObjects([self.viewModel numberWithoutLastDigits], @"3782822463");
+    XCTAssertEqualObjects([self.viewModel numberWithoutLastDigits], @"37828224631");
     
     self.viewModel.cardNumber = @"";
-    XCTAssertEqualObjects([self.viewModel numberWithoutLastDigits], @"123456781234");
+    XCTAssertEqualObjects([self.viewModel numberWithoutLastDigits], @"1234 5678 1234 5678");
 }
 
 - (void)testValidity {

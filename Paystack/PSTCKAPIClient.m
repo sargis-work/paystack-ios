@@ -22,7 +22,6 @@
 #import "PSTCKAPIResponseDecodable.h"
 #import "PSTCKAuthViewController.h"
 #import "PSTCKAPIPostRequest.h"
-#import <Paystack/Paystack-Swift.h>
 
 #ifdef PSTCK_STATIC_LIBRARY_BUILD
 #import "PSTCKCategoryLoader.h"
@@ -395,27 +394,6 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     [self.viewController presentViewController:alert animated:YES completion:nil];
 }
 
-- (void) requestAVS:(NSArray<PSTCKState *>*) states {
-    [self notifyShowingDialog];
-    [self notifyBeforeValidate];
-    PSTCKAddressViewController* avsVC = [[PSTCKAddressViewController alloc] initWithNibName: @"AddressViewController" bundle:[NSBundle bundleForClass:[self class]]];
-    avsVC.transaction = self.serverTransaction.id;
-    avsVC.didCollectAddress = ^ (NSDictionary<NSString *,id> * _Nonnull address) {
-        [self notifyDialogDismissed];
-        NSData *data = [PSTCKFormEncoder formEncryptedDataForDict:address
-                                                     usePublicKey:[self publicKey]
-                                                     onThisDevice:[self.class device_id]];
-        [self makeChargeRequest:data
-                        atStage:PSTCKChargeStageAVS];
-    };
-    avsVC.didTapCancelButton = ^{
-        [self notifyDialogDismissed];
-        [self didEndWithErrorMessage:@"Could not complete charge because billing information is missing"];
-    };
-    avsVC.states = states;
-    [self.viewController presentViewController:avsVC animated:YES completion:nil];
-}
-
 - (void) requestAuth:(NSString * _Nonnull) url{
     [self notifyShowingDialog];
     [self notifyBeforeValidate];
@@ -475,20 +453,7 @@ didTransactionSuccess:(nonnull PSTCKTransactionCompletionBlock)successCompletion
     if([[responseObject status] isEqual:@"1"] || [[responseObject status] isEqual:@"success"]){
         [self didEndSuccessfully];
         return;
-    }
-    else if([[responseObject status] isEqual:@"2"] && [[responseObject auth].lowercaseString isEqual:@"avs"]){
-        [self fetchStatesWithCountry:responseObject.countrycode completion: ^( NSArray<PSTCKState *> * _Nonnull states, NSError * _Nullable error) {
-            if(error != NULL) {
-                [self didEndWithError:error];
-            }
-            else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self requestAVS:states];
-                });
-            }
-        }];
-        return;
-    }    else if([[responseObject status] isEqual:@"2"] || [[responseObject auth].lowercaseString isEqual:@"pin"]){
+    } else if([[responseObject status] isEqual:@"2"] || [[responseObject auth].lowercaseString isEqual:@"pin"]){
         [self requestPin];
         return;
     } else if([self.serverTransaction id] != nil){
